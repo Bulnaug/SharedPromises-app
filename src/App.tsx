@@ -15,7 +15,7 @@ export default function App() {
 
       <SignedIn>
         {me === null && <SelectRole />}
-        {me && <Wishes />}
+        {me && <Wishes role={me.role} />}
       </SignedIn>
     </>
   );

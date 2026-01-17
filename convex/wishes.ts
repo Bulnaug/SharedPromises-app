@@ -73,3 +73,21 @@ export const confirm = mutation({
     });
   },
 });
+
+export const reject = mutation({
+  args: { id: v.id("wishes") },
+  handler: async (ctx, { id }) => {
+    const user = await getCurrentUser(ctx);
+    const wish = await ctx.db.get(id);
+
+    if (!wish) throw new Error("Wish not found");
+
+    if (user.role !== "partner") {
+      throw new Error("Only partner can reject");
+    }
+
+    await ctx.db.patch(id, {
+      status: "pending",
+    });
+  },
+});

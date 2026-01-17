@@ -1,15 +1,22 @@
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
+type Wish = Doc<"wishes">;
 type Role = "author" | "partner";
 
-export default function WishCard({
-  wish,
-  role,
-}: {
-  wish: any;
+type Props = {
+  wish: Wish;
   role: Role;
-}) {
+};
+
+const statusMap: Record<Wish["status"], string> = {
+  pending: "⏳ В ожидании",
+  marked_done: "👀 Проверяется",
+  confirmed: "❤️ Подтверждено",
+};
+
+export default function WishCard({ wish, role }: Props) {
   const markDone = useMutation(api.wishes.markDone);
   const confirm = useMutation(api.wishes.confirm);
   const reject = useMutation(api.wishes.reject);
@@ -18,14 +25,11 @@ export default function WishCard({
     <div className="p-4 bg-white rounded-xl shadow space-y-2">
       <p className="text-lg">{wish.text}</p>
 
-      {/* STATUS */}
-      <div className="text-sm text-gray-500">
-        Статус: <b>{wish.status}</b>
-      </div>
+      <p className="text-sm text-gray-500">
+        {statusMap[wish.status]}
+      </p>
 
-      {/* ACTIONS */}
       <div className="flex gap-2">
-        {/* AUTHOR */}
         {role === "author" && wish.status === "pending" && (
           <button
             onClick={() => markDone({ id: wish._id })}
@@ -35,7 +39,6 @@ export default function WishCard({
           </button>
         )}
 
-        {/* PARTNER */}
         {role === "partner" && wish.status === "marked_done" && (
           <>
             <button
@@ -44,7 +47,6 @@ export default function WishCard({
             >
               Подтвердить
             </button>
-
             <button
               onClick={() => reject({ id: wish._id })}
               className="px-3 py-1 rounded border"
