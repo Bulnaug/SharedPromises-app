@@ -1,9 +1,22 @@
+import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
 import Wishes from "./pages/Wishes";
+import SelectRole from "./pages/SelectRole";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
 
 export default function App() {
+  const me = useQuery(api.users.getMe);
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Wishes />
-    </div>
+    <>
+      <SignedOut>
+        <SignIn />
+      </SignedOut>
+
+      <SignedIn>
+        {me === null && <SelectRole />}
+        {me && <Wishes />}
+      </SignedIn>
+    </>
   );
 }

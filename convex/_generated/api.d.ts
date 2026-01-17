@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as lib_getUser from "../lib/getUser.js";
 import type * as users from "../users.js";
 import type * as wishes from "../wishes.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "lib/getUser": typeof lib_getUser;
   users: typeof users;
   wishes: typeof wishes;
 }>;

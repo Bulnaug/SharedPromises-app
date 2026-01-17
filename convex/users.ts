@@ -5,23 +5,28 @@ export const getMe = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity?.email) return null;
+    if (!identity) return null;
 
     return await ctx.db
       .query("users")
-      .filter(q => q.eq(q.field("email"), identity.email))
+      .filter(q => q.eq(q.field("externalId"), identity.subject))
       .first();
   },
 });
 
-export const createUser = mutation({
-  args: { role: v.union(v.literal("author"), v.literal("partner")) },
+export const createMe = mutation({
+  args: {
+    role: v.union(
+      v.literal("author"),
+      v.literal("partner")
+    ),
+  },
   handler: async (ctx, { role }) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity?.email) throw new Error("Not authenticated");
+    if (!identity) throw new Error("Not authenticated");
 
     await ctx.db.insert("users", {
-      email: identity.email,
+      externalId: identity.subject,
       role,
     });
   },

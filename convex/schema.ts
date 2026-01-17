@@ -3,12 +3,12 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    email: v.string(),
+    externalId: v.string(),
     role: v.union(
       v.literal("author"),
       v.literal("partner")
     ),
-  }),
+}),
 
   wishes: defineTable({
     text: v.string(),
