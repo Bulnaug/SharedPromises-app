@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUser } from "./lib/getUser";
+
+/* ---------- QUERIES ---------- */
 
 export const list = query({
   args: {},
@@ -12,12 +13,52 @@ export const list = query({
   },
 });
 
-export const add = mutation({
-  args: { text: v.string() },
-  handler: async (ctx, { text }) => {
-    const user = await getCurrentUser(ctx);
+export const lastEvent = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
 
-    if (user.role !== "author") {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_externalId", q =>
+        q.eq("externalId", identity.subject)
+      )
+      .first();
+
+    if (!user) return null;
+
+    const last = await ctx.db
+      .query("wishes")
+      .order("desc")
+      .first();
+
+    if (!last) return null;
+
+    if (last.createdBy === user._id) return null;
+
+    return last;
+  },
+});
+
+/* ---------- MUTATIONS ---------- */
+
+export const add = mutation({
+  args: {
+    text: v.string(),
+  },
+  handler: async (ctx, { text }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_externalId", q =>
+        q.eq("externalId", identity.subject)
+      )
+      .first();
+
+    if (!user || user.role !== "author") {
       throw new Error("Only author can add wishes");
     }
 
@@ -33,61 +74,13 @@ export const add = mutation({
 export const markDone = mutation({
   args: { id: v.id("wishes") },
   handler: async (ctx, { id }) => {
-    const user = await getCurrentUser(ctx);
-    const wish = await ctx.db.get(id);
-
-    if (!wish) throw new Error("Wish not found");
-
-    if (user.role !== "author") {
-      throw new Error("Only author can mark done");
-    }
-
-    if (wish.createdBy !== user._id) {
-      throw new Error("Not your wish");
-    }
-
-    await ctx.db.patch(id, {
-      status: "marked_done",
-    });
+    await ctx.db.patch(id, { status: "marked_done" });
   },
 });
 
 export const confirm = mutation({
   args: { id: v.id("wishes") },
   handler: async (ctx, { id }) => {
-    const user = await getCurrentUser(ctx);
-    const wish = await ctx.db.get(id);
-
-    if (!wish) throw new Error("Wish not found");
-
-    if (user.role !== "partner") {
-      throw new Error("Only partner can confirm");
-    }
-
-    if (wish.status !== "marked_done") {
-      throw new Error("Wish is not ready for confirmation");
-    }
-
-    await ctx.db.patch(id, {
-      status: "confirmed",
-    });
-  },
-});
-
-export const reject = mutation({
-  args: { id: v.id("wishes") },
-  handler: async (ctx, { id }) => {
-    const user = await getCurrentUser(ctx);
-    const wish = await ctx.db.get(id);
-
-    if (!wish) throw new Error("Wish not found");
-
-    if (user.role !== "partner") {
-      throw new Error("Only partner can reject");
-    }
-
-    await ctx.db.patch(id, {
-      status: "pending",
-    });
+    await ctx.db.patch(id, { status: "confirmed" });
   },
 });
