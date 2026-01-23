@@ -85,3 +85,11 @@ export const confirm = mutation({
     await ctx.db.patch(id, { status: "confirmed" });
   },
 });
+
+// Удаление желания
+export const deleteWish = mutation({
+  args: { id: v.id("wishes") },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
+  },
+});

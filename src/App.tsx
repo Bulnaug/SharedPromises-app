@@ -43,7 +43,7 @@ export default function App() {
                   page === "add" ? "bg-black text-white" : "hover:bg-gray-200"
                 }`}
               >
-                Добавить желание
+                Редактор хотелок
               </button>
             )}
           </div>
