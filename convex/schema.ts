@@ -8,6 +8,7 @@ export default defineSchema({
       v.literal("author"),
       v.literal("partner")
     ),
+    createdAt: v.number(),
   }).index("by_externalId", ["externalId"]),
 
   wishes: defineTable({

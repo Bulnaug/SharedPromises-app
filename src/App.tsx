@@ -1,27 +1,19 @@
 import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
-import Wishes from "./pages/Wishes";
 import SelectRole from "./pages/SelectRole";
-import { useQuery } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { usePartnerNotifications } from "./hooks/usePartnerNotifications";
-
-export default function App() {
-  const me = useQuery(api.users.getMe);
-
-  // подключаем слушатель уведомлений
-  usePartnerNotifications();
-
+function App() {
   return (
     <>
       <SignedOut>
-        <SignIn />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <SignIn />
+        </div>
       </SignedOut>
-
+      
       <SignedIn>
-        {me === undefined && null /* loading */}
-        {me === null && <SelectRole />}
-        {me && <Wishes role={me.role} />}
+        <SelectRole />
       </SignedIn>
     </>
   );
 }
+
+export default App;
