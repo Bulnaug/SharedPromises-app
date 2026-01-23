@@ -1,12 +1,17 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function SelectRole() {
+  const { isLoaded, isSignedIn } = useAuth();
+
   const me = useQuery(api.users.getMe);
   const createMe = useMutation(api.users.createMe);
 
-  if (me === undefined) return null;
+  if (!isLoaded) return null;
+  if (!isSignedIn) return null;
 
+  if (me === undefined) return null;
   if (me) return null;
 
   return (
