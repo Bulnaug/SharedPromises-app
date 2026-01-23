@@ -27,8 +27,8 @@ VITE_CLERK_PUBLISHABLE_KEY → начинается с pk_test_...
 CLERK_SECRET_KEY → начинается с sk_test_...
 
 **Добавляем их в нижеуказанные места**
-![alt text]({620FCABB-9F88-4ABF-AFEB-34D1C7A77D52}.png)
-![alt text]({7F9ADA82-8EC4-4319-AB6B-4DC1488A38D4}.png)
+![alt text](public\screenshots\{7F9ADA82-8EC4-4319-AB6B-4DC1488A38D4}.png)
+![alt text](public\screenshots\{620FCABB-9F88-4ABF-AFEB-34D1C7A77D52}.png)
 
 **2️⃣ Создайте JWT Template**
 
@@ -38,7 +38,7 @@ CLERK_SECRET_KEY → начинается с sk_test_...
 
 Claims (JSON):
 
-![alt text]({F85B4A57-1519-4604-A73E-E5FF50666535}.png)
+![alt text](public\screenshots\{F85B4A57-1519-4604-A73E-E5FF50666535}.png)
 
 
 ## ⚙️ Шаг 2: Настройка Convex
