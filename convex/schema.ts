@@ -14,6 +14,7 @@ export default defineSchema({
   wishes: defineTable({
     text: v.string(),
     createdBy: v.id("users"),
+    createdByRole: v.union(v.literal("author"), v.literal("partner")),
     status: v.union(
       v.literal("pending"),
       v.literal("marked_done"),

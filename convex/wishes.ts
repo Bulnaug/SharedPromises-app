@@ -65,6 +65,7 @@ export const add = mutation({
     await ctx.db.insert("wishes", {
       text,
       createdBy: user._id,
+      createdByRole: user.role, // ← добавляем сюда
       status: "pending",
       createdAt: Date.now(),
     });
