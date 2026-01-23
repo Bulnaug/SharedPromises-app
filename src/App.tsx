@@ -1,6 +1,16 @@
 import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
 import SelectRole from "./pages/SelectRole";
-function App() {
+import Wishes from "./pages/Wishes";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
+import { usePartnerNotifications } from "./hooks/usePartnerNotifications";
+
+export default function App() {
+  const me = useQuery(api.users.getMe);
+
+  // Подключаем уведомления партнёра
+  usePartnerNotifications();
+
   return (
     <>
       <SignedOut>
@@ -8,12 +18,12 @@ function App() {
           <SignIn />
         </div>
       </SignedOut>
-      
+
       <SignedIn>
-        <SelectRole />
+        {me === undefined && <div>Loading user data...</div>}
+        {me === null && <SelectRole />}
+        {me && <Wishes role={me.role} />}
       </SignedIn>
     </>
   );
 }
-
-export default App;

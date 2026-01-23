@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -7,7 +7,9 @@ import { useState } from "react";
 
 type Wish = Doc<"wishes">;
 type Role = "author" | "partner";
-const [isSubmitting, setIsSubmitting] = useState(false);
+
+/* ---------- UI для статусов ---------- */
+
 type StatusUI = {
   label: string;
   bgColor: string;
@@ -15,8 +17,6 @@ type StatusUI = {
   pulse?: boolean;
   glow?: boolean;
 };
-
-/* ---------- UI CONFIG ---------- */
 
 const statusUI: Record<Wish["status"], StatusUI> = {
   pending: {
@@ -40,51 +40,16 @@ const statusUI: Record<Wish["status"], StatusUI> = {
 
 /* ---------- COMPONENT ---------- */
 
-export default function WishCard({
-  wish,
-  role,
-}: {
-  wish: Wish;
-  role: Role;
-}) {
-  /* ---------- MUTATIONS WITH OPTIMISTIC UI ---------- */
+export default function WishCard({ wish, role }: { wish: Wish; role: Role }) {
+  const markDone = useMutation(api.wishes.markDone);
+  const confirm = useMutation(api.wishes.confirm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const markDone = useMutation(api.wishes.markDone).withOptimisticUpdate(
-    (store, args) => {
-      const wishes = store.getQuery(api.wishes.list, {});
-      if (!wishes) return;
-
-      store.setQuery(
-        api.wishes.list,
-        {},
-        wishes.map((w) =>
-          w._id === args.id ? { ...w, status: "marked_done" } : w
-        )
-      );
-    }
-  );
-
-  const confirm = useMutation(api.wishes.confirm).withOptimisticUpdate(
-    (store, args) => {
-      const wishes = store.getQuery(api.wishes.list, {});
-      if (!wishes) return;
-
-      store.setQuery(
-        api.wishes.list,
-        {},
-        wishes.map((w) =>
-          w._id === args.id ? { ...w, status: "confirmed" } : w
-        )
-      );
-    }
-  );
-
-  /* ---------- HANDLERS ---------- */
+  const ui = statusUI[wish.status];
 
   const handleMarkDone = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-
     try {
       await markDone({ id: wish._id });
       toast.success("Отмечено как выполненное");
@@ -98,7 +63,6 @@ export default function WishCard({
   const handleConfirm = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-
     try {
       await confirm({ id: wish._id });
       toast.success("Желание подтверждено ❤️");
@@ -110,10 +74,6 @@ export default function WishCard({
   };
 
   const isDisabled = isSubmitting || wish.status === "confirmed";
-
-  const ui = statusUI[wish.status];
-
-  /* ---------- RENDER ---------- */
 
   return (
     <motion.div
@@ -131,11 +91,10 @@ export default function WishCard({
         />
       )}
 
-      {/* Content */}
-      <div className="relative z-10 space-y-3">
+      {/* Содержимое карточки */}
+      <div className="relative z-10 space-y-2">
         <p className="text-lg">{wish.text}</p>
 
-        {/* Status badge */}
         <motion.span
           key={wish.status}
           initial={{ scale: 0.9, opacity: 0 }}
@@ -152,30 +111,26 @@ export default function WishCard({
           {ui.label}
         </motion.span>
 
-        {/* Actions */}
-        <AnimatePresence>
-          {role === "author" && wish.status === "pending" && (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              disabled={isDisabled}
-              onClick={handleMarkDone}
-              className="px-3 py-1 rounded bg-black text-white disabled:opacity-50"
-            >
-              Я сделал
-            </motion.button>
-          )}
+        {/* Действия */}
+        {role === "author" && wish.status === "pending" && (
+          <button
+            onClick={handleMarkDone}
+            disabled={isDisabled}
+            className="px-3 py-1 mt-2 rounded bg-black text-white disabled:opacity-50 hover:bg-gray-800 transition"
+          >
+            Я сделал
+          </button>
+        )}
 
-          {role === "partner" && wish.status === "marked_done" && (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              disabled={isDisabled}
-              onClick={handleConfirm}
-              className="px-3 py-1 rounded bg-green-600 text-white disabled:opacity-50"
-            >
-              Подтвердить
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {role === "partner" && wish.status === "marked_done" && (
+          <button
+            onClick={handleConfirm}
+            disabled={isDisabled}
+            className="px-3 py-1 mt-2 rounded bg-green-600 text-white disabled:opacity-50 hover:bg-green-700 transition"
+          >
+            Подтвердить
+          </button>
+        )}
       </div>
     </motion.div>
   );
