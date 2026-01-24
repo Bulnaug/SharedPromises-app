@@ -1,60 +1,55 @@
-import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
-import { useState } from "react";
-import Dashboard from "./pages/Dashboard";
-import AddWishPage from "./pages/AddWishPage";
-import { useQuery } from "convex/react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { usePartnerNotifications } from "./hooks/usePartnerNotifications";
+import React from "react";
+
+
+// Страницы
+import Landing from "./pages/Landing";
+import RoomsPage from "./pages/RoomsPage";
+import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   const me = useQuery(api.users.getMe);
-  usePartnerNotifications();
+  const getOrCreateMe = useMutation(api.users.getOrCreateMe);
 
-  // состояние текущей страницы
-  const [page, setPage] = useState<"dashboard" | "add">("dashboard");
-
-  if (!me) return <div>Loading...</div>;
+  // Создаём пользователя в Convex, если его ещё нет
+  // Делать только один раз после login
+  React.useEffect(() => {
+    if (me === null) {
+      getOrCreateMe();
+    }
+  }, [me, getOrCreateMe]);
 
   return (
-    <>
+    <BrowserRouter>
+      {/* Не залогиненные */}
       <SignedOut>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <SignIn />
-        </div>
+        <Routes>
+          <Route path="*" element={<Landing />} />
+        </Routes>
       </SignedOut>
 
+      {/* Залогиненные */}
       <SignedIn>
-        <div className="flex min-h-screen">
-          {/* Sidebar */}
-          <div className="w-64 bg-gray-100 p-4 space-y-4 flex flex-col">
-            <button
-              onClick={() => setPage("dashboard")}
-              className={`px-4 py-2 rounded text-left ${
-                page === "dashboard" ? "bg-black text-white" : "hover:bg-gray-200"
-              }`}
-            >
-              Dashboard
-            </button>
+        {me === undefined && <div className="p-6">Loading...</div>}
+        {me && (
+          <Routes>
+            {/* Редирект с корня */}
+            <Route path="/" element={<Navigate to="/rooms" replace />} />
+            
+            {/* Страница списка комнат */}
+            <Route path="/rooms" element={<RoomsPage />} />
 
-            {me.role === "author" && (
-              <button
-                onClick={() => setPage("add")}
-                className={`px-4 py-2 rounded text-left ${
-                  page === "add" ? "bg-black text-white" : "hover:bg-gray-200"
-                }`}
-              >
-                Редактор хотелок
-              </button>
-            )}
-          </div>
+            {/* Dashboard выбранной комнаты */}
+            <Route path="/rooms/:roomId" element={<Dashboard />} />
 
-          {/* Main content */}
-          <div className="flex-1 p-4">
-            {page === "dashboard" && <Dashboard />}
-            {page === "add" && <AddWishPage />}
-          </div>
-        </div>
+            {/* Любой другой путь → редирект на список комнат */}
+            <Route path="*" element={<Navigate to="/rooms" replace />} />
+          </Routes>
+        )}
       </SignedIn>
-    </>
+    </BrowserRouter>
   );
 }

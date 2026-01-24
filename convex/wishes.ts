@@ -1,95 +1,78 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-/* ---------- QUERIES ---------- */
-
-export const list = query({
-  args: {},
-  handler: async (ctx) => {
+/**
+ * Получить все желания комнаты
+ */
+export const listByRoom = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, { roomId }) => {
     return await ctx.db
       .query("wishes")
-      .order("desc")
+      .withIndex("by_room", q => q.eq("roomId", roomId))
+      .order("asc")
       .collect();
   },
 });
 
-export const lastEvent = query({
-  args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_externalId", q =>
-        q.eq("externalId", identity.subject)
-      )
-      .first();
-
-    if (!user) return null;
-
-    const last = await ctx.db
-      .query("wishes")
-      .order("desc")
-      .first();
-
-    if (!last) return null;
-
-    if (last.createdBy === user._id) return null;
-
-    return last;
-  },
-});
-
-/* ---------- MUTATIONS ---------- */
-
+/**
+ * Добавить желание
+ */
 export const add = mutation({
   args: {
+    roomId: v.id("rooms"),
     text: v.string(),
+    userId: v.id("users"),
   },
-  handler: async (ctx, { text }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_externalId", q =>
-        q.eq("externalId", identity.subject)
-      )
-      .first();
-
-    if (!user || user.role !== "author") {
-      throw new Error("Only author can add wishes");
-    }
-
-    await ctx.db.insert("wishes", {
+  handler: async (ctx, { roomId, text, userId }) => {
+    return await ctx.db.insert("wishes", {
       text,
-      createdBy: user._id,
-      createdByRole: user.role, // ← добавляем сюда
+      roomId,
+      createdBy: userId,
       status: "pending",
       createdAt: Date.now(),
     });
   },
 });
 
+/**
+ * Отметить как выполненное
+ */
 export const markDone = mutation({
-  args: { id: v.id("wishes") },
-  handler: async (ctx, { id }) => {
-    await ctx.db.patch(id, { status: "marked_done" });
+  args: {
+    wishId: v.id("wishes"),
+  },
+  handler: async (ctx, { wishId }) => {
+    await ctx.db.patch(wishId, {
+      status: "marked_done",
+    });
   },
 });
 
+/**
+ * Подтвердить выполнение
+ */
 export const confirm = mutation({
-  args: { id: v.id("wishes") },
-  handler: async (ctx, { id }) => {
-    await ctx.db.patch(id, { status: "confirmed" });
+  args: {
+    wishId: v.id("wishes"),
+  },
+  handler: async (ctx, { wishId }) => {
+    await ctx.db.patch(wishId, {
+      status: "confirmed",
+    });
   },
 });
 
-// Удаление желания
-export const deleteWish = mutation({
-  args: { id: v.id("wishes") },
-  handler: async (ctx, { id }) => {
-    await ctx.db.delete(id);
+/**
+ * Удалить желание
+ */
+export const remove = mutation({
+  args: {
+    wishId: v.id("wishes"),
+  },
+  handler: async (ctx, { wishId }) => {
+    await ctx.db.delete(wishId);
   },
 });

@@ -9,6 +9,7 @@
  */
 
 import type * as lib_getUser from "../lib/getUser.js";
+import type * as rooms from "../rooms.js";
 import type * as users from "../users.js";
 import type * as wishes from "../wishes.js";
 
@@ -20,6 +21,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "lib/getUser": typeof lib_getUser;
+  rooms: typeof rooms;
   users: typeof users;
   wishes: typeof wishes;
 }>;

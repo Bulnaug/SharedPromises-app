@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"; // ← ДОБАВЬТЕ ЭТО
 
 export default function SelectRole() {
   const { isSignedIn, getToken } = useAuth(); // ← ДОБАВЬТЕ ЭТО
-  const me = useQuery(api.users.getMe);
+  const me = useQuery(api.users.me);
   const createMe = useMutation(api.users.createMe);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
