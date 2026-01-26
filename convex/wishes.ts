@@ -1,78 +1,112 @@
-import { mutation, query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getUserByClerkId } from "./users";
 
-/**
- * Получить все желания комнаты
- */
-export const listByRoom = query({
+export const getWishesByRoom = query({
   args: {
     roomId: v.id("rooms"),
   },
   handler: async (ctx, { roomId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkId(ctx, identity.subject);
+
+    const room = await ctx.db.get(roomId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const isMember =
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id);
+
+    if (!isMember) {
+      throw new Error("Access denied");
+    }
+
     return await ctx.db
       .query("wishes")
-      .withIndex("by_room", q => q.eq("roomId", roomId))
-      .order("asc")
+      .withIndex("by_roomId", (q) =>
+        q.eq("roomId", roomId)
+      )
+      .order("desc")
       .collect();
   },
 });
 
-/**
- * Добавить желание
- */
-export const add = mutation({
+export const createWish = mutation({
   args: {
     roomId: v.id("rooms"),
-    text: v.string(),
-    userId: v.id("users"),
+    title: v.string(),
+    description: v.optional(v.string()),
   },
-  handler: async (ctx, { roomId, text, userId }) => {
+  handler: async (ctx, { roomId, title, description }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkId(ctx, identity.subject);
+
+    const room = await ctx.db.get(roomId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const isMember =
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id);
+
+    if (!isMember) {
+      throw new Error("Access denied");
+    }
+
     return await ctx.db.insert("wishes", {
-      text,
       roomId,
-      createdBy: userId,
-      status: "pending",
+      authorId: user._id,
+      title,
+      description,
+      fulfilled: false,
       createdAt: Date.now(),
     });
   },
 });
 
-/**
- * Отметить как выполненное
- */
-export const markDone = mutation({
+export const toggleWishFulfilled = mutation({
   args: {
     wishId: v.id("wishes"),
   },
   handler: async (ctx, { wishId }) => {
-    await ctx.db.patch(wishId, {
-      status: "marked_done",
-    });
-  },
-});
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
 
-/**
- * Подтвердить выполнение
- */
-export const confirm = mutation({
-  args: {
-    wishId: v.id("wishes"),
-  },
-  handler: async (ctx, { wishId }) => {
-    await ctx.db.patch(wishId, {
-      status: "confirmed",
-    });
-  },
-});
+    const user = await getUserByClerkId(ctx, identity.subject);
 
-/**
- * Удалить желание
- */
-export const remove = mutation({
-  args: {
-    wishId: v.id("wishes"),
-  },
-  handler: async (ctx, { wishId }) => {
-    await ctx.db.delete(wishId);
+    const wish = await ctx.db.get(wishId);
+    if (!wish) {
+      throw new Error("Wish not found");
+    }
+
+    const room = await ctx.db.get(wish.roomId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const isMember =
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id);
+
+    if (!isMember) {
+      throw new Error("Access denied");
+    }
+
+    await ctx.db.patch(wishId, {
+      fulfilled: !wish.fulfilled,
+    });
   },
 });

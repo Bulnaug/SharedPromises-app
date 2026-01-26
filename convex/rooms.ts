@@ -1,72 +1,81 @@
-// convex/rooms.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { getUserByClerkId } from "./users";
 
-/**
- * Создать комнату + назначить роль создателю
- */
 export const createRoom = mutation({
   args: {
     name: v.string(),
-    role: v.union(v.literal("author"), v.literal("partner")),
   },
-  handler: async (ctx, { name, role }) => {
+  handler: async (ctx, { name }) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
 
-    const me = await ctx.db
-      .query("users")
-      .withIndex("by_externalId", q =>
-        q.eq("externalId", identity.subject)
-      )
-      .first();
+    const user = await getUserByClerkId(ctx, identity.subject);
 
-    if (!me) throw new Error("User not found");
-
-    const roomId = await ctx.db.insert("rooms", {
+    return await ctx.db.insert("rooms", {
       name,
+      ownerId: user._id,
+      memberIds: [],
       createdAt: Date.now(),
     });
-
-    await ctx.db.insert("roomMembers", {
-      roomId,
-      userId: me._id,
-      role,
-      joinedAt: Date.now(),
-    });
-
-    return roomId;
   },
 });
 
-/**
- * Получить комнаты текущего пользователя
- */
-export const listMyRooms = query({
+export const getMyRooms = query({
+  args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    if (!identity) {
+      return [];
+    }
 
-    const me = await ctx.db
-      .query("users")
-      .withIndex("by_externalId", q =>
-        q.eq("externalId", identity.subject)
-      )
-      .first();
+    const user = await getUserByClerkId(ctx, identity.subject);
 
-    if (!me) return [];
-
-    const memberships = await ctx.db
-      .query("roomMembers")
-      .withIndex("by_user", q =>
-        q.eq("userId", me._id)
+    const ownedRooms = await ctx.db
+      .query("rooms")
+      .withIndex("by_ownerId", (q) =>
+        q.eq("ownerId", user._id)
       )
       .collect();
 
-    const rooms = await Promise.all(
-      memberships.map(m => ctx.db.get(m.roomId))
-    );
+    const memberRooms = await ctx.db
+      .query("rooms")
+      .withIndex("by_memberId", (q) =>
+        q.eq("memberIds", user._id as any)
+      )
+      .collect();
 
-    return rooms.filter(Boolean);
+    return [...ownedRooms, ...memberRooms];
+  },
+});
+
+export const getRoom = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, { roomId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkId(ctx, identity.subject);
+
+    const room = await ctx.db.get(roomId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const isMember =
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id);
+
+    if (!isMember) {
+      throw new Error("Access denied");
+    }
+
+    return room;
   },
 });

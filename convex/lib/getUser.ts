@@ -10,7 +10,7 @@ export async function getCurrentUser(
 
   const user = await ctx.db
     .query("users")
-    .filter(q => q.eq(q.field("externalId"), identity.subject))
+    .filter(q => q.eq(q.field("clerkId"), identity.subject))
     .first();
 
   if (!user) {

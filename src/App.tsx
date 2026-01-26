@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   const me = useQuery(api.users.getMe);
-  const getOrCreateMe = useMutation(api.users.getOrCreateMe);
+  const getOrCreateMe = useMutation(api.users.createMe);
 
   // Создаём пользователя в Convex, если его ещё нет
   // Делать только один раз после login
