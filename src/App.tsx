@@ -1,5 +1,6 @@
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import NewWishPage from "./pages/NewWishPage";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import React, { useEffect, useRef } from "react";
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/rooms/:roomId" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/rooms" replace />} />
+            <Route path="/rooms/:roomId/new" element={<NewWishPage />} />
           </Routes>
         )}
       </SignedIn>
