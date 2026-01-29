@@ -15,10 +15,13 @@ export default function Dashboard() {
     convexRoomId ? { roomId: convexRoomId } : "skip"
   );
 
-  const wishes = useQuery(
-    api.wishes.getWishesByRoom,
-    convexRoomId ? { roomId: convexRoomId } : "skip"
+  const data = useQuery(
+    api.wishes.getWishesByRoomGrouped,
+    roomId ? { roomId: roomId as Id<"rooms"> } : "skip"
   );
+
+  if (!data) return <div>Loading…</div>;
+
 
   const toggleWish = useMutation(api.wishes.toggleWishFulfilled);
 
@@ -26,64 +29,46 @@ export default function Dashboard() {
     return <Navigate to="/rooms" replace />;
   }
 
-  if (room === undefined || wishes === undefined) {
-    return <div className="p-6">Loading…</div>;
-  }
-
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-56 border-r p-4">
-        <h2 className="font-semibold mb-4">
-          {room.name}
-        </h2>
+    <div className="p-6 max-w-2xl mx-auto space-y-8">
+      <h1 className="text-2xl font-bold text-center">
+        {data.room.name}
+      </h1>
 
-        <Link
-          to={`/rooms/${room._id}/new`}
-          className="block rounded px-3 py-2 bg-black text-white text-sm"
-        >
-          + Add wish
-        </Link>
-      </aside>
+      {data.members.map((userId) => {
+        const wishes = data.wishesByUser[userId] ?? [];
+        const isMe = userId === data.meId;
 
-      {/* Content */}
-      <main className="flex-1 p-6 max-w-xl">
-        <h1 className="text-xl font-bold mb-4">
-          Wishes
-        </h1>
+        return (
+          <section key={userId}>
+            <h2 className="text-lg font-semibold mb-2">
+              {isMe ? "Мои хотелки" : "Хотелки партнёра"}
+            </h2>
 
-        {wishes.length === 0 ? (
-          <p className="text-gray-500">
-            No wishes yet ✨
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {wishes.map((wish) => (
-              <li
-                key={wish._id}
-                className="border rounded p-3 flex items-center gap-3"
-              >
-                <input
-                  type="checkbox"
-                  checked={wish.fulfilled}
-                  onChange={() =>
-                    toggleWish({ wishId: wish._id })
-                  }
-                />
-                <span
-                  className={
-                    wish.fulfilled
-                      ? "line-through text-gray-400"
-                      : ""
-                  }
-                >
-                  {wish.title}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </main>
+            {wishes.length === 0 ? (
+              <p className="text-gray-400 text-sm">
+                Пока пусто
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {wishes.map(wish => (
+                  <li
+                    key={wish._id}
+                    className="border rounded p-3 flex gap-3"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={wish.fulfilled}
+                      readOnly
+                    />
+                    <span>{wish.title}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        );
+      })}
     </div>
   );
 }
