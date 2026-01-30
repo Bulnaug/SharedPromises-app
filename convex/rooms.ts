@@ -52,30 +52,19 @@ export const getMyRooms = query({
 });
 
 export const getRoom = query({
-  args: {
-    roomId: v.id("rooms"),
-  },
+  args: { roomId: v.id("rooms") },
   handler: async (ctx, { roomId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await getUserByClerkId(ctx, identity.subject);
-
     const room = await ctx.db.get(roomId);
-    if (!room) {
-      throw new Error("Room not found");
-    }
+    if (!room) return null;
 
-    const isMember =
-      room.ownerId === user._id ||
-      room.memberIds.includes(user._id);
+    const users = await Promise.all([
+      ctx.db.get(room.ownerId),
+      ...room.memberIds.map((id) => ctx.db.get(id)),
+    ]);
 
-    if (!isMember) {
-      throw new Error("Access denied");
-    }
-
-    return room;
+    return {
+      ...room,
+      users: users.filter(Boolean),
+    };
   },
 });

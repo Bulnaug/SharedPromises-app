@@ -1,8 +1,8 @@
+import React from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import React from "react";
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -11,7 +11,7 @@ export default function Dashboard() {
     ? (roomId as Id<"rooms">)
     : null;
 
-  // ✅ хуки
+  // ✅ ХУКИ ВСЕГДА СВЕРХУ
   const room = useQuery(
     api.rooms.getRoom,
     convexRoomId ? { roomId: convexRoomId } : "skip"
@@ -22,7 +22,6 @@ export default function Dashboard() {
     convexRoomId ? { roomId: convexRoomId } : "skip"
   );
 
-  // ✅ useMemo ТОЖЕ СЮДА
   const wishesByUser = React.useMemo(() => {
     if (!wishes) return {};
 
@@ -41,7 +40,7 @@ export default function Dashboard() {
     return grouped;
   }, [wishes]);
 
-  // ⬇️⬇️⬇️ ТОЛЬКО ТЕПЕРЬ return ⬇️⬇️⬇️
+  // ⬇️⬇️⬇️ RETURN ТОЛЬКО ПОСЛЕ ВСЕХ ХУКОВ ⬇️⬇️⬇️
 
   if (!convexRoomId) {
     return <Navigate to="/rooms" replace />;
@@ -61,44 +60,52 @@ export default function Dashboard() {
       <aside className="w-56 border-r p-4">
         <Link
           to={`/rooms/${room._id}/new`}
-          className="block rounded px-3 py-2 bg-black text-white text-sm"
+          className="block rounded px-3 py-2 bg-black text-white text-sm text-center"
         >
           + Add wish
         </Link>
       </aside>
 
       {/* Content */}
-      <main className="flex-1 p-6 max-w-xl space-y-6">
-        <h1 className="text-xl font-bold text-center">
+      <main className="flex-1 p-6">
+        <h1 className="text-xl font-bold text-center mb-8">
           {room.name}
         </h1>
 
-        {Object.entries(wishesByUser).map(
-          ([userId, userWishes]) => (
-            <section key={userId}>
-              <h2 className="text-lg font-semibold mb-2">
-                Хотелки пользователя
-              </h2>
+        <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {room.users.map((user) => {
+            const userWishes =
+              wishesByUser[user!._id.toString()] ?? [];
 
-              {userWishes.length === 0 ? (
-                <p className="text-gray-400 text-sm">
-                  Пока пусто
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {userWishes.map((wish) => (
-                    <li
-                      key={wish._id}
-                      className="border rounded p-3"
-                    >
-                      {wish.title}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          )
-        )}
+            return (
+              <section
+                key={user!._id}
+                className="border rounded p-4"
+              >
+                <h2 className="text-lg font-semibold mb-3 text-center">
+                  Хотелки {user!.name ?? "пользователя"}
+                </h2>
+
+                {userWishes.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center">
+                    Пока пусто
+                  </p>
+                ) : (
+                  <ul className="space-y-2">
+                    {userWishes.map((wish) => (
+                      <li
+                        key={wish._id}
+                        className="border rounded p-3"
+                      >
+                        {wish.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            );
+          })}
+        </div>
       </main>
     </div>
   );
