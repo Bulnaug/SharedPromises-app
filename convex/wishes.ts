@@ -120,3 +120,17 @@ export const toggleWishFulfilled = mutation({
   },
 });
 
+export const getWishesByRoom = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, { roomId }) => {
+    return await ctx.db
+      .query("wishes")
+      .withIndex("by_room", (q) =>
+        q.eq("roomId", roomId)
+      )
+      .collect();
+  },
+});
+
