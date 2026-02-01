@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NewWishPage from "./pages/NewWishPage";
 import RoomSettings from "./pages/RoomSettings";
 import JoinRoom from "./components/JoinRoom";
+import ProfilePage from "./pages/ProfilPage";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import React, { useEffect, useRef } from "react";
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="/rooms/:roomId/new" element={<NewWishPage />} />
             <Route path="/rooms/:roomId" element={<Dashboard />} />
             <Route path="/rooms/:roomId/settings" element={<RoomSettings />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="*" element={<Navigate to="/rooms" />} />
           </Routes>

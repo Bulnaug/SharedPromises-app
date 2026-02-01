@@ -36,14 +36,16 @@ export const createMe = mutation({
       .unique();
 
     if (existing) {
-      return existing._id;
+      return existing;
     }
 
-    return await ctx.db.insert("users", {
+    const user = await ctx.db.insert("users", {
       clerkId: identity.subject,
-      name: identity.name ?? "Anonymous",
-      imageUrl: identity.pictureUrl,
+      name: identity.name ?? "User",
+      email: identity.email,
     });
+
+    return user;
   },
 });
 
@@ -51,9 +53,7 @@ export const getMe = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      return null;
-    }
+    if (!identity) return null;
 
     return await ctx.db
       .query("users")
@@ -61,5 +61,34 @@ export const getMe = query({
         q.eq("clerkId", identity.subject)
       )
       .unique();
+  },
+});
+
+export const updateMyName = mutation({
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, { name }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) =>
+        q.eq("clerkId", identity.subject)
+      )
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user._id, {
+      name,
+    });
+
+    return { success: true };
   },
 });

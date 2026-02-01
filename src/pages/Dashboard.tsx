@@ -72,7 +72,12 @@ export default function Dashboard() {
         >
           My rooms
         </Link>
-        <ProfilePage></ProfilePage>
+        <Link
+          to="/profile"
+          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+        >
+          👤 My profile
+        </Link>
         <Link
           to={`/rooms/${room._id}/settings`}
           className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
