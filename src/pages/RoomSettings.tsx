@@ -1,8 +1,7 @@
 import { useParams, Navigate } from "react-router-dom";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import React from "react";
 
 export default function RoomSettings() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -16,7 +15,7 @@ export default function RoomSettings() {
     convexRoomId ? { roomId: convexRoomId } : "skip"
   );
 
-  const invite = useMutation(api.rooms.inviteToRoom);
+//   const invite = useMutation(api.rooms.inviteToRoom);
 
   if (!convexRoomId) {
     return <Navigate to="/rooms" replace />;

@@ -6,7 +6,7 @@ import JoinRoom from "./components/JoinRoom";
 import ProfilePage from "./pages/ProfilPage";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 // Страницы
 import Landing from "./pages/Landing";
