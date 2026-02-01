@@ -95,24 +95,9 @@ export const toggleWishFulfilled = mutation({
       throw new Error("Not authenticated");
     }
 
-    const user = await getUserByClerkId(ctx, identity.subject);
-
     const wish = await ctx.db.get(wishId);
     if (!wish) {
       throw new Error("Wish not found");
-    }
-
-    const room = await ctx.db.get(wish.roomId);
-    if (!room) {
-      throw new Error("Room not found");
-    }
-
-    const isMember =
-      room.ownerId === user._id ||
-      room.memberIds.includes(user._id);
-
-    if (!isMember) {
-      throw new Error("Access denied");
     }
 
     await ctx.db.patch(wishId, {
@@ -135,3 +120,61 @@ export const getWishesByRoom = query({
   },
 });
 
+export const getMyWishesByRoom = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, { roomId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkId(ctx, identity.subject);
+
+    return await ctx.db
+      .query("wishes")
+      .withIndex("by_room", q =>
+        q.eq("roomId", roomId)
+      )
+      .filter(q =>
+        q.eq(q.field("userId"), user._id)
+      )
+      .collect();
+  },
+});
+
+export const deleteWish = mutation({
+  args: {
+    wishId: v.id("wishes"),
+  },
+  handler: async (ctx, { wishId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const wish = await ctx.db.get(wishId);
+    if (!wish) {
+      throw new Error("Wish not found");
+    }
+
+    // 🔒 Только автор может удалить
+    if (!wish.userId) {
+      throw new Error("No author");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", q =>
+        q.eq("clerkId", identity.subject)
+      )
+      .unique();
+
+    if (!user || user._id !== wish.userId) {
+      throw new Error("Not allowed");
+    }
+
+    await ctx.db.delete(wishId);
+  },
+});

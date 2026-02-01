@@ -1,73 +1,138 @@
-import { useParams, Navigate } from "react-router-dom";
-import { useMutation } from "convex/react";
+import React from "react";
+import { useParams, Navigate, Link } from "react-router-dom";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { useState } from "react";
 
-export default function NewWishPage() {
+export default function AddWish() {
   const { roomId } = useParams<{ roomId: string }>();
 
   const convexRoomId = roomId
     ? (roomId as Id<"rooms">)
     : null;
 
-  const createWish = useMutation(api.wishes.createWish);
-
-  const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
-
   if (!convexRoomId) {
     return <Navigate to="/rooms" replace />;
   }
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const wishes = useQuery(
+    api.wishes.getMyWishesByRoom,
+    { roomId: convexRoomId }
+  );
+
+  const createWish = useMutation(api.wishes.createWish);
+  const deleteWish = useMutation(api.wishes.deleteWish);
+
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+
+  if (wishes === undefined) {
+    return <div className="p-6">Loading…</div>;
+  }
+
+  const handleAddWish = async () => {
     if (!title.trim()) return;
 
+    setLoading(true);
     try {
-      setLoading(true);
       await createWish({
         roomId: convexRoomId,
-        title,
+        title: title.trim(),
+        description: description.trim() || undefined,
       });
-      window.history.back();
+      setTitle("");
+      setDescription("");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">
-        New wish
-      </h1>
+    <div className="max-w-xl mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">
+          Добавить хотелку
+        </h1>
 
-      <form onSubmit={submit} className="space-y-4">
+        <Link
+          to={`/rooms/${convexRoomId}`}
+          className="text-sm underline"
+        >
+          ← назад
+        </Link>
+      </div>
+
+      {/* Add wish form */}
+      <div className="space-y-2">
         <input
-          className="border rounded px-3 py-2 w-full"
-          placeholder="Wish title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          placeholder="Я хочу..."
+          className="w-full border rounded px-3 py-2"
         />
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="bg-black text-white px-4 py-2 rounded"
-            disabled={loading}
-          >
-            Create
-          </button>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Описание (необязательно)"
+          className="w-full border rounded px-3 py-2 text-sm"
+          rows={3}
+        />
 
-          <button
-            type="button"
-            className="border px-4 py-2 rounded"
-            onClick={() => window.history.back()}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+        <button
+          onClick={handleAddWish}
+          disabled={loading}
+          className="px-4 py-2 rounded bg-black text-white text-sm disabled:opacity-50"
+        >
+          Добавить
+        </button>
+      </div>
+
+      {/* Wishes list */}
+      <div className="space-y-3">
+        <h2 className="font-semibold text-sm text-gray-600">
+          Желания в этой комнате
+        </h2>
+
+        {wishes.length === 0 ? (
+          <p className="text-sm text-gray-400">
+            Пока желаний нет
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {wishes.map((wish) => (
+              <li
+                key={wish._id}
+                className="border rounded p-3 flex items-center justify-between gap-3"
+              >
+                <div>
+                  <div
+                    className={
+                      wish.fulfilled
+                        ? "line-through text-gray-400"
+                        : ""
+                    }
+                  >
+                    {wish.title}
+                  </div>
+                </div>
+
+                {/* Удаление (если нельзя — mutation сама запретит) */}
+                <button
+                  onClick={() =>
+                    deleteWish({ wishId: wish._id })
+                  }
+                  className="text-xs text-red-500"
+                >
+                  удалить
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

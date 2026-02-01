@@ -3,6 +3,7 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useMutation } from "convex/react";
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -20,6 +21,10 @@ export default function Dashboard() {
   const wishes = useQuery(
     api.wishes.getWishesByRoom,
     convexRoomId ? { roomId: convexRoomId } : "skip"
+  );
+
+  const toggleFulfilled = useMutation(
+    api.wishes.toggleWishFulfilled
   );
 
   const wishesByUser = React.useMemo(() => {
@@ -114,9 +119,26 @@ export default function Dashboard() {
                     {userWishes.map((wish) => (
                       <li
                         key={wish._id}
-                        className="border rounded p-3"
+                        className="border rounded p-3 flex items-center justify-between"
                       >
-                        {wish.title}
+                        <span
+                          className={
+                            wish.fulfilled
+                              ? "line-through text-gray-400"
+                              : ""
+                          }
+                        >
+                          {wish.title}
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            toggleFulfilled({ wishId: wish._id })
+                          }
+                          className="text-xs px-2 py-1 rounded border"
+                        >
+                          {wish.fulfilled ? "↩ вернуть" : "✓ сделано"}
+                        </button>
                       </li>
                     ))}
                   </ul>
