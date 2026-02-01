@@ -1,6 +1,8 @@
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NewWishPage from "./pages/NewWishPage";
+import RoomSettings from "./pages/RoomSettings";
+import JoinRoom from "./components/JoinRoom";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import React, { useEffect, useRef } from "react";
@@ -39,15 +41,20 @@ export default function App() {
 
       {/* Залогиненные */}
       <SignedIn>
-        {me === undefined && <div className="p-6">Loading...</div>}
+        {me === undefined && <div>Loading...</div>}
 
         {me && (
           <Routes>
-            <Route path="/" element={<Navigate to="/rooms" replace />} />
+            <Route path="/" element={<Navigate to="/rooms" />} />
+
+            <Route path="/join/:roomId" element={<JoinRoom />} />
+
             <Route path="/rooms" element={<RoomsPage />} />
-            <Route path="/rooms/:roomId" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/rooms" replace />} />
             <Route path="/rooms/:roomId/new" element={<NewWishPage />} />
+            <Route path="/rooms/:roomId" element={<Dashboard />} />
+            <Route path="/rooms/:roomId/settings" element={<RoomSettings />} />
+
+            <Route path="*" element={<Navigate to="/rooms" />} />
           </Routes>
         )}
       </SignedIn>

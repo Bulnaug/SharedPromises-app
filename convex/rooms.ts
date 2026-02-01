@@ -68,3 +68,37 @@ export const getRoom = query({
     };
   },
 });
+
+export const inviteToRoom = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, { roomId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkId(ctx, identity.subject);
+    const room = await ctx.db.get(roomId);
+
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    // ❌ уже участник
+    if (
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id)
+    ) {
+      return;
+    }
+
+    // ⚠️ только 2 человека
+    if (room.memberIds.length >= 1) {
+      throw new Error("Room already has two members");
+    }
+
+    await ctx.db.patch(roomId, {
+      memberIds: [...room.memberIds, user._id],
+    });
+  },
+});

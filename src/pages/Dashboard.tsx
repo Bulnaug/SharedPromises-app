@@ -3,6 +3,7 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import ProfilePage from "./ProfilPage";
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -63,6 +64,20 @@ export default function Dashboard() {
           className="block rounded px-3 py-2 bg-black text-white text-sm text-center"
         >
           + Add wish
+        </Link>
+
+        <Link
+          to={`/rooms/`}
+          className="block rounded px-3 py-2 bg-black text-white text-sm text-center"
+        >
+          My rooms
+        </Link>
+        <ProfilePage></ProfilePage>
+        <Link
+          to={`/rooms/${room._id}/settings`}
+          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+        >
+          ⚙️ Settings
         </Link>
       </aside>
 
