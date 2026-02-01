@@ -1,6 +1,9 @@
 import { query, mutation } from "./_generated/server";
 import { QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { MutationCtx } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+
 
 export const getUserByClerkId = async (
   ctx: QueryCtx,
@@ -92,3 +95,31 @@ export const updateMyName = mutation({
     return { success: true };
   },
 });
+
+export async function getUserByClerkIdOrCreate(
+  ctx: MutationCtx,
+  identity: {
+    subject: string;
+    name?: string | null;
+    email?: string | null;
+  }
+) {
+  const existing = await ctx.db
+    .query("users")
+    .withIndex("by_clerkId", (q) =>
+      q.eq("clerkId", identity.subject)
+    )
+    .unique();
+
+  if (existing) {
+    return existing;
+  }
+
+  const userId = await ctx.db.insert("users", {
+    clerkId: identity.subject,
+    name: identity.name ?? "User",
+    email: identity.email ?? undefined,
+  });
+
+  return await ctx.db.get(userId);
+}

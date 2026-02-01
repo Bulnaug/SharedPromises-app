@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserByClerkId } from "./users";
+import { getUserByClerkIdOrCreate } from "./users";
 
 export const createRoom = mutation({
   args: {
@@ -24,30 +25,18 @@ export const createRoom = mutation({
 });
 
 export const getMyRooms = query({
-  args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      return [];
-    }
+    if (!identity) return [];
 
     const user = await getUserByClerkId(ctx, identity.subject);
 
-    const ownedRooms = await ctx.db
-      .query("rooms")
-      .withIndex("by_ownerId", (q) =>
-        q.eq("ownerId", user._id)
-      )
-      .collect();
+    const rooms = await ctx.db.query("rooms").collect();
 
-    const memberRooms = await ctx.db
-      .query("rooms")
-      .withIndex("by_memberId", (q) =>
-        q.eq("memberIds", user._id as any)
-      )
-      .collect();
-
-    return [...ownedRooms, ...memberRooms];
+    return rooms.filter(room =>
+      room.ownerId === user._id ||
+      room.memberIds.includes(user._id)
+    );
   },
 });
 
@@ -77,28 +66,29 @@ export const inviteToRoom = mutation({
       throw new Error("Not authenticated");
     }
 
-    const user = await getUserByClerkId(ctx, identity.subject);
-    const room = await ctx.db.get(roomId);
+    // ✅ ГАРАНТИРУЕМ, ЧТО USER СУЩЕСТВУЕТ
+    const user = await getUserByClerkIdOrCreate(ctx, identity);
 
+    const room = await ctx.db.get(roomId);
     if (!room) {
       throw new Error("Room not found");
     }
 
-    // ❌ уже участник
+    // Уже участник — ничего не делаем
     if (
-      room.ownerId === user._id ||
-      room.memberIds.includes(user._id)
+      room.ownerId === user!._id ||
+      room.memberIds.includes(user!._id)
     ) {
       return;
     }
 
-    // ⚠️ только 2 человека
+    // Ограничение: 2 человека
     if (room.memberIds.length >= 1) {
       throw new Error("Room already has two members");
     }
 
     await ctx.db.patch(roomId, {
-      memberIds: [...room.memberIds, user._id],
+      memberIds: [...room.memberIds, user!._id],
     });
   },
 });
