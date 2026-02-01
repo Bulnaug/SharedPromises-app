@@ -22,6 +22,7 @@ export default defineSchema({
     roomId: v.id("rooms"),
     userId: v.optional(v.id("users")),   // <-- ВАЖНО
     title: v.string(),
+    completedDates: v.array(v.string()),
     fulfilled: v.boolean(),
     createdAt: v.number(),
   })

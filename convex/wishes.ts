@@ -78,6 +78,7 @@ export const createWish = mutation({
       roomId,
       userId: user._id,
       title,
+      completedDates: [],
       fulfilled: false,
       createdAt: Date.now(),
     });
