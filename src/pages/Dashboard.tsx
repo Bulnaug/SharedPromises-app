@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -54,7 +53,7 @@ export default function Dashboard() {
     return <div className="p-6">Room not found</div>;
   }
 
-  const { room, wishesByUser, usersMap, meId } = data;
+  const { room, wishesByUser, usersMap } = data;
 
   // общий прогресс
   const allWishes = Object.values(wishesByUser).flat();
@@ -111,7 +110,6 @@ export default function Dashboard() {
         {Object.entries(wishesByUser).map(
           ([userId, userWishes]) => {
             const progress = calcProgress(userWishes);
-            const isMe = userId === meId.toString();
 
             return (
               <section
