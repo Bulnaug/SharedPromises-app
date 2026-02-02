@@ -1,16 +1,5 @@
-import { today } from "./date"
-
-type Habit = {
-  completedDates: string[]
-}
-
-export const calculateDailyProgress = (habits: Habit[]): number => {
-  if (habits.length === 0) return 0
-
-  const t = today()
-  const doneToday = habits.filter(h =>
-    h.completedDates.includes(t)
-  ).length
-
-  return Math.round((doneToday / habits.length) * 100)
+export function calcProgress(wishes: { fulfilled: boolean }[]) {
+  if (wishes.length === 0) return 0;
+  const done = wishes.filter(w => w.fulfilled).length;
+  return Math.round((done / wishes.length) * 100);
 }
