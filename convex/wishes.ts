@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserByClerkId } from "./users";
+import type { Id, Doc } from "./_generated/dataModel";
 
 export const getWishesByRoomGrouped = query({
   args: {
@@ -8,13 +9,20 @@ export const getWishesByRoomGrouped = query({
   },
   handler: async (ctx, { roomId }) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
 
     const me = await getUserByClerkId(ctx, identity.subject);
 
     const room = await ctx.db.get(roomId);
-    if (!room) throw new Error("Room not found");
+    if (!room) {
+      throw new Error("Room not found");
+    }
 
+    // ─────────────────────────────
+    // Получаем все желания комнаты
+    // ─────────────────────────────
     const wishes = await ctx.db
       .query("wishes")
       .withIndex("by_room", q =>
@@ -22,25 +30,62 @@ export const getWishesByRoomGrouped = query({
       )
       .collect();
 
-    // группируем по userId
-    const grouped: Record<string, typeof wishes> = {};
+    // ─────────────────────────────
+    // Группируем желания по userId
+    // ─────────────────────────────
+    const wishesByUser: Record<string, typeof wishes> = {};
 
     for (const wish of wishes) {
-  if (!wish.userId) continue;
+      if (!wish.userId) continue;
 
-  const key = wish.userId.toString();
+      const key = wish.userId.toString();
 
-  if (!grouped[key]) {
-    grouped[key] = [];
-  }
+      if (!wishesByUser[key]) {
+        wishesByUser[key] = [];
+      }
 
-  grouped[key].push(wish);
-}
+      wishesByUser[key].push(wish);
+    }
 
+    // ─────────────────────────────
+    // Получаем пользователей комнаты
+    // ─────────────────────────────
+    const userIds = [
+      room.ownerId,
+      ...room.memberIds,
+    ];
+
+    const uniqueUserIds = Array.from(
+      new Set(userIds.map(id => id.toString()))
+    );
+
+        const users = await Promise.all(
+      uniqueUserIds.map(id =>
+        ctx.db.get(id as Id<"users">)
+      )
+    );
+
+    const usersMap: Record<string, { name: string }> = {};
+
+    for (const user of users) {
+      if (!user) continue;
+
+      // 💡 TS теперь знает, что это Doc<"users">
+      const u = user as Doc<"users">;
+
+      usersMap[u._id.toString()] = {
+        name: u.name ?? "Без имени",
+      };
+    }
+
+    // ─────────────────────────────
+    // Возвращаем данные для UI
+    // ─────────────────────────────
     return {
       room,
       members: room.memberIds,
-      wishesByUser: grouped,
+      wishesByUser,
+      usersMap,
       meId: me._id,
     };
   },
