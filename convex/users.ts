@@ -2,7 +2,6 @@ import { query, mutation } from "./_generated/server";
 import { QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { MutationCtx } from "./_generated/server";
-import type { Id } from "./_generated/dataModel";
 
 
 export const getUserByClerkId = async (

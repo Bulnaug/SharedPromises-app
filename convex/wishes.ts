@@ -98,7 +98,7 @@ export const createWish = mutation({
     title: v.string(),
     description: v.optional(v.string()),
   },
-  handler: async (ctx, { roomId, title, description }) => {
+  handler: async (ctx, { roomId, title }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
