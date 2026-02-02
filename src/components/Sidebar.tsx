@@ -3,31 +3,87 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
   return (
-    <aside className="w-56 border-r p-4 space-y-4">
+    <aside className="
+     w-60
+     bg-white
+     border-r
+     p-5
+     space-y-4
+     sticky top-0
+     h-screen
+    ">
       <Link
         to={`/rooms/${roomId}/new`}
-        className="block rounded px-3 py-2 bg-black text-white text-sm text-center"
+        className="
+            block
+            rounded-xl
+            px-4
+            py-2.5
+            bg-black
+            text-white
+            text-sm
+            font-medium
+            text-center
+            hover:bg-gray-800
+            transition
+        "
       >
         + Add wish
       </Link>
 
       <Link
         to="/rooms"
-        className="block text-sm underline text-center"
+        className="
+            block
+            rounded-xl
+            px-4
+            py-2.5
+            bg-black
+            text-white
+            text-sm
+            font-medium
+            text-center
+            hover:bg-gray-800
+            transition
+        "
       >
         ← back to rooms
       </Link>
 
       <Link
         to="/profile"
-        className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+        className="
+            block
+            rounded-xl
+            px-4
+            py-2.5
+            bg-black
+            text-white
+            text-sm
+            font-medium
+            text-center
+            hover:bg-gray-800
+            transition
+        "
       >
         👤 My profile
       </Link>
 
       <Link
         to={`/rooms/${roomId}/settings`}
-        className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+        className="
+            block
+            rounded-xl
+            px-4
+            py-2.5
+            bg-black
+            text-white
+            text-sm
+            font-medium
+            text-center
+            hover:bg-gray-800
+            transition
+        "
       >
         ⚙️ Settings
       </Link>

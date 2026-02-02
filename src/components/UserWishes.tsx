@@ -13,30 +13,50 @@ export function UserWishes({
   const progress = calcProgress(wishes);
 
   return (
-    <section className="border rounded p-4 space-y-3">
-      <h2 className="text-lg font-semibold">
+    <section className="
+     bg-white
+     rounded-2xl
+     p-5
+     shadow-sm
+     space-y-4
+    ">
+      <h2 className="text-lg font-semibold text-gray-900">
         Хотелки {name}
       </h2>
 
-      <div className="text-sm text-gray-600">
-        Прогресс: {progress}%
+      <div className="flex items-center justify-between text-sm text-gray-600">
+        <span>Прогресс</span>
+        <span className="font-medium">{progress}%</span>
       </div>
       <ProgressBar value={progress} />
 
       {wishes.length === 0 ? (
-        <p className="text-sm text-gray-400">Пока пусто</p>
+        <p className="text-sm text-gray-400 italic">
+            Пока здесь пусто ✨
+        </p>
       ) : (
         <ul className="space-y-2">
           {wishes.map(wish => (
             <li
               key={wish._id}
-              className="border rounded p-3 flex items-center justify-between"
+              className="
+                rounded-xl
+                border
+                border-gray-200
+                px-4
+                py-3
+                flex
+                items-center
+                justify-between
+                hover:bg-gray-50
+                transition
+              "
             >
               <span
                 className={
                   wish.fulfilled
                     ? "line-through text-gray-400"
-                    : ""
+                    : "text-gray-800"
                 }
               >
                 {wish.title}
@@ -44,7 +64,16 @@ export function UserWishes({
 
               <button
                 onClick={() => onToggle(wish._id)}
-                className="text-xs px-2 py-1 rounded border"
+                className="
+                 text-xs
+                 px-3
+                 py-1.5
+                 rounded-full
+                 border
+                 font-medium
+                 hover:bg-gray-100
+                 transition
+                "
               >
                 {wish.fulfilled ? "↩ вернуть" : "✓ сделано"}
               </button>

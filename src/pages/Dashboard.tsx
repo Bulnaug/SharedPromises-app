@@ -34,18 +34,37 @@ export default function Dashboard() {
   const totalProgress = calcProgress(allWishes);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar roomId={room._id} />
 
       <main className="flex-1 p-6 max-w-xl mx-auto space-y-6">
-        <h1 className="text-xl font-bold text-center">
+        <h1 className="
+          text-2xl
+          font-semibold
+          text-center
+          bg-white
+          rounded-2xl
+          py-4
+          shadow-sm
+        ">
           {room.name}
         </h1>
 
-        <section>
-          <h2 className="text-sm font-semibold mb-1">
-            Общий прогресс: {totalProgress}%
-          </h2>
+        <section className="
+          bg-white
+          rounded-2xl
+          p-4
+          shadow-sm
+          space-y-2
+        ">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-medium text-gray-700">
+              Общий прогресс
+            </h2>
+            <span className="text-sm font-semibold">
+              {totalProgress}%
+            </span>
+          </div>
           <ProgressBar value={totalProgress} />
         </section>
 
