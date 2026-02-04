@@ -6,6 +6,9 @@ import { ProgressBar } from "../components/ProgressBar";
 import { calcProgress } from "../utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
 
+import { build30DaysActivity } from "../utils/activity";
+import { Activity30Days } from "../components/Activity30Days";
+
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
 
@@ -32,6 +35,7 @@ export default function Dashboard() {
 
   const allWishes = Object.values(wishesByUser).flat();
   const totalProgress = calcProgress(allWishes);
+  const activity30Days = build30DaysActivity(allWishes);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -57,6 +61,7 @@ export default function Dashboard() {
           shadow-sm
           space-y-2
         ">
+          <Activity30Days data={activity30Days} />
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-medium text-gray-700">
               Общий прогресс
