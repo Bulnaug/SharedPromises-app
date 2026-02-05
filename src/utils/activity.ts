@@ -1,31 +1,58 @@
-export type ActivityLevel = 0 | 1 | 2;
+import type { Id } from "../../convex/_generated/dataModel";
+
+export type DayActivityStatus =
+  | "empty"
+  | "partial"
+  | "full";
+
+export type DayActivity = {
+  date: string; // YYYY-MM-DD
+  status: DayActivityStatus;
+};
+
+type WishLike = {
+  fulfilled: boolean;
+  createdAt: number;
+};
 
 export function build30DaysActivity(
-  wishes: {
-    completedDates: string[];
-  }[],
-  strongThreshold = 3
-): ActivityLevel[] {
-  const today = new Date();
-  const days: ActivityLevel[] = [];
+  wishes: WishLike[]
+): DayActivity[] {
+  const days: DayActivity[] = [];
+  const now = new Date();
 
   for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
+    const day = new Date(now);
+    day.setDate(now.getDate() - i);
+    day.setHours(23, 59, 59, 999);
 
-    const dayKey = date.toISOString().slice(0, 10);
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
 
-    const completedCount = wishes.filter(w =>
-      w.completedDates?.includes(dayKey)
+    // желания, которые существовали в этот день
+    const activeWishes = wishes.filter(
+      (w) => w.createdAt <= day.getTime()
+    );
+
+    const total = activeWishes.length;
+    const fulfilled = activeWishes.filter(
+      (w) => w.fulfilled
     ).length;
 
-    if (completedCount === 0) {
-      days.push(0);
-    } else if (completedCount >= strongThreshold) {
-      days.push(2);
-    } else {
-      days.push(1);
+    let status: DayActivityStatus = "empty";
+
+    if (fulfilled > 0 && fulfilled < total) {
+      status = "partial";
     }
+
+    if (total > 0 && fulfilled === total) {
+      status = "full";
+    }
+
+    days.push({
+      date: day.toISOString().slice(0, 10),
+      status,
+    });
   }
 
   return days;

@@ -1,44 +1,39 @@
-import type { ActivityLevel } from "../utils/activity";
-
-function color(level: ActivityLevel) {
-  switch (level) {
-    case 0:
-      return "bg-slate-700";
-    case 1:
-      return "bg-green-500";
-    case 2:
-      return "bg-green-700";
-  }
-}
+import type { DayActivity } from "../utils/activity";
 
 export function Activity30Days({
   data,
 }: {
-  data: ActivityLevel[];
+  data: DayActivity[];
 }) {
   return (
-    <section className="space-y-2">
-      <h3 className="text-sm font-semibold text-center text-slate-300">
+    <div className="flex flex-col items-center gap-2">
+      <div className="text-xs text-gray-500">
         Активность за 30 дней
-      </h3>
+      </div>
 
-      <div className="grid grid-rows-3 grid-flow-col gap-1 justify-center">
-        {data.map((lvl, i) => (
+      <div className="grid grid-cols-10 gap-1">
+        {data.map((day) => (
           <div
-            key={i}
-            className={`w-4 h-4 rounded ${color(lvl)}`}
-            title={`День ${i + 1}`}
+            key={day.date}
+            title={day.date}
+            className={`
+              w-5 h-5 rounded
+              ${
+                day.status === "empty" &&
+                "bg-gray-200"
+              }
+              ${
+                day.status === "partial" &&
+                "bg-green-300"
+              }
+              ${
+                day.status === "full" &&
+                "bg-green-600"
+              }
+            `}
           />
         ))}
       </div>
-
-      <div className="flex justify-center gap-2 text-xs text-slate-400">
-        <span>мало</span>
-        <span>●</span>
-        <span>средне</span>
-        <span>●</span>
-        <span>много</span>
-      </div>
-    </section>
+    </div>
   );
 }

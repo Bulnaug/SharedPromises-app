@@ -12,8 +12,13 @@ export function useDashboard(roomId: Id<"rooms"> | null) {
     api.wishes.toggleWishFulfilled
   );
 
+  const toggleDay = useMutation(
+    api.wishes.toggleWishDay
+  );
+
   return {
     data,
     toggleFulfilled,
+    toggleDay,
   };
 }

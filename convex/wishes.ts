@@ -223,3 +223,41 @@ export const deleteWish = mutation({
     await ctx.db.delete(wishId);
   },
 });
+
+export const toggleWishDay = mutation({
+  args: {
+    wishId: v.id("wishes"),
+    date: v.string(), // "2026-02-01"
+  },
+  handler: async (ctx, { wishId, date }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const wish = await ctx.db.get(wishId);
+    if (!wish) throw new Error("Wish not found");
+
+    // 🔒 только владелец желания
+    if (!wish.userId) throw new Error("No owner");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", q =>
+        q.eq("clerkId", identity.subject)
+      )
+      .unique();
+
+    if (!user || user._id !== wish.userId) {
+      throw new Error("Not allowed");
+    }
+
+    const dates = wish.completedDates ?? [];
+
+    const nextDates = dates.includes(date)
+      ? dates.filter(d => d !== date)
+      : [...dates, date];
+
+    await ctx.db.patch(wishId, {
+      completedDates: nextDates,
+    });
+  },
+});
