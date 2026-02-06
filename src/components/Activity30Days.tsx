@@ -1,34 +1,28 @@
-import type { DayActivity } from "../utils/activity";
+type ActivityDay = {
+  date: string;
+  status: "empty" | "partial" | "full";
+};
 
-export function Activity30Days({
-  data,
-}: {
-  data: DayActivity[];
-}) {
+export function Activity30Days({ data }: { data: ActivityDay[] }) {
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="text-xs text-gray-500">
+    <div className="bg-white rounded-2xl p-4 shadow-sm">
+      <h3 className="text-sm font-semibold text-center mb-3">
         Активность за 30 дней
-      </div>
+      </h3>
 
-      <div className="grid grid-cols-10 gap-1">
-        {data.map((day) => (
+      <div className="grid grid-cols-10 gap-2 justify-center">
+        {data.map(day => (
           <div
             key={day.date}
             title={day.date}
             className={`
-              w-5 h-5 rounded
+              w-4 h-4 rounded
               ${
-                day.status === "empty" &&
-                "bg-gray-200"
-              }
-              ${
-                day.status === "partial" &&
-                "bg-green-300"
-              }
-              ${
-                day.status === "full" &&
-                "bg-green-600"
+                day.status === "empty"
+                  ? "bg-gray-200"
+                  : day.status === "partial"
+                  ? "bg-green-300"
+                  : "bg-green-600"
               }
             `}
           />

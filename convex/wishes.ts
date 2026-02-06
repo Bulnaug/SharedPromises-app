@@ -130,38 +130,43 @@ export const createWish = mutation({
   },
 });
 
+function today() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
 export const toggleWishFulfilled = mutation({
   args: {
     wishId: v.id("wishes"),
   },
   handler: async (ctx, { wishId }) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    if (!identity) throw new Error("Not authenticated");
 
     const wish = await ctx.db.get(wishId);
-    if (!wish) {
-      throw new Error("Wish not found");
+    if (!wish) throw new Error("Wish not found");
+
+    const todayStr = today();
+    const dates = wish.completedDates ?? [];
+
+    const isDoneToday = dates.includes(todayStr);
+
+    if (isDoneToday) {
+      // 🔁 откат сегодняшнего дня
+      const nextDates = dates.filter(d => d !== todayStr);
+
+      await ctx.db.patch(wishId, {
+        completedDates: nextDates,
+        fulfilled: nextDates.length > 0,
+      });
+    } else {
+      // ✅ отметить ТОЛЬКО сегодня
+      const nextDates = [...dates, todayStr];
+
+      await ctx.db.patch(wishId, {
+        completedDates: nextDates,
+        fulfilled: true,
+      });
     }
-
-    await ctx.db.patch(wishId, {
-      fulfilled: !wish.fulfilled,
-    });
-  },
-});
-
-export const getWishesByRoom = query({
-  args: {
-    roomId: v.id("rooms"),
-  },
-  handler: async (ctx, { roomId }) => {
-    return await ctx.db
-      .query("wishes")
-      .withIndex("by_room", (q) =>
-        q.eq("roomId", roomId)
-      )
-      .collect();
   },
 });
 
