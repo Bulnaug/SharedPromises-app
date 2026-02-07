@@ -28,4 +28,13 @@ export default defineSchema({
   })
   .index("by_room", ["roomId"])
   .index("by_room_user", ["roomId", "userId"]),
+
+  wishProgress: defineTable({
+    wishId: v.id("wishes"),
+    date: v.string(), // YYYY-MM-DD
+    completedBy: v.id("users"),
+    createdAt: v.number(),
+  })
+  .index("by_date", ["date"])
+  .index("by_wish", ["wishId"])
 });

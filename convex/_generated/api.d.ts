@@ -16,6 +16,7 @@ import type * as migrations_fillWishUserId from "../migrations/fillWishUserId.js
 import type * as migrations_index from "../migrations/index.js";
 import type * as rooms from "../rooms.js";
 import type * as users from "../users.js";
+import type * as wishProgress from "../wishProgress.js";
 import type * as wishes from "../wishes.js";
 
 import type {
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/index": typeof migrations_index;
   rooms: typeof rooms;
   users: typeof users;
+  wishProgress: typeof wishProgress;
   wishes: typeof wishes;
 }>;
 

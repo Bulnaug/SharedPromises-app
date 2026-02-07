@@ -5,22 +5,20 @@ import { UserWishes } from "../components/UserWishes";
 import { ProgressBar } from "../components/ProgressBar";
 import { calcProgress } from "../utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
-
 import { build30DaysActivity } from "../utils/activity";
-import { Activity30Days } from "../components/Activity30Days";
+import { Tracker } from "../components/tracker/Tracker";
+import dayjs from "dayjs";
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
 
-  const convexRoomId = roomId
-    ? (roomId as Id<"rooms">)
-    : null;
+  const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
 
-  // ✅ ХУКИ — ВСЕГДА ПЕРВЫМИ
-  const { data, toggleFulfilled } =
-    useDashboard(convexRoomId);
+  const convexRoomId = roomId ? (roomId as Id<"rooms">) : null;
 
-  // ❗ после хуков — любые return
+  // ✅ Хуки — ВСЕГДА ПЕРВЫМИ
+  const { data } = useDashboard(convexRoomId);
+
   if (!convexRoomId) {
     return <Navigate to="/rooms" replace />;
   }
@@ -33,11 +31,14 @@ export default function Dashboard() {
     return <div className="p-6">Room not found</div>;
   }
 
-  // ✅ дальше — обычный JS
   const { room, wishesByUser, usersMap } = data;
 
+  // Все желания всех пользователей
   const allWishes = Object.values(wishesByUser).flat();
+
   const totalProgress = calcProgress(allWishes);
+
+  // 30-дневная активность для трекера
   const activity30Days = build30DaysActivity(allWishes);
 
   return (
@@ -57,37 +58,32 @@ export default function Dashboard() {
           {room.name}
         </h1>
 
-        <section className="
-          bg-white
-          rounded-2xl
-          p-4
-          shadow-sm
-          space-y-2
-        ">
-          <Activity30Days data={activity30Days} />
+        {/* === 30-дневный трекер === */}
+        <section className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
+          <Tracker wishes={allWishes} startDate={startDate} />
+
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-medium text-gray-700">
-              Общий прогресс
-            </h2>
-            <span className="text-sm font-semibold">
-              {totalProgress}%
-            </span>
+            <h2 className="text-sm font-medium text-gray-700">Общий прогресс</h2>
+            <span className="text-sm font-semibold">{totalProgress}%</span>
           </div>
+
           <ProgressBar value={totalProgress} />
         </section>
 
-        {Object.entries(wishesByUser).map(
-          ([userId, wishes]) => (
+        {/* === Список желаний пользователей === */}
+        {Object.entries(wishesByUser).map(([userId, wishes]) => {
+          const user = usersMap[userId];
+          if (!user) return null;
+
+          return (
             <UserWishes
               key={userId}
-              name={usersMap[userId].name}
+              name={user.name || "Без имени"}
               wishes={wishes}
-              onToggle={(id) =>
-                toggleFulfilled({ wishId: id })
-              }
+              userId={userId as Id<"users">} // Приведение строки к Id<"users">
             />
-          )
-        )}
+          );
+        })}
       </main>
     </div>
   );
