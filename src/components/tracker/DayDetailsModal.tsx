@@ -31,7 +31,7 @@ export function DayDetailsModal({
         {/* Контент */}
         {wishes.length === 0 ? (
           <p className="text-sm text-gray-500 text-center">
-            В этот день ничего не было отмечено
+            В этот день никто ничего не сделал
           </p>
         ) : (
           <ul className="space-y-2">

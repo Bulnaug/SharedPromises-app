@@ -25,7 +25,7 @@ type Day = {
 export function Tracker({ startDate, wishes }: TrackerProps) {
   const days: Day[] = useMemo(() => {
     const start = dayjs(startDate);
-    return Array.from({ length: 30 }, (_, i) => {
+    return Array.from({ length: 35 }, (_, i) => {
       const date = start.add(i, "day");
       return {
         key: date.format("YYYY-MM-DD"),
