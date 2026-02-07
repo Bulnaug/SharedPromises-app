@@ -9,9 +9,6 @@ import { useDashboard } from "../hooks/useDashboard";
 import { build30DaysActivity } from "../utils/activity";
 import { Activity30Days } from "../components/Activity30Days";
 
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
 
@@ -20,7 +17,7 @@ export default function Dashboard() {
     : null;
 
   // ✅ ХУКИ — ВСЕГДА ПЕРВЫМИ
-  const { data, toggleFulfilled, toggleDay } =
+  const { data, toggleFulfilled } =
     useDashboard(convexRoomId);
 
   // ❗ после хуков — любые return
