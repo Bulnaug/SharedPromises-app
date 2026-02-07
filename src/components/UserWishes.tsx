@@ -1,6 +1,7 @@
 import { ProgressBar } from "./ProgressBar";
 import { calcProgress } from "../utils/progress";
 import { isDoneToday } from "../utils/isDoneToday";
+import { calculateWishStreak } from "../utils/calculateWishStreak";
 import { api } from "../../convex/_generated/api";
 import { useMutation } from "convex/react";
 import dayjs from "dayjs";
@@ -67,6 +68,7 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
         <ul className="space-y-2">
           {wishes.map((wish) => {
             const doneToday = isDoneToday(wish.completedDates);
+            const streak = calculateWishStreak(wish);
 
             return (
               <li
@@ -76,6 +78,11 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
                 <span className={doneToday ? "line-through text-gray-400" : "text-gray-800"}>
                   {wish.title}
                 </span>
+                {streak > 2 && (
+                  <span className="text-xs text-green-600 ml-2">
+                    🔥 {streak}
+                  </span>
+                )}
 
                 <button
                   onClick={() => handleToggle(wish)}
