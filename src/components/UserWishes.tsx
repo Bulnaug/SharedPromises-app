@@ -52,12 +52,21 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
   };
 
   return (
-    <section className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Хотелки {name}</h2>
-
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <span>Прогресс</span>
-        <span className="font-medium">{progress}%</span>
+    <section className="
+      bg-white
+      rounded-2xl
+      shadow-sm
+      border border-gray-100
+      p-6
+      space-y-5
+    ">
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Что получает {name}
+        </h2>
+        <span className="text-sm font-medium text-gray-500">
+          {progress}%
+        </span>
       </div>
 
       <ProgressBar value={progress} />
@@ -73,26 +82,45 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
             return (
               <li
                 key={wish._id.toString()}
-                className="rounded-xl border border-gray-200 px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+                className="
+                flex items-center justify-between
+                px-4 py-3
+                rounded-xl
+                border border-gray-100
+                hover:bg-gray-50
+                transition"
               >
-                <span className={doneToday ? "line-through text-gray-400" : "text-gray-800"}>
-                  {wish.title}
-                </span>
-                {streak > 2 && (
-                  <span className="text-xs text-green-600 ml-2">
-                    🔥 {streak}
+                <div className="flex items-center gap-3">
+                  <span className={doneToday
+                    ? "line-through text-gray-400"
+                    : "text-gray-800"}
+                  >
+                    {wish.title}
                   </span>
-                )}
+
+                  {streak > 0 && (
+                    <span className="text-xs text-orange-500 font-medium">
+                      🔥 {streak}
+                    </span>
+                  )}
+                </div>
 
                 <button
                   onClick={() => handleToggle(wish)}
-                  className={`text-xs px-3 py-1.5 rounded-full border font-medium transition ${
-                    doneToday
-                      ? "bg-green-100 text-green-700 border-green-200"
-                      : "hover:bg-gray-100"
-                  }`}
+                  className={`
+                    text-xs
+                    px-3 py-1.5
+                    rounded-full
+                    font-medium
+                    transition
+                    ${
+                      doneToday
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }
+                  `}
                 >
-                  {doneToday ? "↩ вернуть" : "✓ сделано"}
+                  {doneToday ? "↩ не сделано" : "✓ сделано"}
                 </button>
               </li>
             );

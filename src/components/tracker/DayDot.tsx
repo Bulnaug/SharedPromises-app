@@ -19,10 +19,12 @@ export function DayDot({
         disabled={isFuture}
         onClick={onClick}
         className={`
-          w-4 h-4 rounded-full transition
-          ${isFuture ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
+          w-4 h-4 rounded-full
+          transition-all duration-150
+          ${isFuture && "opacity-30 cursor-not-allowed"}
           ${colorClass}
           hover:scale-110
+          hover:ring-2 hover:ring-offset-2 hover:ring-green-300
         `}
       />
 

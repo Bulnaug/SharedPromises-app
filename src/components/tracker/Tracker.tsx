@@ -84,7 +84,12 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
       )}
 
       {/* Сетка точек 30 дней */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="
+        grid
+        grid-cols-7
+        gap-2
+        max-w-xs
+      ">
         {days.map((day) => {
           const relevantWishes = wishes.filter((w) => {
             const createdAtDate = dayjs(w.createdAt).format("YYYY-MM-DD");

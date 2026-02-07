@@ -42,7 +42,14 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar roomId={room._id} />
 
-      <main className="flex-1 p-6 max-w-xl mx-auto space-y-6">
+      <main className="
+        flex-1
+        px-6
+        py-8
+        max-w-4xl
+        mx-auto
+        space-y-8
+      ">
         <h1 className="
           text-2xl
           font-semibold
@@ -56,33 +63,61 @@ export default function Dashboard() {
         </h1>
 
         {/* === 30-дневный трекер === */}
-        <section className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
-  <Tracker wishes={allWishes} startDate={startDate} />
+        <section className="
+          bg-white
+          rounded-2xl
+          shadow-sm
+          border border-gray-100
+          p-6
+          space-y-5
+        ">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-medium text-gray-500">
+              Активность за 30 дней
+            </h2>
+            <span className="text-xs text-gray-400">
+              последние дни
+            </span>
+          </div>
 
-  <div className="flex justify-between items-center">
-    <h2 className="text-sm font-medium text-gray-700">Общий прогресс</h2>
-    <span className="text-sm font-semibold">{totalProgress}%</span>
-  </div>
+          {/* Трекер */}
+          <div className="flex justify-center">
+            <Tracker wishes={allWishes} startDate={startDate} />
+          </div>
 
-  <ProgressBar value={totalProgress} />
-</section>
+          {/* Общий прогресс */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Общий прогресс сегодня</span>
+              <span className="font-semibold text-gray-900">
+                {totalProgress}%
+              </span>
+            </div>
 
+            <ProgressBar value={totalProgress} />
+          </div>
+        </section>
+        <section className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          gap-6
+        ">
+          {/* === Список желаний пользователей === */}
+          {Object.entries(wishesByUser).map(([userId, wishes]) => {
+            const user = usersMap[userId];
+            if (!user) return null;
 
-
-        {/* === Список желаний пользователей === */}
-        {Object.entries(wishesByUser).map(([userId, wishes]) => {
-          const user = usersMap[userId];
-          if (!user) return null;
-
-          return (
-            <UserWishes
-              key={userId}
-              name={user.name || "Без имени"}
-              wishes={wishes}
-              userId={userId as Id<"users">} // Приведение строки к Id<"users">
-            />
-          );
-        })}
+            return (
+              <UserWishes
+                key={userId}
+                name={user.name || "Без имени"}
+                wishes={wishes}
+                userId={userId as Id<"users">} // Приведение строки к Id<"users">
+              />
+            );
+          })}
+        </section>
       </main>
     </div>
   );
