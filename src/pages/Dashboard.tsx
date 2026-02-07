@@ -6,7 +6,6 @@ import { ProgressBar } from "../components/ProgressBar";
 import { calcProgress } from "../utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
 import { Tracker } from "../components/tracker/Tracker";
-import { Activity30Days } from "../components/Activity30Days";
 import dayjs from "dayjs";
 
 export default function Dashboard() {

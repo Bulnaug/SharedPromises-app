@@ -20,7 +20,7 @@ type UserWishesProps = {
   userId: Id<"users">; // текущий залогиненный пользователь
 };
 
-export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesProps) {
+export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
 
   const progress = calcProgress(wishes);
