@@ -16,27 +16,25 @@ type Wish = {
 type UserWishesProps = {
   name: string;
   wishes: Wish[];
-  userId: Id<"users">;
+  userId: Id<"users">; // текущий залогиненный пользователь
 };
 
 export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
 
   const progress = calcProgress(wishes);
-
-  const markComplete = useMutation(api.wishProgress.markComplete);
-  const unmarkComplete = useMutation(api.wishProgress.unmarkComplete);
-
   const today = dayjs().format("YYYY-MM-DD");
+
+  // ✅ используем существующую мутацию toggleWishFulfilled
+  const toggleWishFulfilled = useMutation(api.wishes.toggleWishFulfilled);
 
   const handleToggle = async (wish: Wish) => {
     const doneToday = isDoneToday(wish.completedDates);
-    const wishId = wish._id;
 
-    // Оптимистично обновляем UI
+    // Оптимистично обновляем локальный стейт
     setWishes((prev) =>
       prev.map((w) => {
-        if (w._id === wishId) {
+        if (w._id === wish._id) {
           return {
             ...w,
             completedDates: doneToday
@@ -48,12 +46,8 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
       })
     );
 
-    // Вызываем мутацию
-    if (doneToday) {
-      await unmarkComplete({ wishId, date: today, userId });
-    } else {
-      await markComplete({ wishId, date: today, userId });
-    }
+    // Отправляем мутацию в базу
+    await toggleWishFulfilled({ wishId: wish._id });
   };
 
   return (
@@ -86,7 +80,9 @@ export function UserWishes({ name, wishes: initialWishes, userId }: UserWishesPr
                 <button
                   onClick={() => handleToggle(wish)}
                   className={`text-xs px-3 py-1.5 rounded-full border font-medium transition ${
-                    doneToday ? "bg-green-100 text-green-700 border-green-200" : "hover:bg-gray-100"
+                    doneToday
+                      ? "bg-green-100 text-green-700 border-green-200"
+                      : "hover:bg-gray-100"
                   }`}
                 >
                   {doneToday ? "↩ вернуть" : "✓ сделано"}

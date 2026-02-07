@@ -5,8 +5,8 @@ import { UserWishes } from "../components/UserWishes";
 import { ProgressBar } from "../components/ProgressBar";
 import { calcProgress } from "../utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
-import { build30DaysActivity } from "../utils/activity";
 import { Tracker } from "../components/tracker/Tracker";
+import { Activity30Days } from "../components/Activity30Days";
 import dayjs from "dayjs";
 
 export default function Dashboard() {
@@ -38,9 +38,6 @@ export default function Dashboard() {
 
   const totalProgress = calcProgress(allWishes);
 
-  // 30-дневная активность для трекера
-  const activity30Days = build30DaysActivity(allWishes);
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar roomId={room._id} />
@@ -60,15 +57,17 @@ export default function Dashboard() {
 
         {/* === 30-дневный трекер === */}
         <section className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
-          <Tracker wishes={allWishes} startDate={startDate} />
+  <Tracker wishes={allWishes} startDate={startDate} />
 
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-medium text-gray-700">Общий прогресс</h2>
-            <span className="text-sm font-semibold">{totalProgress}%</span>
-          </div>
+  <div className="flex justify-between items-center">
+    <h2 className="text-sm font-medium text-gray-700">Общий прогресс</h2>
+    <span className="text-sm font-semibold">{totalProgress}%</span>
+  </div>
 
-          <ProgressBar value={totalProgress} />
-        </section>
+  <ProgressBar value={totalProgress} />
+</section>
+
+
 
         {/* === Список желаний пользователей === */}
         {Object.entries(wishesByUser).map(([userId, wishes]) => {

@@ -2,16 +2,16 @@ import dayjs from "dayjs";
 
 type DayDotProps = {
   date: dayjs.Dayjs;
-  hasWishes: boolean;
   isFuture: boolean;
   onClick: () => void;
+  colorClass?: string; // новый проп для цвета точки
 };
 
 export function DayDot({
   date,
-  hasWishes,
   isFuture,
   onClick,
+  colorClass = "bg-gray-300", // по умолчанию серый
 }: DayDotProps) {
   return (
     <div className="relative group flex justify-center">
@@ -21,7 +21,7 @@ export function DayDot({
         className={`
           w-4 h-4 rounded-full transition
           ${isFuture ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-          ${hasWishes ? "bg-green-500" : "bg-gray-300"}
+          ${colorClass}
           hover:scale-110
         `}
       />

@@ -1,33 +1,42 @@
-type ActivityDay = {
-  date: string;
-  status: "empty" | "partial" | "full";
+import dayjs from "dayjs";
+import type { Id } from "../../convex/_generated/dataModel";
+
+type Activity30DaysProps = {
+  wishes: {
+    _id: Id<"wishes">;
+    completedDates: string[];
+  }[];
 };
 
-export function Activity30Days({ data }: { data: ActivityDay[] }) {
-  return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
-      <h3 className="text-sm font-semibold text-center mb-3">
-        Активность за 30 дней
-      </h3>
+export function Activity30Days({ wishes }: Activity30DaysProps) {
+  const today = dayjs();
+  const days = Array.from({ length: 30 }, (_, i) =>
+    today.subtract(29 - i, "day").format("YYYY-MM-DD")
+  );
 
-      <div className="grid grid-cols-10 gap-2 justify-center">
-        {data.map(day => (
+  // Считаем процент выполненных желаний за каждый день
+  const dayStatus = days.map((date) => {
+    const total = wishes.length;
+    const done = wishes.filter((w) => w.completedDates.includes(date)).length;
+    const percent = total > 0 ? (done / total) * 100 : 0;
+    return { date, percent };
+  });
+
+  return (
+    <div className="grid grid-cols-30 gap-1">
+      {dayStatus.map((d, i) => {
+        let color = "bg-gray-300"; // 0%
+        if (d.percent === 100) color = "bg-green-500";
+        else if (d.percent > 0) color = "bg-yellow-400"; // частично выполнено
+
+        return (
           <div
-            key={day.date}
-            title={day.date}
-            className={`
-              w-4 h-4 rounded
-              ${
-                day.status === "empty"
-                  ? "bg-gray-200"
-                  : day.status === "partial"
-                  ? "bg-green-300"
-                  : "bg-green-600"
-              }
-            `}
-          />
-        ))}
-      </div>
+            key={i}
+            title={`${d.date} — выполнено ${Math.round(d.percent)}%`}
+            className={`w-3 h-3 rounded-full ${color} transition`}
+          ></div>
+        );
+      })}
     </div>
   );
 }

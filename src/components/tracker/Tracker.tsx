@@ -1,75 +1,90 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
 
-import { useTrackerDays } from "../../hooks/useTrackerDays";
 import { DayDot } from "./DayDot";
 import { DayDetailsModal } from "./DayDetailsModal";
 
 type Wish = {
   _id: string;
   title: string;
-};
-
-type ProgressItem = {
-  date: string;
-  wish: Wish;
+  completedDates: string[];
 };
 
 export type TrackerProps = {
-  startDate: string;
-  wishes: {
-    _id: string;
-    completedDates: string[];
-  }[];
+  startDate: string; // первый день трекера
+  wishes: Wish[];    // все желания пары
 };
 
-export function Tracker({ startDate }: TrackerProps) {
-  const days = useTrackerDays(startDate);
+type Day = {
+  key: string;       // YYYY-MM-DD
+  date: string;
+  isFuture: boolean;
+};
 
-  const progress = useQuery(api.wishProgress.getByDateRange, {
-    from: days[0].key,
-    to: days[days.length - 1].key,
-  }) as ProgressItem[] | undefined;
-
-  const progressByDate = useMemo(() => {
-    if (!progress) return {};
-
-    return progress.reduce<Record<string, Wish[]>>((acc, item) => {
-      if (!acc[item.date]) acc[item.date] = [];
-      acc[item.date].push(item.wish);
-      return acc;
-    }, {});
-  }, [progress]);
+export function Tracker({ startDate, wishes }: TrackerProps) {
+  // Создаём массив дней с startDate до сегодня (30 дней)
+  const days: Day[] = useMemo(() => {
+    const start = dayjs(startDate);
+    return Array.from({ length: 30 }, (_, i) => {
+      const date = start.add(i, "day");
+      return {
+        key: date.format("YYYY-MM-DD"),
+        date: date.format("YYYY-MM-DD"),
+        isFuture: date.isAfter(dayjs(), "day"),
+      };
+    });
+  }, [startDate]);
 
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+  const selectedDay = days.find((d) => d.key === selectedDayKey);
 
-  const selectedDay = days.find(d => d.key === selectedDayKey);
+  // Группируем желания по дате для модалки
+  const wishesByDate = useMemo(() => {
+    const map: Record<string, Wish[]> = {};
+    wishes.forEach((wish) => {
+      wish.completedDates.forEach((date) => {
+        if (!map[date]) map[date] = [];
+        map[date].push(wish);
+      });
+    });
+    return map;
+  }, [wishes]);
 
   return (
     <>
-      {/* Сетка точек */}
-      <div className="grid grid-cols-6 gap-3">
-        {days.map(day => (
-          <DayDot
-            key={day.key}
-            date={day.date}
-            hasWishes={(progressByDate[day.key]?.length ?? 0) > 0}
-            isFuture={day.isFuture}
-            onClick={() => {
-              if (!day.isFuture) setSelectedDayKey(day.key);
-            }}
-          />
-        ))}
+      {/* Сетка точек 30 дней */}
+      <div className="grid grid-cols-6 gap-2">
+        {days.map((day) => {
+          const totalWishes = wishes.length;
+          const completedWishes = wishes.filter((w) =>
+            w.completedDates.includes(day.date)
+          ).length;
+
+          // Цвет точки: серый=0%, желтый=частично, зеленый=100%
+          let colorClass = "bg-gray-300";
+          if (completedWishes === totalWishes && totalWishes > 0) colorClass = "bg-green-500";
+          else if (completedWishes > 0) colorClass = "bg-yellow-400";
+
+          return (
+            <DayDot
+              key={day.key}
+              date={dayjs(day.date)}
+              isFuture={day.isFuture}
+              colorClass={colorClass}
+              onClick={() => {
+                if (!day.isFuture) setSelectedDayKey(day.key);
+              }}
+            />
+          );
+        })}
       </div>
 
-      {/* Модалка */}
+      {/* Модальное окно с деталями дня */}
       {selectedDay && (
         <DayDetailsModal
-          date={selectedDay.date}
-          wishes={progressByDate[selectedDay.key] || []}
-          onClose={() => setSelectedDayKey(null)}
+        date={dayjs(selectedDay.date)}
+        wishes={wishesByDate[selectedDay.key] || []}
+        onClose={() => setSelectedDayKey(null)}
         />
       )}
     </>
