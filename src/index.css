@@ -5,3 +5,18 @@
 * {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+@keyframes wish-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-wish-in {
+  animation: wish-in 0.25s ease-out both;
+}

@@ -7,6 +7,7 @@ import { useMutation } from "convex/react";
 import dayjs from "dayjs";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useState } from "react";
+import { Check, RotateCcw  } from "lucide-react";
 
 type Wish = {
   _id: Id<"wishes">;
@@ -83,12 +84,14 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
               <li
                 key={wish._id.toString()}
                 className="
-                flex items-center justify-between
-                px-4 py-3
-                rounded-xl
-                border border-gray-100
-                hover:bg-gray-50
-                transition"
+                  flex items-center justify-between
+                  px-4 py-3
+                  rounded-xl
+                  border border-gray-100
+                  hover:bg-gray-50
+                  transition
+                  animate-wish-in
+                "
               >
                 <div className="flex items-center gap-3">
                   <span className={doneToday
@@ -107,20 +110,30 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
 
                 <button
                   onClick={() => handleToggle(wish)}
-                  className={`
+                   className={`
+                    inline-flex items-center gap-2
                     text-xs
                     px-3 py-1.5
                     rounded-full
                     font-medium
                     transition
+                    active:scale-95
                     ${
                       doneToday
-                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ? "bg-green-100 text-green-700 hover:bg-red-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-green-200"
                     }
                   `}
                 >
-                  {doneToday ? "↩ не сделано" : "✓ сделано"}
+                  {doneToday ? (
+                    <>
+                      <RotateCcw size={14} className="opacity-80"/>
+                    </>
+                  ) : (
+                    <>
+                      <Check size={14} className="opacity-80"/>
+                    </>
+                  )}
                 </button>
               </li>
             );
