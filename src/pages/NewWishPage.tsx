@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Sidebar } from "../components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
+import { Pencil } from "lucide-react";
 
 /* ───────────────── types ───────────────── */
 
@@ -13,6 +14,14 @@ type Wish = {
   title: string;
   fulfilled: boolean;
 };
+
+type FeedbackType = "saved" | "added" | "deleted";
+
+type Feedback = {
+  type: FeedbackType;
+  text: string;
+};
+
 
 const listItemVariants = {
   hidden: {
@@ -38,6 +47,8 @@ const listItemVariants = {
 
 export default function AddWish() {
   const { roomId } = useParams<{ roomId: string }>();
+
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
 
   const convexRoomId = roomId
     ? (roomId as Id<"rooms">)
@@ -65,8 +76,8 @@ export default function AddWish() {
   const [loading, setLoading] = useState(false);
 
   // inline edit
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draftTitle, setDraftTitle] = useState("");
+  const [editingId, setEditingId] = useState<Id<"wishes"> | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   /* ─────────────── sync query → state ─────────────── */
 
@@ -92,32 +103,51 @@ export default function AddWish() {
         title: title.trim(),
       });
       setTitle("");
+      showFeedback("added"); // 👈 ВОТ ЭТО
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDeleteWish = async (wishId: Id<"wishes">) => {
+    await deleteWish({ wishId });
+    showFeedback("deleted");
+  };
+
   const startEdit = (wish: Wish) => {
-    setEditingId(wish._id.toString());
-    setDraftTitle(wish.title);
+    setEditingId(wish._id);
+    setEditValue(wish.title);
   };
 
   const saveEdit = async (wish: Wish) => {
-    const newTitle = draftTitle.trim();
-    if (!newTitle || newTitle === wish.title) {
-      setEditingId(null);
-      return;
-    }
+    if (!editValue.trim()) return;
 
-    // optimistic update
-    setWishes((prev) =>
-      prev.map((w) =>
-        w._id === wish._id ? { ...w, title: newTitle } : w
-      )
-    );
+    await updateWish({
+      wishId: wish._id,
+      title: editValue.trim(),
+    });
 
     setEditingId(null);
-    await updateWish({ wishId: wish._id, title: newTitle });
+    showFeedback("saved"); // 👈 ВОТ ЭТО
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const showFeedback = (type: FeedbackType) => {
+    const map: Record<FeedbackType, string> = {
+      saved: "Сохранено",
+      added: "Желание добавлено",
+      deleted: "Желание удалено",
+    };
+
+    setFeedback({ type, text: map[type] });
+
+    setTimeout(() => {
+      setFeedback(null);
+    }, 1500);
   };
 
   /* ─────────────── UI ─────────────── */
@@ -232,69 +262,79 @@ export default function AddWish() {
                         {/* ───── title / edit ───── */}
                         <div className="flex-1">
                           <AnimatePresence mode="wait">
-                            {isEditing ? (
+                            {editingId === wish._id ? (
                               <motion.input
-                                key="input"
-                                autoFocus
-                                value={draftTitle}
-                                onChange={(e) => setDraftTitle(e.target.value)}
-                                onBlur={() => saveEdit(wish)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveEdit(wish);
-                                  if (e.key === "Escape") setEditingId(null);
-                                }}
-                                initial={{ opacity: 0, scale: 0.97 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.97 }}
-                                transition={{ duration: 0.15 }}
-                                className="
-                                  w-full
-                                  text-sm
-                                  px-2 py-1
-                                  rounded-lg
-                                  border border-gray-300
-                                  focus:outline-none
-                                  focus:ring-2
-                                  focus:ring-green-500
-                                "
-                              />
-                            ) : (
-                              <motion.div
-                                key="text"
-                                onClick={() => startEdit(wish)}
+                                key="edit"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                transition={{ duration: 0.15 }}
-                                className={`
+                                autoFocus
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={() => saveEdit(wish)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") saveEdit(wish);
+                                  if (e.key === "Escape") cancelEdit();
+                                }}
+                                className="
+                                  w-full
                                   text-sm
-                                  cursor-text
-                                  ${
-                                    wish.fulfilled
-                                      ? "line-through text-gray-400"
-                                      : "text-gray-800 hover:underline"
-                                  }
-                                `}
+                                  text-gray-800
+                                  bg-transparent
+                                  border-none
+                                  px-0
+                                  py-0
+                                  outline-none
+                                  focus:outline-none
+                                  placeholder-gray-300
+                                "
+                              />
+                            ) : (
+                              <motion.p
+                                key="text"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="text-sm text-gray-800"
                               >
                                 {wish.title}
-                              </motion.div>
+                              </motion.p>
                             )}
                           </AnimatePresence>
                         </div>
 
-                        {/* ───── delete ───── */}
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => deleteWish({ wishId: wish._id })}
-                          className="
-                            text-xs
-                            text-red-500
-                            hover:text-red-600
-                            transition
-                          "
-                        >
-                          Больше не хочу
-                        </motion.button>
+                        <div className="flex items-center gap-2">
+                          {/* ✏️ Edit */}
+                          <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => startEdit(wish)}
+                            className="
+                              p-1.5
+                              rounded-lg
+                              text-gray-400
+                              hover:text-gray-700
+                              hover:bg-gray-100
+                              transition
+                            "
+                            title="Редактировать"
+                          >
+                            <Pencil size={14} />
+                          </motion.button>
+
+                          {/* 🗑 Delete */}
+                          <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleDeleteWish(wish._id)}
+                            className="
+                              text-xs
+                              text-red-500
+                              hover:text-red-600
+                              transition
+                            "
+                          >
+                            Больше не хочу
+                          </motion.button>
+                        </div>
                       </motion.li>
                     );
                   })}
@@ -305,6 +345,32 @@ export default function AddWish() {
 
         </div>
       </main>
+      <AnimatePresence>
+        {feedback && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2 }}
+            className="
+              fixed
+              bottom-6
+              left-1/2
+              -translate-x-1/2
+              bg-gray-900
+              text-white
+              text-xs
+              px-4
+              py-2
+              rounded-full
+              shadow-lg
+              pointer-events-none
+            "
+          >
+            {feedback.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
