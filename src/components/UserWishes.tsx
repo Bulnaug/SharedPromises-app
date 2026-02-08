@@ -7,7 +7,8 @@ import { useMutation } from "convex/react";
 import dayjs from "dayjs";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useState } from "react";
-import { Check, RotateCcw  } from "lucide-react";
+import { Check, X} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Wish = {
   _id: Id<"wishes">;
@@ -23,6 +24,9 @@ type UserWishesProps = {
 
 export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
+  const [rotatingId, setRotatingId] = useState<string | null>(null);
+
+  
 
   const progress = calcProgress(wishes);
   const today = dayjs().format("YYYY-MM-DD");
@@ -33,24 +37,22 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const handleToggle = async (wish: Wish) => {
     const doneToday = isDoneToday(wish.completedDates);
 
-    // Оптимистично обновляем локальный стейт
     setWishes((prev) =>
-      prev.map((w) => {
-        if (w._id === wish._id) {
-          return {
-            ...w,
-            completedDates: doneToday
-              ? w.completedDates.filter((d) => d !== today)
-              : [...w.completedDates, today],
-          };
-        }
-        return w;
-      })
+      prev.map((w) =>
+        w._id === wish._id
+          ? {
+              ...w,
+              completedDates: doneToday
+                ? w.completedDates.filter((d) => d !== today)
+                : [...w.completedDates, today],
+            }
+          : w
+      )
     );
 
-    // Отправляем мутацию в базу
     await toggleWishFulfilled({ wishId: wish._id });
   };
+
 
   return (
     <section className="
@@ -76,23 +78,27 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
         <p className="text-sm text-gray-400 italic">Пока здесь пусто ✨</p>
       ) : (
         <ul className="space-y-2">
-          {wishes.map((wish) => {
-            const doneToday = isDoneToday(wish.completedDates);
-            const streak = calculateWishStreak(wish);
+          <AnimatePresence>
+            {wishes.map((wish) => {
+              const doneToday = isDoneToday(wish.completedDates);
+              const streak = calculateWishStreak(wish);
 
-            return (
-              <li
-                key={wish._id.toString()}
-                className="
-                  flex items-center justify-between
-                  px-4 py-3
-                  rounded-xl
-                  border border-gray-100
-                  hover:bg-gray-50
-                  transition
-                  animate-wish-in
-                "
-              >
+              return (
+                <motion.li
+                  key={wish._id.toString()}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="
+                    flex items-center justify-between
+                    px-4 py-3
+                    rounded-xl
+                    border border-gray-100
+                    hover:bg-gray-50
+                  "
+                >
                 <div className="flex items-center gap-3">
                   <span className={doneToday
                     ? "line-through text-gray-400"
@@ -108,16 +114,14 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
                   )}
                 </div>
 
-                <button
+                <motion.button
+                  layout
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleToggle(wish)}
-                   className={`
+                  className={`
                     inline-flex items-center gap-2
-                    text-xs
-                    px-3 py-1.5
-                    rounded-full
-                    font-medium
-                    transition
-                    active:scale-95
+                    text-xs px-3 py-1.5
+                    rounded-full font-medium
                     ${
                       doneToday
                         ? "bg-green-100 text-green-700 hover:bg-red-200"
@@ -125,19 +129,34 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
                     }
                   `}
                 >
-                  {doneToday ? (
-                    <>
-                      <RotateCcw size={14} className="opacity-80"/>
-                    </>
-                  ) : (
-                    <>
-                      <Check size={14} className="opacity-80"/>
-                    </>
-                  )}
-                </button>
-              </li>
+                  <AnimatePresence mode="wait">
+                    {doneToday ? (
+                      <motion.span
+                        key="undo"
+                        initial={{ rotate: 0, opacity: 0 }}
+                        animate={{ rotate: 180, opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <X size={14} />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="check"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check size={14} />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </motion.li>
             );
           })}
+          </AnimatePresence>
         </ul>
       )}
     </section>
