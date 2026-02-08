@@ -24,9 +24,6 @@ type UserWishesProps = {
 
 export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
-  const [rotatingId, setRotatingId] = useState<string | null>(null);
-
-  
 
   const progress = calcProgress(wishes);
   const today = dayjs().format("YYYY-MM-DD");

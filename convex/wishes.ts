@@ -266,3 +266,13 @@ export const toggleWishDay = mutation({
     });
   },
 });
+
+export const updateWish = mutation({
+  args: {
+    wishId: v.id("wishes"),
+    title: v.string(),
+  },
+  handler: async (ctx, { wishId, title }) => {
+    await ctx.db.patch(wishId, { title });
+  },
+});
