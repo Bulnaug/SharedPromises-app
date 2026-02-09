@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { isDoneToday } from "../../../utils/isDoneToday";
+import { isDoneToday } from "../utils/isDoneToday";
 
 import type { Wish } from "../types";
 

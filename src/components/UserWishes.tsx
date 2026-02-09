@@ -1,5 +1,5 @@
 import { ProgressBar } from "./ProgressBar";
-import { calcProgress } from "../utils/progress";
+import { calcProgress } from "../features/wishes/utils/progress";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";

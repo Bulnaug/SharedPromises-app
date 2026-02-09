@@ -3,9 +3,9 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Sidebar } from "../components/Sidebar";
 import { UserWishes } from "../components/UserWishes";
 import { ProgressBar } from "../components/ProgressBar";
-import { calcProgress } from "../utils/progress";
+import { calcProgress } from "../features/wishes/utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
-import { Tracker } from "../components/tracker/Tracker";
+import { Tracker } from "../features/tracker/components/Tracker";
 import dayjs from "dayjs";
 
 export default function Dashboard() {

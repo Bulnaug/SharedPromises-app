@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
-import { Modal } from "../ui/Modal";
+import { Modal } from "../../../components/ui/Modal";
 
 dayjs.locale("ru");
 

@@ -1,14 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
-import { isDoneToday } from "../../../utils/isDoneToday";
-import { calculateWishStreak } from "../../../utils/calculateWishStreak";
-import type { Id } from "../../../../convex/_generated/dataModel";
+import { isDoneToday } from "../utils/isDoneToday";
+import { calculateWishStreak } from "../utils/calculateWishStreak";
 
-type Wish = {
-  _id: Id<"wishes">;
-  title: string;
-  completedDates: string[];
-};
+import type { Wish } from "../types";
 
 type Props = {
   wish: Wish;
@@ -57,7 +52,7 @@ export function WishItem({ wish, onToggle }: Props) {
         layout
         whileTap={{ scale: 0.95 }}
         onClick={() => onToggle(wish)}
-        title={doneToday ? "Отменить сегодня" : "Отметить выполненным"}
+        title={doneToday ? "Недоделано" : "Выполнено"}
         className={`
             inline-flex items-center justify-center
             w-9 h-9

@@ -238,8 +238,6 @@ export default function AddWish() {
                   className="space-y-2"
                 >
                   {wishes.map((wish) => {
-                    const isEditing = editingId === wish._id.toString();
-
                     return (
                       <motion.li
                         key={wish._id}
