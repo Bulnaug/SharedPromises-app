@@ -3,17 +3,13 @@ import { calcProgress } from "../utils/progress";
 import { isDoneToday } from "../utils/isDoneToday";
 import { api } from "../../convex/_generated/api";
 import { useMutation } from "convex/react";
-import dayjs from "dayjs";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { WishItem } from "../features/wishes/components/WishItem";
+import { useToggleWish } from "../features/wishes/hooks/useToggleWish";
 
-type Wish = {
-  _id: Id<"wishes">;
-  title: string;
-  completedDates: string[];
-};
+import type { Wish } from "../features/wishes/types";
 
 type UserWishesProps = {
   name: string;
@@ -25,29 +21,11 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
 
   const progress = calcProgress(wishes);
-  const today = dayjs().format("YYYY-MM-DD");
 
   // ✅ используем существующую мутацию toggleWishFulfilled
   const toggleWishFulfilled = useMutation(api.wishes.toggleWishFulfilled);
 
-  const handleToggle = async (wish: Wish) => {
-    const doneToday = isDoneToday(wish.completedDates);
-
-    setWishes((prev) =>
-      prev.map((w) =>
-        w._id === wish._id
-          ? {
-              ...w,
-              completedDates: doneToday
-                ? w.completedDates.filter((d) => d !== today)
-                : [...w.completedDates, today],
-            }
-          : w
-      )
-    );
-
-    await toggleWishFulfilled({ wishId: wish._id });
-  };
+  const { toggleWish } = useToggleWish(setWishes);
 
 
   return (
@@ -71,6 +49,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
       <ProgressBar value={progress} />
 
       {wishes.length === 0 ? (
+        
         <p className="text-sm text-gray-400 italic">Пока здесь пусто ✨</p>
       ) : (
         <ul className="space-y-2">
@@ -80,7 +59,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
                 <WishItem
                   key={wish._id.toString()}
                   wish={wish}
-                  onToggle={handleToggle}
+                  onToggle={toggleWish}
                 />
             );
           })}
