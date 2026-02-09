@@ -35,15 +35,16 @@ export function WishItem({ wish, onToggle }: Props) {
       "
     >
       <div className="flex items-center gap-3">
-        <span
-          className={
-            doneToday
-              ? "line-through text-gray-400"
-              : "text-gray-800"
-          }
+        <motion.span
+          layout
+          animate={{
+            opacity: doneToday ? 0.5 : 1,
+          }}
+          transition={{ duration: 0.2 }}
+          className={doneToday ? "line-through" : ""}
         >
-          {wish.title}
-        </span>
+            {wish.title}
+        </motion.span>
 
         {streak > 0 && (
           <span className="text-xs text-orange-500 font-medium">
