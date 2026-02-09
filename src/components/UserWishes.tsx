@@ -1,8 +1,5 @@
 import { ProgressBar } from "./ProgressBar";
 import { calcProgress } from "../utils/progress";
-import { isDoneToday } from "../utils/isDoneToday";
-import { api } from "../../convex/_generated/api";
-import { useMutation } from "convex/react";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -21,9 +18,6 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
 
   const progress = calcProgress(wishes);
-
-  // ✅ используем существующую мутацию toggleWishFulfilled
-  const toggleWishFulfilled = useMutation(api.wishes.toggleWishFulfilled);
 
   const { toggleWish } = useToggleWish(setWishes);
 
@@ -48,21 +42,22 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
 
       <ProgressBar value={progress} />
 
-      {wishes.length === 0 ? (
-        
-        <p className="text-sm text-gray-400 italic">Пока здесь пусто ✨</p>
-      ) : (
+      {wishes.length === 0 && (
+        <p className="text-sm text-gray-400 italic">
+          Пока здесь пусто ✨
+        </p>
+      )}
+
+      {wishes.length > 0 && (
         <ul className="space-y-2">
           <AnimatePresence>
-            {wishes.map((wish) => {
-              return (
-                <WishItem
-                  key={wish._id.toString()}
-                  wish={wish}
-                  onToggle={toggleWish}
-                />
-            );
-          })}
+            {wishes.map((wish) => (
+              <WishItem
+                key={wish._id.toString()}
+                wish={wish}
+                onToggle={toggleWish}
+              />
+            ))}
           </AnimatePresence>
         </ul>
       )}
