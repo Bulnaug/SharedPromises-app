@@ -72,11 +72,8 @@ export default function Dashboard() {
         ">
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-medium text-gray-500">
-              Активность за 30 дней
+              Активность за 5 недель
             </h2>
-            <span className="text-xs text-gray-400">
-              последние дни
-            </span>
           </div>
 
           {/* Трекер */}
