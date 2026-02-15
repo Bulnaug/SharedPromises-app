@@ -5,7 +5,7 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 import type { Wish, Feedback, FeedbackType } from "../types";
 
 export function useWishes(roomId: Id<"rooms">) {
-  /* ───────── data ───────── */
+  /* ───── data ───── */
 
   const wishesQuery = useQuery(
     api.wishes.getMyWishesByRoom,
@@ -16,7 +16,7 @@ export function useWishes(roomId: Id<"rooms">) {
   const deleteWish = useMutation(api.wishes.deleteWish);
   const updateWish = useMutation(api.wishes.updateWish);
 
-  /* ───────── state ───────── */
+  /* ───── state ───── */
 
   const [wishes, setWishes] = useState<Wish[]>([]);
   const [title, setTitle] = useState("");
@@ -27,15 +27,15 @@ export function useWishes(roomId: Id<"rooms">) {
 
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  /* ───────── sync ───────── */
+  /* ───── sync query → state ───── */
 
   useEffect(() => {
     if (wishesQuery) {
-      setWishes(wishesQuery);
+      setWishes(wishesQuery as Wish[]);
     }
   }, [wishesQuery]);
 
-  /* ───────── feedback ───────── */
+  /* ───── feedback ───── */
 
   const showFeedback = (type: FeedbackType) => {
     const map: Record<FeedbackType, string> = {
@@ -51,13 +51,12 @@ export function useWishes(roomId: Id<"rooms">) {
     }, 1500);
   };
 
-  /* ───────── actions ───────── */
+  /* ───── actions ───── */
 
   const addWish = async () => {
     if (!title.trim()) return;
 
     setLoading(true);
-
     try {
       await createWish({
         roomId,

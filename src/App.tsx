@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NewWishPage from "./pages/NewWishPage";
+import AddWishPage from "./pages/AddWishPage";
 import RoomSettings from "./pages/RoomSettings";
 import JoinRoom from "./components/JoinRoom";
 import ProfilePage from "./pages/ProfilPage";
@@ -51,7 +52,7 @@ export default function App() {
             <Route path="/join/:roomId" element={<JoinRoom />} />
 
             <Route path="/rooms" element={<RoomsPage />} />
-            <Route path="/rooms/:roomId/new" element={<NewWishPage />} />
+            <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
             <Route path="/rooms/:roomId" element={<Dashboard />} />
             <Route path="/rooms/:roomId/settings" element={<RoomSettings />} />
             <Route path="/profile" element={<ProfilePage />} />
