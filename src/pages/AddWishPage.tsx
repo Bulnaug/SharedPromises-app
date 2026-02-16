@@ -22,6 +22,9 @@ export default function AddWishPage() {
       <main className="flex-1 px-6 py-8">
         <div className="max-w-xl mx-auto space-y-8">
           <AddWishForm {...wishes} />
+            <h2 className="text-sm font-semibold text-gray-600">
+              То, что ты уже хочешь
+            </h2>
           <WishList {...wishes} />
         </div>
       </main>

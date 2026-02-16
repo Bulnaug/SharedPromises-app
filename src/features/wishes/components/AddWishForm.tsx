@@ -14,7 +14,12 @@ export function AddWishForm({
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
       <label className="text-sm font-medium text-gray-700">
-        Я хочу
+        <h1 className="text-xl font-semibold text-gray-900">
+              Новое желание
+            </h1>
+            <p className="text-sm text-gray-500">
+              Напиши что хочешь получать каждый день 💚
+            </p>
       </label>
 
       <input

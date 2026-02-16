@@ -1,5 +1,6 @@
 import type { Wish } from "../types";
 import type { Id } from "../../../../convex/_generated/dataModel";
+import { Pencil } from "lucide-react";
 
 type Props = {
   wishes: Wish[];
@@ -60,7 +61,7 @@ export function WishList({
               onClick={() => startEdit(wish)}
               className="text-xs text-gray-500 hover:text-gray-700"
             >
-              Редактировать
+              <Pencil size={14} />
             </button>
 
             <button
