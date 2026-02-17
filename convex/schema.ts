@@ -12,6 +12,7 @@ export default defineSchema({
   rooms: defineTable({
     name: v.string(),
     ownerId: v.id("users"),
+    inviteCode: v.string(),
     memberIds: v.array(v.id("users")),
     createdAt: v.number(),
   })
