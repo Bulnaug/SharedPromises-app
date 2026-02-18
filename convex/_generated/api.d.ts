@@ -10,6 +10,7 @@
 
 import type * as lib_getUser from "../lib/getUser.js";
 import type * as migrations_cleanupAuthorId from "../migrations/cleanupAuthorId.js";
+import type * as migrations_fillInviteCodes from "../migrations/fillInviteCodes.js";
 import type * as migrations_fillUserNames from "../migrations/fillUserNames.js";
 import type * as migrations_fillWishComlitedDays from "../migrations/fillWishComlitedDays.js";
 import type * as migrations_fillWishUserId from "../migrations/fillWishUserId.js";
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   "lib/getUser": typeof lib_getUser;
   "migrations/cleanupAuthorId": typeof migrations_cleanupAuthorId;
+  "migrations/fillInviteCodes": typeof migrations_fillInviteCodes;
   "migrations/fillUserNames": typeof migrations_fillUserNames;
   "migrations/fillWishComlitedDays": typeof migrations_fillWishComlitedDays;
   "migrations/fillWishUserId": typeof migrations_fillWishUserId;
