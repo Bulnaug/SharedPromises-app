@@ -43,7 +43,7 @@ export default function Dashboard() {
 
       <main className="
         flex-1
-        px-6
+        px-2
         py-8
         max-w-4xl
         mx-auto

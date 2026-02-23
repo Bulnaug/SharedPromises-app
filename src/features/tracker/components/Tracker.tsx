@@ -125,7 +125,7 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
 
       {/* Calendar grid */}
       <div className="w-full flex justify-center">
-        <div className="w-fit">
+        <div className="inline-block max-w-full">
           <div className="grid grid-cols-7 gap-2">
             {/* weekdays */}
             {weekDays.map((wd) => (

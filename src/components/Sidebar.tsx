@@ -20,7 +20,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
       "
     >
       {/* ───────── Верх ───────── */}
-      <div className="shrink-0 p-3 md:p-6 space-y-3 md:space-y-6">
+      <div className="p-3 md:p-6 space-y-3 md:space-y-6">
         {/* Лого: SP на мобилке, SharedPromises на md+ */}
         <div className="flex items-center justify-center md:justify-start">
           <div className="md:hidden text-lg font-semibold text-gray-900">

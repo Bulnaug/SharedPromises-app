@@ -33,7 +33,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
     ">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-900">
-          Что получает {name}
+          Что делает {name}
         </h2>
         <span className="text-sm font-medium text-gray-500">
           {progress}%
