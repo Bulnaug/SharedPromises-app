@@ -11,6 +11,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
   return (
     <aside
       className="
+        sticky top-0
         h-dvh
         bg-white
         border-r border-gray-200
@@ -19,11 +20,11 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
       "
     >
       {/* ───────── Верх ───────── */}
-      <div className="p-3 md:p-6 space-y-3 md:space-y-6">
+      <div className="shrink-0 p-3 md:p-6 space-y-3 md:space-y-6">
         {/* Лого: SP на мобилке, SharedPromises на md+ */}
         <div className="flex items-center justify-center md:justify-start">
           <div className="md:hidden text-lg font-semibold text-gray-900">
-            SP
+            S<span className="text-green-500">P</span>
           </div>
 
           <div className="hidden md:block text-xl font-semibold text-gray-900">
@@ -69,6 +70,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
         )}
 
         {/* Навигация */}
+        
         <nav className="space-y-1">
           <SidebarLink to="/rooms" icon="🏠" label="Мои комнаты" />
           <SidebarLink

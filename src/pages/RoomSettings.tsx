@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRoom } from "../hooks/useRoom";
+import { Sidebar } from "../components/Sidebar";
 import type { Id } from "../../convex/_generated/dataModel";
 
 type Props = {
@@ -98,7 +99,16 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar roomId={room._id} />
+      <main className="
+        flex-1
+        px-6
+        py-8
+        max-w-4xl
+        mx-auto
+        space-y-8
+      ">
       <button
         onClick={back}
         className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-2"
@@ -235,6 +245,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
           </button>
         )}
       </section>
+      </main>
     </div>
   );
 };
