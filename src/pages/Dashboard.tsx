@@ -72,12 +72,12 @@ export default function Dashboard() {
         ">
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-medium text-gray-500">
-              Активность за 5 недель
+              Календарь активности
             </h2>
           </div>
 
           {/* Трекер */}
-          <div className="flex justify-center">
+          <div className="">
             <Tracker wishes={allWishes} startDate={startDate} />
           </div>
 
