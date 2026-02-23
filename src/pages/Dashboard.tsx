@@ -61,6 +61,8 @@ export default function Dashboard() {
           {room.name}
         </h1>
 
+        
+
         {/* === 30-дневный трекер === */}
         <section className="
           bg-white

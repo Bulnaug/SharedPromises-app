@@ -96,43 +96,37 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
 
   return (
     <>
-      {streak > 0 && (
-        <div className="text-center font-semibold text-green-600 mb-3">
-          🔥 {streak} {streak === 1 ? "день" : "дня"} подряд с 100% выполнением!
-        </div>
-      )}
-
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          type="button"
-          className="h-10 w-10 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-900 grid place-items-center"
-          onClick={() => setMonthCursor((m) => m.subtract(1, "month"))}
-          aria-label="Предыдущий месяц"
-        >
-          ←
-        </button>
+      <div className="w-full flex justify-center mb-3">
+        <div className="w-[260px] sm:w-[280px] flex items-center justify-between">
+          <button
+            type="button"
+            className="h-9 w-9 text-gray-900 grid place-items-center"
+            onClick={() => setMonthCursor((m) => m.subtract(1, "month"))}
+            aria-label="Предыдущий месяц"
+          >
+            ←
+          </button>
 
-        <div className="text-left">
-          <div className="text-xl font-semibold text-gray-900 leading-tight">
-            {monthCursor.format("MMMM")} {monthCursor.format("YYYY")}
+          <div className="text-sm font-semibold text-gray-900">
+            {monthCursor.format("MMMM YYYY")}
           </div>
-        </div>
 
-        <button
-          type="button"
-          className="h-10 w-10 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-900 grid place-items-center"
-          onClick={() => setMonthCursor((m) => m.add(1, "month"))}
-          aria-label="Следующий месяц"
-        >
-          →
-        </button>
+          <button
+            type="button"
+            className="h-9 w-9 text-gray-900 grid place-items-center"
+            onClick={() => setMonthCursor((m) => m.add(1, "month"))}
+            aria-label="Следующий месяц"
+          >
+            →
+          </button>
+        </div>
       </div>
 
       {/* Calendar grid */}
       <div className="w-full flex justify-center">
-        <div className="w-[260px] sm:w-[280px]">
-          <div className="grid grid-cols-7 gap-1.5">
+        <div className="w-fit">
+          <div className="grid grid-cols-7 gap-2">
             {/* weekdays */}
             {weekDays.map((wd) => (
               <div
@@ -212,6 +206,12 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
           </div>
         </div>
       </div>
+
+      {streak > 0 && (
+        <div className="text-center font-semibold text-green-600 mb-5 mt-5">
+          🔥 {streak} {streak === 1 ? "день" : "дня"} подряд с 100% выполнением!
+        </div>
+      )}
 
       {selectedDay && (
         <DayDetailsModal
