@@ -52,10 +52,10 @@ export default function App() {
             <Route path="/" element={<Navigate to="/rooms" />} />
 
             <Route path="/join/:inviteCode" element={<JoinRoom />} />
+            <Route path="/rooms" element={<RoomsPage />} />
 
             {/* ✅ Глобальные страницы с AppSidebar */}
             <Route element={<AppLayout />}>
-              <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               {/* если у тебя появится /rooms/new — добавишь сюда */}
             </Route>

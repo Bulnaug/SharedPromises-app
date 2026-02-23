@@ -3,13 +3,19 @@ import { AppSidebar } from "../components/AppSidebar";
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-6xl flex">
+    <div className="flex min-h-screen bg-gray-50">
         <AppSidebar />
-        <main className="flex-1 p-4 sm:p-6">
+        <main className="
+            flex-1
+            px-2
+            py-8
+            max-w-4xl
+            mx-auto
+            space-y-8
+        ">
           <Outlet />
         </main>
-      </div>
+      
     </div>
   );
 }

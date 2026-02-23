@@ -1,13 +1,8 @@
-import { Link, useMatch, useLocation, useNavigate } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 
 export function AppSidebar() {
   const isRoomsPage = useMatch("/rooms");
-  const isProfilePage = useMatch("/profile");
-  const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const showBackToRooms = pathname.startsWith("/profile");
-  const topHref = showBackToRooms ? "/rooms" : "/rooms/new";
 
   return (
     <aside
