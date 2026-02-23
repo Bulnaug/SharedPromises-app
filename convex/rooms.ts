@@ -11,19 +11,24 @@ const generateInviteCode = () =>
 // ========================
 
 export const createRoom = mutation({
-  args: {
-    name: v.string(),
-  },
+  args: { name: v.string() },
   handler: async (ctx, { name }) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
 
-    const user = await getUserByClerkId(ctx, identity.subject);
+    // ✅ Гарантируем, что пользователь существует
+    const user = await getUserByClerkIdOrCreate(ctx, identity);
 
     return await ctx.db.insert("rooms", {
       name,
       ownerId: user._id,
-      memberIds: [],
+
+      // ✅ ФИКС БАГА:
+      // Owner теперь сразу в списке участников
+      memberIds: [user._id],
+
       inviteCode: generateInviteCode(),
       createdAt: Date.now(),
     });
@@ -52,10 +57,9 @@ export const getRoom = query({
     const room = await ctx.db.get(roomId);
     if (!room) return null;
 
-    const users = await Promise.all([
-      ctx.db.get(room.ownerId),
-      ...room.memberIds.map((id) => ctx.db.get(id)),
-    ]);
+    const users = await Promise.all(
+      room.memberIds.map((id) => ctx.db.get(id))
+    );
 
     return {
       ...room,
@@ -81,22 +85,17 @@ export const inviteToRoom = mutation({
     }
 
     // Уже участник — ничего не делаем
-    if (
-      room.ownerId === user!._id ||
-      room.memberIds.includes(user!._id)
-    ) {
-      return;
-    }
+    if (room.memberIds.includes(user!._id)) return;
 
-    // Ограничение: 2 человека
-    if (room.memberIds.length >= 1) {
+    // Ограничение: максимум 2 человека
+    if (room.memberIds.length >= 2) {
       throw new Error("Room already has two members");
     }
 
     await ctx.db.patch(roomId, {
       memberIds: [...room.memberIds, user!._id],
     });
-  },
+      },
 });
 
 // ========================
@@ -120,15 +119,9 @@ export const getMembers = query({
     const room = await ctx.db.get(roomId);
     if (!room) return [];
 
-    const members = await Promise.all([
-      ctx.db.get(room.ownerId),
-      ...room.memberIds.map((id) => ctx.db.get(id)),
-    ]);
+    const members = await Promise.all(room.memberIds.map((id) => ctx.db.get(id)));
 
-    return members.filter(
-      (member): member is NonNullable<typeof member> =>
-        member !== null
-    );
+    return members.filter((m): m is NonNullable<typeof m> => m !== null);
   },
 });
 
@@ -181,6 +174,10 @@ export const removeMember = mutation({
       throw new Error("Only owner can remove members");
     }
 
+    if (userId === room.ownerId) {
+      throw new Error("Owner cannot be removed");
+    }
+
     await ctx.db.patch(roomId, {
       memberIds: room.memberIds.filter(
         (id) => id !== userId
@@ -203,14 +200,10 @@ export const leave = mutation({
     const room = await ctx.db.get(roomId);
     if (!room) throw new Error("Room not found");
 
-    if (room.ownerId === user._id) {
-      throw new Error("Owner cannot leave room");
-    }
+    if (room.ownerId === user._id) throw new Error("Owner cannot leave room");
 
     await ctx.db.patch(roomId, {
-      memberIds: room.memberIds.filter(
-        (id) => id !== user._id
-      ),
+      memberIds: room.memberIds.filter((id) => id !== user._id),
     });
   },
 });
@@ -234,5 +227,39 @@ export const deleteRoom = mutation({
     }
 
     await ctx.db.delete(roomId);
+  },
+});
+
+export const joinByCode = mutation({
+  args: { inviteCode: v.string() },
+  handler: async (ctx, { inviteCode }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const user = await getUserByClerkIdOrCreate(ctx, identity);
+
+    const room = await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("inviteCode"), inviteCode))
+      .first();
+
+    if (!room) throw new Error("Invalid invite code");
+
+    // owner уже в комнате
+    if (room.ownerId === user!._id) return room._id;
+
+    // уже участник
+    if (room.memberIds.includes(user!._id)) return room._id;
+
+    // ограничение: owner + 1 участник
+    if (room.memberIds.length >= 1) {
+      throw new Error("Room already has two members");
+    }
+
+    await ctx.db.patch(room._id, {
+      memberIds: [...room.memberIds, user!._id],
+    });
+
+    return room._id;
   },
 });

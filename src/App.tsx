@@ -1,10 +1,9 @@
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import NewWishPage from "./pages/NewWishPage";
 import AddWishPage from "./pages/AddWishPage";
-import RoomSettings from "./pages/RoomSettings";
 import JoinRoom from "./components/JoinRoom";
 import ProfilePage from "./pages/ProfilPage";
+import RoomSettingsRoute from "./pages/RoomSettingsRoute";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
@@ -49,12 +48,15 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/rooms" />} />
 
-            <Route path="/join/:roomId" element={<JoinRoom />} />
+            <Route path="/join/:inviteCode" element={<JoinRoom />} />
 
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
             <Route path="/rooms/:roomId" element={<Dashboard />} />
-            <Route path="/rooms/:roomId/settings" element={<RoomSettings />} />
+            <Route
+              path="/rooms/:roomId/settings"
+              element={<RoomSettingsRoute />}
+            />
             <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="*" element={<Navigate to="/rooms" />} />

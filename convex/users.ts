@@ -42,7 +42,7 @@ export const createMe = mutation({
     const user = await ctx.db.insert("users", {
       clerkId: identity.subject,
       name: identity.name ?? "User",
-      email: identity.email,
+      email: identity.email ?? undefined,
     });
 
     return user;
@@ -118,5 +118,11 @@ export async function getUserByClerkIdOrCreate(
     email: identity.email ?? undefined,
   });
 
-  return await ctx.db.get(userId);
+  const created = await ctx.db.get(userId);
+
+  if (!created) {
+    throw new Error("Failed to create user");
+  }
+
+  return created; // ✅ теперь гарантированно не null
 }

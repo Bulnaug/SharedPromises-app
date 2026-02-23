@@ -3,38 +3,23 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
 export const useRoom = (roomId?: Id<"rooms">) => {
+  const argsOrSkip = roomId ? { roomId } : "skip";
+
   // -------- QUERIES --------
-  const room = useQuery(
-    api.rooms.getById,
-    roomId ? { roomId } : "skip"
-  );
+  const room = useQuery(api.rooms.getById, argsOrSkip);
+  const members = useQuery(api.rooms.getMembers, argsOrSkip);
 
-  const members = useQuery(
-    api.rooms.getMembers,
-    roomId ? { roomId } : "skip"
-  );
-
+  // если у тебя реально называется getMe — ок.
+  // (Я бы в идеале называл me, но не принципиально.)
   const currentUser = useQuery(api.users.getMe);
 
   // -------- MUTATIONS --------
-  const regenerateInvite = useMutation(
-    api.rooms.regenerateInvite
-  );
-
-  const removeMemberMutation = useMutation(
-    api.rooms.removeMember
-  );
-
-  const leaveRoomMutation = useMutation(
-    api.rooms.leave
-  );
-
-  const deleteRoomMutation = useMutation(
-    api.rooms.deleteRoom
-  );
+  const regenerateInvite = useMutation(api.rooms.regenerateInvite);
+  const removeMemberMutation = useMutation(api.rooms.removeMember);
+  const leaveRoomMutation = useMutation(api.rooms.leave);
+  const deleteRoomMutation = useMutation(api.rooms.deleteRoom);
 
   // -------- ACTIONS --------
-
   const regenerateInviteLink = async () => {
     if (!roomId) return;
     await regenerateInvite({ roomId });
@@ -55,14 +40,21 @@ export const useRoom = (roomId?: Id<"rooms">) => {
     await deleteRoomMutation({ roomId });
   };
 
+  const isLoading =
+    !!roomId &&
+    (room === undefined || members === undefined || currentUser === undefined);
+
   return {
-    room,
+    room: room ?? null,
     members: members ?? [],
-    currentUserId: currentUser?._id,
+    currentUser,
+    currentUserId: currentUser?._id ?? null,
+
     regenerateInviteLink,
     removeMember,
     leaveRoom,
     deleteRoom,
-    isLoading: room === undefined || members === undefined,
+
+    isLoading,
   };
 };

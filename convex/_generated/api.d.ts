@@ -15,6 +15,7 @@ import type * as migrations_fillUserNames from "../migrations/fillUserNames.js";
 import type * as migrations_fillWishComlitedDays from "../migrations/fillWishComlitedDays.js";
 import type * as migrations_fillWishUserId from "../migrations/fillWishUserId.js";
 import type * as migrations_index from "../migrations/index.js";
+import type * as migrations_ownerIntoMember from "../migrations/ownerIntoMember.js";
 import type * as rooms from "../rooms.js";
 import type * as users from "../users.js";
 import type * as wishProgress from "../wishProgress.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/fillWishComlitedDays": typeof migrations_fillWishComlitedDays;
   "migrations/fillWishUserId": typeof migrations_fillWishUserId;
   "migrations/index": typeof migrations_index;
+  "migrations/ownerIntoMember": typeof migrations_ownerIntoMember;
   rooms: typeof rooms;
   users: typeof users;
   wishProgress: typeof wishProgress;

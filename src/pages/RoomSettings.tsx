@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRoom } from "../hooks/useRoom";
+import type { Id } from "../../convex/_generated/dataModel";
 
 type Props = {
   back: () => void;
+  roomId: Id<"rooms"> | undefined;
 };
 
-export const RoomSettingsPage = ({ back }: Props) => {
+export const RoomSettingsPage = ({ back, roomId }: Props) => {
   const {
     room,
     members,
@@ -14,195 +16,222 @@ export const RoomSettingsPage = ({ back }: Props) => {
     removeMember,
     leaveRoom,
     deleteRoom,
-  } = useRoom();
+    isLoading, // ✅
+  } = useRoom(roomId); // ⚠️ убедись, что roomId реально подхватывается
 
   const [copied, setCopied] = useState(false);
+  const [busyAction, setBusyAction] = useState<
+    null | "regen" | `remove:${string}` | "leave" | "delete"
+  >(null);
 
-  if (!room) return null;
+  if (isLoading) return null; // или skeleton
+  if (!room || !currentUserId) return null;
 
-  const inviteLink = `${window.location.origin}/join/${room.inviteCode}`;
-  const isOwner = room.ownerId === currentUserId;
+  const isOwner = room.ownerId === currentUserId; // ✅ один раз
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const inviteLink = useMemo(() => {
+    return `${window.location.origin}/join/${room.inviteCode}`;
+  }, [room.inviteCode]);
+
+  const copyInvite = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      alert("Не удалось скопировать. Скопируй вручную.");
+    }
+  };
+
+  const onRegenerate = async () => {
+    if (!isOwner) return;
+    const ok = confirm(
+      "Перегенерировать ссылку приглашения? Старая перестанет работать."
+    );
+    if (!ok) return;
+
+    setBusyAction("regen");
+    try {
+      await regenerateInviteLink();
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const onRemoveMember = async (userId: Id<"users">, name?: string) => {
+    const ok = confirm(`Удалить участника${name ? ` "${name}"` : ""} из комнаты?`);
+    if (!ok) return;
+
+    setBusyAction(`remove:${userId}`);
+    try {
+      await removeMember(userId);
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const onLeave = async () => {
+    const ok = confirm("Точно хочешь покинуть комнату?");
+    if (!ok) return;
+
+    setBusyAction("leave");
+    try {
+      await leaveRoom();
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const onDelete = async () => {
+    const ok = confirm("Удалить комнату навсегда? Это действие нельзя отменить.");
+    if (!ok) return;
+
+    setBusyAction("delete");
+    try {
+      await deleteRoom();
+    } finally {
+      setBusyAction(null);
+    }
   };
 
   return (
-    <div style={styles.wrapper}>
-      <button onClick={back} style={styles.backBtn}>
-        ← Назад
+    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <button
+        onClick={back}
+        className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-2"
+      >
+        <span aria-hidden>←</span> Назад
       </button>
 
-      <h2>Параметры комнаты</h2>
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold text-gray-900">Параметры комнаты</h2>
+        <p className="text-sm text-gray-600">
+          Управляй приглашением, участниками и безопасными действиями.
+        </p>
+      </div>
 
-      {/* INVITE BLOCK */}
-      <div style={styles.card}>
-        <h3>Приглашение</h3>
+      {/* INVITE */}
+      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Приглашение</h3>
+            <p className="text-sm text-gray-600">
+              Отправь ссылку партнёру, чтобы он присоединился к комнате.
+            </p>
+          </div>
 
-        <div style={styles.inviteRow}>
+          <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+            Code: <span className="font-mono">{room.inviteCode}</span>
+          </span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             value={inviteLink}
             readOnly
-            style={styles.input}
+            className="w-full flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 font-mono"
           />
-          <button onClick={handleCopy} style={styles.primaryBtn}>
-            {copied ? "Скопировано!" : "Копировать"}
+          <button
+            onClick={copyInvite}
+            className="rounded-xl px-4 py-2 text-sm font-medium bg-gray-900 text-white hover:bg-black transition"
+          >
+            {copied ? "Скопировано" : "Копировать"}
           </button>
         </div>
 
         {isOwner && (
-          <button
-            onClick={regenerateInviteLink}
-            style={styles.secondaryBtn}
-          >
-            Перегенерировать ссылку
-          </button>
+          <div className="pt-1">
+            <button
+              onClick={onRegenerate}
+              disabled={busyAction === "regen"}
+              className="rounded-xl px-4 py-2 text-sm font-medium border border-gray-200 hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {busyAction === "regen" ? "Генерирую..." : "Перегенерировать ссылку"}
+            </button>
+          </div>
         )}
-      </div>
+      </section>
 
       {/* MEMBERS */}
-      <div style={styles.card}>
-        <h3>Участники</h3>
+      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">Участники</h3>
+          <p className="text-sm text-gray-600">
+            {members.length} {members.length === 1 ? "участник" : "участника/участников"}
+          </p>
+        </div>
 
-        {members.map((member) => {
-          const isMe = member._id === currentUserId;
+        <div className="divide-y divide-gray-100">
+          {members.map((m) => {
+            const isMe = m._id === currentUserId;
+            const isMemberOwner = m._id === room.ownerId;
+            const removing = busyAction === `remove:${m._id}`;
 
-          return (
-            <div key={member._id} style={styles.memberRow}>
-              <div>
-                {member.name}{" "}
-                {isMe && <span style={styles.meTag}>(Вы)</span>}
-                {member._id === room.ownerId && (
-                  <span style={styles.ownerTag}>Owner</span>
+            return (
+              <div key={m._id} className="py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium text-gray-900 truncate">{m.name}</span>
+
+                    {isMe && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                        Вы
+                      </span>
+                    )}
+
+                    {isMemberOwner && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                        Owner
+                      </span>
+                    )}
+                  </div>
+
+                  {/* если захочешь, можно показать id мелким шрифтом */}
+                  {/* <div className="text-xs text-gray-400 font-mono truncate">{m._id}</div> */}
+                </div>
+
+                {isOwner && !isMe && (
+                  <button
+                    onClick={() => onRemoveMember(m._id, m.name)}
+                    disabled={removing}
+                    className="rounded-xl px-3 py-1.5 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {removing ? "Удаляю..." : "Удалить"}
+                  </button>
                 )}
               </div>
-
-              {isOwner && !isMe && (
-                <button
-                  onClick={() => removeMember(member._id)}
-                  style={styles.dangerBtnSmall}
-                >
-                  Удалить
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* DANGER ZONE */}
-      <div style={{ ...styles.card, border: "1px solid #ffcccc" }}>
-        <h3 style={{ color: "#d32f2f" }}>Danger Zone</h3>
+      <section className="bg-white rounded-2xl border border-red-200 shadow-sm p-5 space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
+          <p className="text-sm text-gray-600">
+            Эти действия необратимы. Будь аккуратнее.
+          </p>
+        </div>
 
-        {!isOwner && (
-          <button onClick={leaveRoom} style={styles.dangerBtn}>
-            Покинуть комнату
+        {!isOwner ? (
+          <button
+            onClick={onLeave}
+            disabled={busyAction === "leave"}
+            className="w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {busyAction === "leave" ? "Выходим..." : "Покинуть комнату"}
+          </button>
+        ) : (
+          <button
+            onClick={onDelete}
+            disabled={busyAction === "delete"}
+            className="w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {busyAction === "delete" ? "Удаляю..." : "Удалить комнату"}
           </button>
         )}
-
-        {isOwner && (
-          <button onClick={deleteRoom} style={styles.dangerBtn}>
-            Удалить комнату
-          </button>
-        )}
-      </div>
+      </section>
     </div>
   );
-};
-
-const styles = {
-  wrapper: {
-    maxWidth: "700px",
-    margin: "40px auto",
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "24px",
-  },
-
-  backBtn: {
-    alignSelf: "flex-start",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-  },
-
-  card: {
-    padding: "20px",
-    borderRadius: "12px",
-    background: "#f9f9f9",
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "16px",
-  },
-
-  inviteRow: {
-    display: "flex",
-    gap: "12px",
-  },
-
-  input: {
-    flex: 1,
-    padding: "8px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-  },
-
-  memberRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "8px 0",
-    borderBottom: "1px solid #eee",
-  },
-
-  meTag: {
-    color: "#888",
-    fontSize: "12px",
-  },
-
-  ownerTag: {
-    marginLeft: "8px",
-    fontSize: "12px",
-    background: "#e3f2fd",
-    padding: "2px 6px",
-    borderRadius: "6px",
-  },
-
-  primaryBtn: {
-    padding: "8px 12px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#2e7d32",
-    color: "white",
-    cursor: "pointer",
-  },
-
-  secondaryBtn: {
-    padding: "8px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    background: "white",
-    cursor: "pointer",
-  },
-
-  dangerBtn: {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#d32f2f",
-    color: "white",
-    cursor: "pointer",
-  },
-
-  dangerBtnSmall: {
-    padding: "6px 10px",
-    borderRadius: "6px",
-    border: "none",
-    background: "#e53935",
-    color: "white",
-    cursor: "pointer",
-  },
 };
