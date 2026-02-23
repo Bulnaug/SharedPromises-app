@@ -13,6 +13,9 @@ import Landing from "./pages/Landing";
 import RoomsPage from "./pages/RoomsPage";
 import Dashboard from "./pages/Dashboard";
 
+// ✅ Layout
+import { AppLayout } from "./layouts/AppLayout";
+
 export default function App() {
   const { isLoaded, isSignedIn } = useAuth();
 
@@ -50,14 +53,20 @@ export default function App() {
 
             <Route path="/join/:inviteCode" element={<JoinRoom />} />
 
-            <Route path="/rooms" element={<RoomsPage />} />
+            {/* ✅ Глобальные страницы с AppSidebar */}
+            <Route element={<AppLayout />}>
+              <Route path="/rooms" element={<RoomsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              {/* если у тебя появится /rooms/new — добавишь сюда */}
+            </Route>
+
+            {/* 🏠 Страницы комнаты — без AppLayout */}
             <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
             <Route path="/rooms/:roomId" element={<Dashboard />} />
             <Route
               path="/rooms/:roomId/settings"
               element={<RoomSettingsRoute />}
             />
-            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="*" element={<Navigate to="/rooms" />} />
           </Routes>
