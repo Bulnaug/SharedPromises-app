@@ -4,7 +4,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 type Props = {
   back: () => void;
-  roomId: Id<"rooms"> | undefined;
+  roomId: Id<"rooms">; // ✅ лучше обязательный
 };
 
 export const RoomSettingsPage = ({ back, roomId }: Props) => {
@@ -16,22 +16,23 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
     removeMember,
     leaveRoom,
     deleteRoom,
-    isLoading, // ✅
-  } = useRoom(roomId); // ⚠️ убедись, что roomId реально подхватывается
+    isLoading,
+  } = useRoom(roomId);
 
   const [copied, setCopied] = useState(false);
   const [busyAction, setBusyAction] = useState<
     null | "regen" | `remove:${string}` | "leave" | "delete"
   >(null);
 
+  // ✅ НЕ hook — безопасно
+  const inviteLink = room
+    ? `${window.location.origin}/join/${room.inviteCode}`
+    : "";
+
   if (isLoading) return null; // или skeleton
   if (!room || !currentUserId) return null;
 
-  const isOwner = room.ownerId === currentUserId; // ✅ один раз
-
-  const inviteLink = useMemo(() => {
-    return `${window.location.origin}/join/${room.inviteCode}`;
-  }, [room.inviteCode]);
+  const isOwner = room.ownerId === currentUserId;
 
   const copyInvite = async () => {
     try {
@@ -59,7 +60,9 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
   };
 
   const onRemoveMember = async (userId: Id<"users">, name?: string) => {
-    const ok = confirm(`Удалить участника${name ? ` "${name}"` : ""} из комнаты?`);
+    const ok = confirm(
+      `Удалить участника${name ? ` "${name}"` : ""} из комнаты?`
+    );
     if (!ok) return;
 
     setBusyAction(`remove:${userId}`);

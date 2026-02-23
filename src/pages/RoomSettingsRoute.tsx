@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
 import type { Id } from "../../convex/_generated/dataModel";
 import { RoomSettingsPage } from "./RoomSettings";
 
@@ -6,12 +6,14 @@ export default function RoomSettingsRoute() {
   const navigate = useNavigate();
   const { roomId } = useParams();
 
-  // roomId из URL — строка. Convex Id в runtime тоже строка, так что безопасно cast’им.
-  const convexRoomId = roomId as Id<"rooms"> | undefined;
+  // Если roomId отсутствует — уходим (можно на /rooms)
+  if (!roomId) {
+    return <Navigate to="/rooms" replace />;
+  }
 
   return (
     <RoomSettingsPage
-      roomId={convexRoomId}
+      roomId={roomId as Id<"rooms">}
       back={() => navigate(-1)}
     />
   );
