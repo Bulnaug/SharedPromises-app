@@ -252,7 +252,7 @@ export const joinByCode = mutation({
     if (room.memberIds.includes(user!._id)) return room._id;
 
     // ограничение: owner + 1 участник
-    if (room.memberIds.length >= 1) {
+    if (room.memberIds.length >= 2) {
       throw new Error("Room already has two members");
     }
 

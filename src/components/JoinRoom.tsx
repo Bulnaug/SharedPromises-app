@@ -1,26 +1,29 @@
 import React from "react";
 import { useParams, Navigate } from "react-router-dom";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export default function JoinRoom() {
-  const { roomId } = useParams<{ roomId: string }>();
+  const { inviteCode } = useParams<{ inviteCode: string }>();
 
-  const me = useQuery(api.users.getMe);
-  const joinRoom = useMutation(api.rooms.inviteToRoom);
+  const joinByCode = useMutation(api.rooms.joinByCode);
 
-  const [joined, setJoined] = React.useState(false);
+  const [roomId, setRoomId] = React.useState<Id<"rooms"> | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!roomId || !me || joined) return;
+    if (!inviteCode) {
+      setError("Invite code отсутствует в ссылке.");
+      return;
+    }
+    if (roomId || error) return;
 
-    joinRoom({ roomId: roomId as Id<"rooms"> })
-      .then(() => setJoined(true))
-      .catch((e) => setError(e.message));
-  }, [roomId, me, joined, joinRoom]);
+    joinByCode({ inviteCode })
+      .then((id) => setRoomId(id))
+      .catch((e) => setError(e?.message ?? "Не удалось присоединиться"));
+  }, [inviteCode, roomId, error, joinByCode]);
 
   return (
     <>
@@ -31,24 +34,13 @@ export default function JoinRoom() {
       </SignedOut>
 
       <SignedIn>
-        {error && (
-          <div className="p-6 text-red-500 text-center">
-            {error}
-          </div>
+        {error && <div className="p-6 text-red-500 text-center">{error}</div>}
+
+        {!error && !roomId && (
+          <div className="p-6 text-center">Joining room…</div>
         )}
 
-        {!joined && (
-          <div className="p-6 text-center">
-            Joining room…
-          </div>
-        )}
-
-        {joined && (
-          <Navigate
-            to={`/rooms/${roomId}`}
-            replace
-          />
-        )}
+        {roomId && <Navigate to={`/rooms/${roomId}`} replace />}
       </SignedIn>
     </>
   );
