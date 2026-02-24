@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "SharedPromises"
+  },
+  "nav": {
+    "rooms": "Комнаты",
+    "newWish": "Новая хотелка",
+    "settings": "Настройки",
+    "profile": "Профиль"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+    "navigation": {
+    "back": "назад"
+  }
+}

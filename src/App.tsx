@@ -7,6 +7,9 @@ import RoomSettingsRoute from "./pages/RoomSettingsRoute";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
+import { useLanguageSwipe } from "./hooks/useLanguageSwipe";
+import { LanguageSwiper } from "./components/LanguageSwiper";
+
 
 // Страницы
 import Landing from "./pages/Landing";
@@ -34,7 +37,11 @@ export default function App() {
     getOrCreateMe();
   }, [isLoaded, isSignedIn, me, getOrCreateMe]);
 
+  useLanguageSwipe();
+
   return (
+    <>
+    <LanguageSwiper className="md:max-w-[220px]" size="sm" />
     <BrowserRouter>
       {/* Не залогиненные */}
       <SignedOut>
@@ -73,5 +80,6 @@ export default function App() {
         )}
       </SignedIn>
     </BrowserRouter>
+    </>
   );
 }

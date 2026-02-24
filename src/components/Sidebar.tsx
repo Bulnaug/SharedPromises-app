@@ -1,5 +1,6 @@
 import { Link, useMatch } from "react-router-dom";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useTranslation } from "react-i18next";
 
 export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
   const isAddWishPage = useMatch("/rooms/:roomId/new");
@@ -7,6 +8,8 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
 
   const backHref = `/rooms/${roomId}`;
   const addHref = `/rooms/${roomId}/new`;
+
+  const { t } = useTranslation();
 
   return (
     <aside
@@ -47,7 +50,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
             "
           >
             <span className="md:hidden text-lg leading-none">←</span>
-            <span className="hidden md:inline text-sm font-medium">← Назад</span>
+            <span className="hidden md:inline text-sm font-medium">← {t("back")}</span>
           </Link>
         ) : (
           <Link
