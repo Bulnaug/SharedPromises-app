@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useRoom } from "../hooks/useRoom";
-import { Sidebar } from "../components/Sidebar";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useTranslation } from "react-i18next";
 
@@ -103,7 +102,6 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar roomId={room._id} />
       <main className="
         flex-1
         px-6

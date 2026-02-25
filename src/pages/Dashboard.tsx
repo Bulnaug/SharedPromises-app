@@ -1,6 +1,5 @@
 import { useParams, Navigate } from "react-router-dom";
 import type { Id } from "../../convex/_generated/dataModel";
-import { Sidebar } from "../components/Sidebar";
 import { UserWishes } from "../components/UserWishes";
 import { ProgressBar } from "../components/ProgressBar";
 import { calcProgress } from "../features/wishes/utils/progress";
@@ -43,7 +42,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar roomId={room._id} />
 
       <main className="
         flex-1

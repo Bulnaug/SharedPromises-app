@@ -1,18 +1,17 @@
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AddWishPage from "./pages/AddWishPage";
 import JoinRoom from "./components/JoinRoom";
 import ProfilePage from "./pages/ProfilPage";
 import RoomSettingsRoute from "./pages/RoomSettingsRoute";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
-import LanguageSwitcher from "./components/LanguageSwitcher";
 
-// Страницы
+// Pages
 import Landing from "./pages/Landing";
 import RoomsPage from "./pages/RoomsPage";
 import Dashboard from "./pages/Dashboard";
+import AddWishPage from "./pages/AddWishPage";
 
 // ✅ Layout
 import { AppLayout } from "./layouts/AppLayout";
@@ -37,7 +36,6 @@ export default function App() {
 
   return (
     <>
-      <LanguageSwitcher />
       <BrowserRouter>
         <SignedOut>
           <Routes>
@@ -51,18 +49,15 @@ export default function App() {
           {me && (
             <Routes>
               <Route path="/" element={<Navigate to="/rooms" />} />
-
               <Route path="/join/:inviteCode" element={<JoinRoom />} />
               <Route path="/rooms" element={<RoomsPage />} />
 
-              {/* ✅ сюда лучше класть LanguageSwiper (внутрь layout) */}
               <Route element={<AppLayout />}>
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/rooms/:roomId" element={<Dashboard />} />
+                <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
+                <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
               </Route>
-
-              <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
-              <Route path="/rooms/:roomId" element={<Dashboard />} />
-              <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
 
               <Route path="*" element={<Navigate to="/rooms" />} />
             </Routes>
