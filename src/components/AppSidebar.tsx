@@ -260,7 +260,7 @@ function SidebarLink({ to, icon, label, active }: any) {
   );
 }
 
-function IconLink({ to, icon, label, active }: any) {
+function IconLink({ to, icon, active }: any) {
   return (
     <Link
       to={to}
