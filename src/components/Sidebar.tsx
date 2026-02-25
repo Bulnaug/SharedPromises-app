@@ -50,7 +50,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
             "
           >
             <span className="md:hidden text-lg leading-none">←</span>
-            <span className="hidden md:inline text-sm font-medium">← {t("back")}</span>
+            <span className="hidden md:inline text-sm font-medium">← {t("navigation.back")}</span>
           </Link>
         ) : (
           <Link

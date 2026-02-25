@@ -9,6 +9,7 @@ import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
 import { useLanguageSwipe } from "./hooks/useLanguageSwipe";
 import { LanguageSwiper } from "./components/LanguageSwiper";
+import { useEdgeLanguageSwipe } from "./hooks/useEdgeLanguageSwipe";
 
 
 // Страницы
@@ -27,6 +28,8 @@ export default function App() {
 
   const createdRef = useRef(false);
 
+  useEdgeLanguageSwipe({ edgePx: 28, minDx: 90 });
+
   useEffect(() => {
     if (!isLoaded) return;
     if (!isSignedIn) return;
@@ -41,7 +44,7 @@ export default function App() {
 
   return (
     <>
-    <LanguageSwiper className="md:max-w-[220px]" size="sm" />
+    <LanguageSwiper className="md:max-w-[220px] hidden" size="sm" />
     <BrowserRouter>
       {/* Не залогиненные */}
       <SignedOut>
