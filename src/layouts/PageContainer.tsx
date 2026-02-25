@@ -49,8 +49,10 @@ export function PageContainer({
           innerClassName,
         ].join(" ")}
       >
-        <LanguageSwitcher />
-        <ThemeToggle />
+        <div className="flex items-center justify-between gap-4">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
         {children}
       </main>
     </div>

@@ -24,7 +24,7 @@ export function AppLayout() {
               space-y-8
             "
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-4">
               <LanguageSwitcher />
               <ThemeToggle />
             </div>

@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-4 justify-between">
+    <div className="flex items-center gap-4">
       {/* DE Flag */}
       <div className="relative">
         <img
