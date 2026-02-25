@@ -4,7 +4,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { useTranslation } from "react-i18next";
 
 type Props = {
-  back: () => void;
+  back: () => void; // можно оставить, даже если не используешь
   roomId: Id<"rooms">;
 };
 
@@ -27,13 +27,13 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
   const { t } = useTranslation();
 
-  // ✅ НЕ hook — безопасно
+  // безопасно (не hook)
   const inviteLink = room
     ? `${window.location.origin}/join/${room.inviteCode}`
     : "";
 
-  if (isLoading) return null; // или skeleton
-  if (!room || !currentUserId) return null;
+  if (isLoading) return <LoadingBlock />;
+  if (!room || !currentUserId) return <EmptyBlock title={t("roomNotFound") ?? "Room not found"} />;
 
   const isOwner = room.ownerId === currentUserId;
 
@@ -49,9 +49,7 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
   const onRegenerate = async () => {
     if (!isOwner) return;
-    const ok = confirm(
-      t("generateInviteLink")
-    );
+    const ok = confirm(t("generateInviteLink"));
     if (!ok) return;
 
     setBusyAction("regen");
@@ -64,7 +62,7 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
   const onRemoveMember = async (userId: Id<"users">, name?: string) => {
     const ok = confirm(
-      `${t("removeMember")} ${name ? ` "${name}"` : ""}  ${t("fromRoom")}`
+      `${t("removeMember")}${name ? ` "${name}"` : ""} ${t("fromRoom")}`
     );
     if (!ok) return;
 
@@ -101,31 +99,21 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <main className="
-        flex-1
-        px-6
-        py-8
-        max-w-4xl
-        mx-auto
-        space-y-8
-      ">
-
-      <div className="space-y-1">
-        <h2 className="text-2xl font-semibold text-gray-900">{t("roomSettings")}</h2>
-        <p className="text-sm text-gray-600">
-          {t("roomSettingsDesc")}
-        </p>
-      </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <header className="space-y-1">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
+          {t("roomSettings")}
+        </h1>
+        <p className="text-sm text-gray-600">{t("roomSettingsDesc")}</p>
+      </header>
 
       {/* INVITE */}
-      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{t("invite")}</h3>
-            <p className="text-sm text-gray-600">
-              {t("inviteDesc")}
-            </p>
+            <h2 className="text-base font-semibold text-gray-900">{t("invite")}</h2>
+            <p className="text-sm text-gray-600">{t("inviteDesc")}</p>
           </div>
 
           <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700">
@@ -161,11 +149,12 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
       </section>
 
       {/* MEMBERS */}
-      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t("members")}</h3>
+          <h2 className="text-base font-semibold text-gray-900">{t("members")}</h2>
           <p className="text-sm text-gray-600">
-            {members.length} {members.length === 1 ? "участник" : "участника/участников"}
+            {members.length}{" "}
+            {members.length === 1 ? t("memberOne") : t("memberMany")}
           </p>
         </div>
 
@@ -179,7 +168,9 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
               <div key={m._id} className="py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-gray-900 truncate">{m.name}</span>
+                    <span className="font-medium text-gray-900 truncate">
+                      {m.name}
+                    </span>
 
                     {isMe && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
@@ -193,9 +184,6 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
                       </span>
                     )}
                   </div>
-
-                  {/* если захочешь, можно показать id мелким шрифтом */}
-                  {/* <div className="text-xs text-gray-400 font-mono truncate">{m._id}</div> */}
                 </div>
 
                 {isOwner && !isMe && (
@@ -214,12 +202,10 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
       </section>
 
       {/* DANGER ZONE */}
-      <section className="bg-white rounded-2xl border border-red-200 shadow-sm p-5 space-y-4">
+      <section className="bg-white rounded-2xl shadow-sm border border-red-200 p-5 md:p-6 space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
-          <p className="text-sm text-gray-600">
-            {t("dangerZoneDesc")}
-          </p>
+          <h2 className="text-base font-semibold text-red-700">Danger Zone</h2>
+          <p className="text-sm text-gray-600">{t("dangerZoneDesc")}</p>
         </div>
 
         {!isOwner ? (
@@ -228,7 +214,7 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
             disabled={busyAction === "leave"}
             className="w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {busyAction === "leave" ? t("leavingAction") :  t("leave")}
+            {busyAction === "leave" ? t("leavingAction") : t("leave")}
           </button>
         ) : (
           <button
@@ -240,7 +226,34 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
           </button>
         )}
       </section>
-      </main>
     </div>
   );
 };
+
+/* ---------------------------
+   Tiny UI helpers
+--------------------------- */
+
+function LoadingBlock() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="h-4 w-44 bg-gray-100 rounded mb-4" />
+      <div className="space-y-2">
+        <div className="h-3 w-full bg-gray-100 rounded" />
+        <div className="h-3 w-5/6 bg-gray-100 rounded" />
+        <div className="h-3 w-2/3 bg-gray-100 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function EmptyBlock({ title }: { title: string }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+      <div className="text-gray-900 font-semibold">{title}</div>
+      <div className="text-sm text-gray-500 mt-1">
+        Room not found.
+      </div>
+    </div>
+  );
+}

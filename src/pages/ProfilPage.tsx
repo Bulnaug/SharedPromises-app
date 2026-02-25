@@ -8,7 +8,6 @@ export default function ProfilePage() {
   const me = useQuery(api.users.getMe);
   const updateName = useMutation(api.users.updateMyName);
   const { user } = useUser();
-
   const { t } = useTranslation();
 
   const [name, setName] = React.useState("");
@@ -20,8 +19,8 @@ export default function ProfilePage() {
     if (me?.name) setName(me.name);
   }, [me?.name]);
 
-  if (me === undefined) return <div>Loading…</div>;
-  if (!me) return <div>Not authenticated</div>;
+  if (me === undefined) return <LoadingBlock />;
+  if (!me) return <EmptyBlock title={t("notAuthenticated") ?? "Not authenticated"} />;
 
   const trimmed = name.trim();
   const original = (me.name ?? "").trim();
@@ -48,24 +47,22 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">
+      <header className="space-y-1">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
           {t("myProfile")}
         </h1>
-        <p className="text-sm text-gray-600">
-          {t("myProfileDesc")}
-        </p>
-      </div>
+        <p className="text-sm text-gray-600">{t("myProfileDesc")}</p>
+      </header>
 
       {/* Account card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
         <div className="flex items-center gap-4">
           <img
             src={user?.imageUrl}
             alt="avatar"
-            className="w-16 h-16 rounded-full ring-1 ring-gray-200"
+            className="w-14 h-14 md:w-16 md:h-16 rounded-full ring-1 ring-gray-200"
           />
 
           <div className="min-w-0">
@@ -76,33 +73,24 @@ export default function ProfilePage() {
               {user?.primaryEmailAddress?.emailAddress ?? ""}
             </div>
           </div>
-
-          {/* <div className="ml-auto">
-            <a
-              href="https://accounts.clerk.com/user"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium underline underline-offset-4"
-            >
-              Сменить фото
-            </a>
-          </div> */}
         </div>
       </section>
 
       {/* Display name card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-4">
-        <div className="flex items-center justify-between">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-4">
+        <div className="flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-gray-900">
             {t("userName")}
           </h2>
 
-          {status === "saved" && (
-            <span className="text-sm text-green-600">{t("saved")}</span>
-          )}
-          {status === "error" && (
-            <span className="text-sm text-red-600">{t("error")}</span>
-          )}
+          <div className="shrink-0">
+            {status === "saved" && (
+              <span className="text-sm text-green-600">{t("saved")}</span>
+            )}
+            {status === "error" && (
+              <span className="text-sm text-red-600">{t("error")}</span>
+            )}
+          </div>
         </div>
 
         <input
@@ -154,15 +142,13 @@ export default function ProfilePage() {
       </section>
 
       {/* Logout card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-        <div className="flex items-center justify-between">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
               {t("session")}
             </h2>
-            <p className="text-sm text-gray-600">
-              {t("signOutDesc")}
-            </p>
+            <p className="text-sm text-gray-600">{t("signOutDesc")}</p>
           </div>
 
           <SignOutButton>
@@ -172,6 +158,32 @@ export default function ProfilePage() {
           </SignOutButton>
         </div>
       </section>
+    </div>
+  );
+}
+
+/* ---------------------------
+   Tiny UI helpers (same style)
+--------------------------- */
+
+function LoadingBlock() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="h-4 w-40 bg-gray-100 rounded mb-4" />
+      <div className="space-y-2">
+        <div className="h-3 w-full bg-gray-100 rounded" />
+        <div className="h-3 w-5/6 bg-gray-100 rounded" />
+        <div className="h-3 w-2/3 bg-gray-100 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function EmptyBlock({ title }: { title: string }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+      <div className="text-gray-900 font-semibold">{title}</div>
+      <div className="text-sm text-gray-500 mt-1">Not authenticated</div>
     </div>
   );
 }

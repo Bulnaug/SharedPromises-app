@@ -8,30 +8,34 @@ import { useTranslation } from "react-i18next";
 
 export default function AddWishPage() {
   const { roomId } = useParams<{ roomId: string }>();
-
   const { t } = useTranslation();
 
   if (!roomId) return <Navigate to="/rooms" replace />;
 
   const convexRoomId = roomId as Id<"rooms">;
-
   const wishes = useWishes(convexRoomId);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <main className="flex-1 px-6 py-8">
-        <div className="max-w-xl mx-auto space-y-8">
-          <AddWishForm {...wishes} />
-            <h2 className="text-sm font-semibold text-gray-600">
-              {t("yourWishes")}
-            </h2>
-          <WishList {...wishes} />
-        </div>
-      </main>
+    <div className="space-y-8">
+      {/* Форма */}
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+        <AddWishForm {...wishes} />
+      </section>
 
-      {wishes.feedback && (
-        <FeedbackToast text={wishes.feedback.text} />
-      )}
+      {/* Заголовок списка */}
+      <div className="px-1">
+        <h2 className="text-sm font-semibold text-gray-600">
+          {t("yourWishes")}
+        </h2>
+      </div>
+
+      {/* Список */}
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+        <WishList {...wishes} />
+      </section>
+
+      {/* Toast */}
+      {wishes.feedback && <FeedbackToast text={wishes.feedback.text} />}
     </div>
   );
 }
