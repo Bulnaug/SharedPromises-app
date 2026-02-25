@@ -7,6 +7,8 @@ import { calcProgress } from "../features/wishes/utils/progress";
 import { useDashboard } from "../hooks/useDashboard";
 import { Tracker } from "../features/tracker/components/Tracker";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
+
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -14,6 +16,8 @@ export default function Dashboard() {
   const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
 
   const convexRoomId = roomId ? (roomId as Id<"rooms">) : null;
+
+  const { t } = useTranslation();
 
   // ✅ Хуки — ВСЕГДА ПЕРВЫМИ
   const { data } = useDashboard(convexRoomId);
@@ -74,7 +78,7 @@ export default function Dashboard() {
         ">
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-medium text-gray-500">
-              Календарь активности
+              {t("activityCalendar")}
             </h2>
           </div>
 
@@ -86,7 +90,7 @@ export default function Dashboard() {
           {/* Общий прогресс */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Общий прогресс сегодня</span>
+              <span className="text-gray-600">{t("fullProgress")}</span>
               <span className="font-semibold text-gray-900">
                 {totalProgress}%
               </span>

@@ -3,5 +3,8 @@
   "myRooms": "Мои комнаты",
   "add": "Добавить",
   "roomSettings": "Параметры комнаты",
-  "myProfile": "Мой профиль"
+  "myProfile": "Мой профиль",
+
+  "activityCalendar": "Календарь активности",
+  "fullProgress": "Общий прогресс сегодня"
 }
