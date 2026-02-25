@@ -1,8 +1,11 @@
 import { Link, useMatch, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar() {
   const isRoomsPage = useMatch("/rooms");
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   return (
     <aside
@@ -31,8 +34,8 @@ export function AppSidebar() {
         {/* Универсальная верхняя кнопка */}
         <button
         onClick={() => navigate(-1)}
-        aria-label="Назад"
-        title="Назад"
+        aria-label={t("back")}
+        title={t("back")}
         className="
             block rounded-xl
             bg-green-500 text-white
@@ -44,19 +47,19 @@ export function AppSidebar() {
         >
         <span className="md:hidden text-lg leading-none">←</span>
         <span className="hidden md:inline text-sm font-medium">
-            ← Назад
+            ← {t("back")}
         </span>
         </button>
 
         {/* Навигация */}
         <nav className="space-y-1">
-          <SidebarLink to="/rooms" icon="🏠" label="Мои комнаты" active={!!isRoomsPage} />
+          <SidebarLink to="/rooms" icon="🏠" label={t("myRooms")} active={!!isRoomsPage} />
         </nav>
       </div>
 
       {/* ───────── Низ ───────── */}
         <div className="mt-auto p-3 md:p-6 border-t border-gray-100">
-            <SidebarLink to="/profile" icon="👤" label="Мой профиль" />
+            <SidebarLink to="/profile" icon="👤" label={t("myProfile")} />
         </div>
     </aside>
   );
