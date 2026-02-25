@@ -29,18 +29,26 @@ export default function Dashboard() {
   const totalProgress = calcProgress(allWishes);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-900 text-center">
+      <header className="
+        rounded-2xl border px-5 py-4 shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      ">
+        <h1 className="text-xl md:text-2xl font-semibold text-center text-slate-900 dark:text-slate-100">
           {room.name}
         </h1>
       </header>
 
       {/* Tracker + progress */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-5">
+      <section className="
+        rounded-2xl border p-5 md:p-6 space-y-5 shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      ">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-gray-500">
+          <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {t("activityCalendar")}
           </h2>
         </div>
@@ -51,8 +59,12 @@ export default function Dashboard() {
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">{t("fullProgress")}</span>
-            <span className="font-semibold text-gray-900">{totalProgress}%</span>
+            <span className="text-slate-600 dark:text-slate-300">
+              {t("fullProgress")}
+            </span>
+            <span className="font-semibold text-slate-900 dark:text-slate-100">
+              {totalProgress}%
+            </span>
           </div>
 
           <ProgressBar value={totalProgress} />
@@ -85,7 +97,7 @@ export default function Dashboard() {
 
 function LoadingBlock() {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white dark:bg-gray-950 dark:border-gray-800 rounded-2xl shadow-sm border border-gray-100 p-6">
       <div className="h-4 w-40 bg-gray-100 rounded mb-4" />
       <div className="space-y-2">
         <div className="h-3 w-full bg-gray-100 rounded" />
@@ -98,7 +110,7 @@ function LoadingBlock() {
 
 function EmptyBlock({ title }: { title: string }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+    <div className="bg-white dark:bg-gray-950 dark:border-gray-800 rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
       <div className="text-gray-900 font-semibold">{title}</div>
       <div className="text-sm text-gray-500 mt-1">Room not found.</div>
     </div>

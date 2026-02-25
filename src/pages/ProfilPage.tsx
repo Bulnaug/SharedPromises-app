@@ -50,26 +50,42 @@ export default function ProfilePage() {
     <div className="space-y-8">
       {/* Header */}
       <header className="space-y-1">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-slate-100">
           {t("myProfile")}
         </h1>
-        <p className="text-sm text-gray-600">{t("myProfileDesc")}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          {t("myProfileDesc")}
+        </p>
       </header>
 
       {/* Account card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+      <section
+        className="
+          rounded-2xl border p-5 md:p-6 space-y-4 shadow-sm
+          bg-white border-gray-100
+          focus-within:ring-2 focus-within:ring-emerald-400/30 focus-within:ring-offset-2
+          focus-within:ring-offset-gray-50
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+          dark:focus-within:ring-emerald-400/25
+          dark:focus-within:ring-offset-slate-900
+        "
+      >
         <div className="flex items-center gap-4">
           <img
             src={user?.imageUrl}
             alt="avatar"
-            className="w-14 h-14 md:w-16 md:h-16 rounded-full ring-1 ring-gray-200"
+            className="
+              w-14 h-14 md:w-16 md:h-16 rounded-full
+              ring-1 ring-gray-200
+              dark:ring-slate-700/60
+            "
           />
 
           <div className="min-w-0">
-            <div className="font-medium text-gray-900 truncate">
+            <div className="font-medium text-slate-900 dark:text-slate-100 truncate">
               {me.name || "Без имени"}
             </div>
-            <div className="text-sm text-gray-600 truncate">
+            <div className="text-sm text-slate-600 dark:text-slate-400 truncate">
               {user?.primaryEmailAddress?.emailAddress ?? ""}
             </div>
           </div>
@@ -77,18 +93,43 @@ export default function ProfilePage() {
       </section>
 
       {/* Display name card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-4">
+      <section
+        className="
+          rounded-2xl border p-5 md:p-6 space-y-4 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-gray-900">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
             {t("userName")}
           </h2>
 
           <div className="shrink-0">
             {status === "saved" && (
-              <span className="text-sm text-green-600">{t("saved")}</span>
+              <span
+                className="
+                  inline-flex items-center rounded-full px-2.5 py-1
+                  text-xs font-medium
+                  bg-emerald-50 text-emerald-700
+                  dark:bg-emerald-500/15 dark:text-emerald-300
+                "
+              >
+                {t("saved")}
+              </span>
             )}
+
             {status === "error" && (
-              <span className="text-sm text-red-600">{t("error")}</span>
+              <span
+                className="
+                  inline-flex items-center rounded-full px-2.5 py-1
+                  text-xs font-medium
+                  bg-red-50 text-red-700
+                  dark:bg-red-500/15 dark:text-red-300
+                "
+              >
+                {t("error")}
+              </span>
             )}
           </div>
         </div>
@@ -102,18 +143,27 @@ export default function ProfilePage() {
           }}
           placeholder={t("addName")}
           className="
-            w-full
-            rounded-xl
-            border border-gray-300
-            px-3 py-2
-            focus:outline-none
-            focus:ring-2
-            focus:ring-black/10
+            w-full rounded-xl border px-3 py-2 text-sm
+            border-gray-300 bg-white text-slate-900
+            placeholder:text-slate-400
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50
+            focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50
+            dark:border-slate-700/60 dark:bg-slate-900/30 dark:text-slate-100
+            dark:placeholder:text-slate-400
+            dark:focus-visible:ring-offset-slate-900
           "
         />
 
         {status === "error" && errorText && (
-          <div className="text-sm text-red-600">{errorText}</div>
+          <div
+            className="
+              text-sm rounded-xl px-3 py-2
+              bg-red-50 text-red-700
+              dark:bg-red-500/10 dark:text-red-300
+            "
+          >
+            {errorText}
+          </div>
         )}
 
         <div className="flex items-center gap-3">
@@ -121,10 +171,12 @@ export default function ProfilePage() {
             onClick={onSave}
             disabled={!canSave}
             className={[
-              "px-4 py-2 rounded-xl text-sm font-medium transition",
+              "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60 focus-visible:ring-offset-2",
+              "focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-slate-900",
               canSave
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed",
+                ? "bg-emerald-500 text-white hover:bg-emerald-600 dark:hover:bg-emerald-400"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-slate-700/40 dark:text-slate-400",
             ].join(" ")}
           >
             {saving ? t("saveAction") : t("save")}
@@ -133,7 +185,14 @@ export default function ProfilePage() {
           {isDirty && !saving && (
             <button
               onClick={() => setName(me.name ?? "")}
-              className="px-3 py-2 rounded-xl text-sm border border-gray-300 hover:bg-gray-50"
+              className="
+                inline-flex items-center justify-center
+                rounded-xl px-3 py-2 text-sm font-medium transition
+                border border-gray-300 hover:bg-gray-50
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-2
+                focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-slate-900
+                dark:border-slate-700/60 dark:text-slate-100 dark:hover:bg-slate-700/30
+              "
             >
               {t("reset")}
             </button>
@@ -142,17 +201,34 @@ export default function ProfilePage() {
       </section>
 
       {/* Logout card */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+      <section
+        className="
+          rounded-2xl border p-5 md:p-6 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
               {t("session")}
             </h2>
-            <p className="text-sm text-gray-600">{t("signOutDesc")}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t("signOutDesc")}
+            </p>
           </div>
 
           <SignOutButton>
-            <button className="text-sm font-medium text-red-600 underline underline-offset-4">
+            <button
+              className="
+                text-sm font-medium
+                text-red-600 underline underline-offset-4
+                hover:text-red-700
+                dark:text-red-300 dark:hover:text-red-200
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:ring-offset-2
+                focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-slate-900
+              "
+            >
               {t("signOut")}
             </button>
           </SignOutButton>
@@ -162,18 +238,22 @@ export default function ProfilePage() {
   );
 }
 
-/* ---------------------------
-   Tiny UI helpers (same style)
---------------------------- */
+/* --------------------------- Tiny UI helpers --------------------------- */
 
 function LoadingBlock() {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <div className="h-4 w-40 bg-gray-100 rounded mb-4" />
+    <div
+      className="
+        rounded-2xl border p-6 shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      "
+    >
+      <div className="h-4 w-40 rounded mb-4 bg-gray-100 dark:bg-slate-700/60" />
       <div className="space-y-2">
-        <div className="h-3 w-full bg-gray-100 rounded" />
-        <div className="h-3 w-5/6 bg-gray-100 rounded" />
-        <div className="h-3 w-2/3 bg-gray-100 rounded" />
+        <div className="h-3 w-full rounded bg-gray-100 dark:bg-slate-700/60" />
+        <div className="h-3 w-5/6 rounded bg-gray-100 dark:bg-slate-700/60" />
+        <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-slate-700/60" />
       </div>
     </div>
   );
@@ -181,9 +261,17 @@ function LoadingBlock() {
 
 function EmptyBlock({ title }: { title: string }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
-      <div className="text-gray-900 font-semibold">{title}</div>
-      <div className="text-sm text-gray-500 mt-1">Not authenticated</div>
+    <div
+      className="
+        rounded-2xl border p-6 text-center shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      "
+    >
+      <div className="font-semibold text-slate-900 dark:text-slate-100">{title}</div>
+      <div className="text-sm mt-1 text-slate-500 dark:text-slate-400">
+        Not authenticated
+      </div>
     </div>
   );
 }

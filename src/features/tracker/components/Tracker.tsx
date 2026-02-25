@@ -26,7 +26,6 @@ type Day = {
 };
 
 function startOfCalendarGrid(month: dayjs.Dayjs) {
-  // Пн - первый день недели
   const first = month.startOf("month");
   const dow = first.day(); // 0=Вс ... 6=Сб
   const mondayIndex = (dow + 6) % 7; // Пн=0 ... Вс=6
@@ -108,7 +107,11 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
         <div className="w-[260px] sm:w-[280px] flex items-center justify-between">
           <button
             type="button"
-            className="h-9 w-9 text-gray-900 grid place-items-center"
+            className="
+              h-9 w-9 grid place-items-center rounded-xl transition
+              text-slate-900 hover:bg-gray-100
+              dark:text-slate-100 dark:hover:bg-slate-800/60
+            "
             onClick={() => setMonthCursor((m) => m.subtract(1, "month"))}
             aria-label={t("prevMonth")}
             title={t("prevMonth")}
@@ -116,13 +119,19 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
             ←
           </button>
 
-          <div className="text-sm font-semibold text-gray-900">
-            {monthCursor.locale(i18n.language?.startsWith("de") ? "de" : "ru").format("MMMM YYYY")}
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {monthCursor
+              .locale(i18n.language?.startsWith("de") ? "de" : "ru")
+              .format("MMMM YYYY")}
           </div>
 
           <button
             type="button"
-            className="h-9 w-9 text-gray-900 grid place-items-center"
+            className="
+              h-9 w-9 grid place-items-center rounded-xl transition
+              text-slate-900 hover:bg-gray-100
+              dark:text-slate-100 dark:hover:bg-slate-800/60
+            "
             onClick={() => setMonthCursor((m) => m.add(1, "month"))}
             aria-label={t("nextMonth")}
             title={t("nextMonth")}
@@ -140,7 +149,7 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
             {weekDays.map((wd) => (
               <div
                 key={wd}
-                className="text-[10px] text-gray-400 text-center select-none leading-none pb-1"
+                className="text-[10px] text-slate-400 dark:text-slate-500 text-center select-none leading-none pb-1"
               >
                 {wd}
               </div>
@@ -149,59 +158,57 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
             {days.map((day) => {
               const relevant = getRelevantWishes(day.date);
               const total = relevant.length;
-              const completed = relevant.filter((w) =>
-                w.completedDates.includes(day.date)
-              ).length;
+              const completed = relevant.filter((w) => w.completedDates.includes(day.date)).length;
 
               const isOutOfMonth = !day.isInMonth;
               const isDisabled = day.isFuture || day.isBeforeStart;
 
-              // БАЗА: простая “точка”
-              let cellBg = "bg-gray-100";
-              let textMain = "text-gray-900";
+              // Base (calm)
+              let cellBg = "bg-gray-100 dark:bg-slate-700/40";
+              let textMain = "text-slate-900 dark:text-slate-100";
 
-              // раскраска по прогрессу
+              // Progress coloring
               if (total > 0 && completed === total) {
-                cellBg = "bg-green-500";
-                textMain = "text-white";
+                cellBg = "bg-emerald-500 dark:bg-emerald-400";
+                textMain = "text-white dark:text-slate-900";
               } else if (completed > 0) {
-                cellBg = "bg-yellow-400";
-                textMain = "text-gray-900";
+                cellBg = "bg-amber-400 dark:bg-amber-400";
+                textMain = "text-slate-900";
               }
 
-              // вне месяца: максимально тихо и без интерактива
+              // Out of month: keep the grid calm (same size, very subtle)
               if (isOutOfMonth) {
                 return (
                   <div
                     key={day.key}
-                    className="h-6 w-6 rounded-full bg-gray-50"
+                    className="h-6 w-6 rounded-full bg-gray-50 dark:bg-slate-900/30"
                     aria-hidden="true"
                   />
                 );
               }
 
-              const disabled = isDisabled;
-              const fade = disabled ? "opacity-30" : "opacity-100";
-              const hover = !disabled ? "hover:brightness-95 active:scale-95" : "cursor-not-allowed";
+              const fade = isDisabled ? "opacity-35" : "opacity-100";
+              const hover = !isDisabled
+                ? "hover:brightness-95 active:scale-95"
+                : "cursor-not-allowed";
 
-              // today — тонкий кружок
-              const todayRing = day.isToday ? "ring-1 ring-black/20" : "";
+              const todayRing = day.isToday
+                ? "ring-1 ring-black/20 dark:ring-slate-200/20"
+                : "";
 
               return (
                 <button
                   key={day.key}
                   type="button"
-                  disabled={disabled}
-                  onClick={() => !disabled && setSelectedDayKey(day.key)}
+                  disabled={isDisabled}
+                  onClick={() => !isDisabled && setSelectedDayKey(day.key)}
                   className={[
-                    "h-6 w-6 sm:h-6 sm:w-6",
-                    "rounded-full",
-                    "grid place-items-center",
-                    "transition",
+                    "h-6 w-6 rounded-full grid place-items-center transition",
                     cellBg,
                     todayRing,
                     fade,
                     hover,
+                    !isDisabled ? "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/35" : "",
                   ].join(" ")}
                   aria-label={day.date}
                   title={day.date}
@@ -217,7 +224,7 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
       </div>
 
       {streak > 0 && (
-        <div className="text-center font-semibold text-green-600 mb-5 mt-5">
+        <div className="text-center font-semibold text-emerald-600 dark:text-emerald-300 mb-5 mt-5">
           🔥 {streak} {streak === 1 ? "день" : "дня"} подряд с 100% выполнением!
         </div>
       )}

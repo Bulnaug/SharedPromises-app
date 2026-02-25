@@ -24,24 +24,26 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* =========================
-          MOBILE TOP BAR (< md)
-      ========================== */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200">
+      {/* ========================= MOBILE TOP BAR ========================= */}
+      <header
+        className="
+          md:hidden sticky top-0 z-50
+          bg-white border-b border-gray-200
+          dark:bg-slate-900/90 dark:border-slate-800
+          backdrop-blur
+        "
+      >
         <div className="px-3 py-2 flex items-center gap-2">
-          {/* Logo */}
-          <div className="text-lg font-semibold text-gray-900 shrink-0">
-            S<span className="text-green-500">P</span>
+          <div className="text-lg font-semibold text-slate-900 dark:text-slate-100 shrink-0">
+            S<span className="text-emerald-500">P</span>
           </div>
 
-          {/* Main action */}
           <div className="flex-1 flex">
             <div className="w-max">
               <TopActionButtonMobile action={topAction} />
             </div>
           </div>
 
-          {/* Nav icons */}
           <nav className="flex items-center gap-1 shrink-0">
             <IconLink
               to="/rooms"
@@ -69,31 +71,22 @@ export function AppSidebar() {
         </div>
       </header>
 
-      {/* =========================
-          DESKTOP SIDEBAR (md+)
-      ========================== */}
+      {/* ========================= DESKTOP SIDEBAR ========================= */}
       <aside
         className="
-          hidden md:flex
-          sticky top-0
-          h-dvh
-          bg-white
-          border-r border-gray-200
-          flex-col
-          w-64
-          shrink-0
+          hidden md:flex sticky top-0 h-dvh shrink-0 flex-col
+          md:w-56 lg:w-64
+          bg-white border-r border-gray-200
+          dark:bg-slate-900 dark:border-slate-800
         "
       >
         <div className="p-6 space-y-6">
-          {/* Logo */}
-          <div className="text-xl font-semibold text-gray-900">
-            Shared<span className="text-green-500">Promises</span>
+          <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+            Shared<span className="text-emerald-500">Promises</span>
           </div>
 
-          {/* Top action */}
           <TopActionButtonDesktop action={topAction} />
 
-          {/* Nav */}
           <nav className="space-y-1">
             <SidebarLink
               to="/rooms"
@@ -113,7 +106,7 @@ export function AppSidebar() {
           </nav>
         </div>
 
-        <div className="mt-auto p-6 border-t border-gray-100">
+        <div className="mt-auto p-6 border-t border-gray-100 dark:border-slate-800">
           <SidebarLink
             to="/profile"
             icon="👤"
@@ -126,9 +119,7 @@ export function AppSidebar() {
   );
 }
 
-/* =========================
-   Top action helpers
-========================= */
+/* ========================= TOP ACTION ========================= */
 
 type TopAction =
   | {
@@ -153,14 +144,7 @@ function getTopAction({
   roomId,
   t,
   navigate,
-}: {
-  inRoom: boolean;
-  isAddWishPage: boolean;
-  isRoomSettingsPage: boolean;
-  roomId?: string;
-  t: (key: string) => string;
-  navigate: ReturnType<typeof useNavigate>;
-}): TopAction {
+}: any): TopAction {
   if (!inRoom) {
     return {
       kind: "button",
@@ -193,16 +177,14 @@ function getTopAction({
   };
 }
 
-/* =========================
-   Mobile top action button
-========================= */
+/* ========================= BUTTONS ========================= */
 
 function TopActionButtonMobile({ action }: { action: TopAction }) {
   const className = `
-    w-full
-    rounded-full
-    bg-green-500 text-white
-    hover:bg-green-600 transition
+    w-full rounded-full
+    bg-emerald-500 text-white
+    hover:bg-emerald-600 transition
+    dark:hover:bg-emerald-400
     px-4 py-2
     text-sm font-medium
     flex items-center justify-center gap-2
@@ -210,92 +192,66 @@ function TopActionButtonMobile({ action }: { action: TopAction }) {
 
   const content = (
     <>
-      <span className="text-base leading-none">{action.mobileIcon}</span>
+      <span>{action.mobileIcon}</span>
       <span className="truncate">{action.label}</span>
     </>
   );
 
-  if (action.kind === "link") {
-    return (
-      <Link to={action.to} aria-label={action.label} title={action.label} className={className}>
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <button onClick={action.onClick} aria-label={action.label} title={action.label} className={className}>
+  return action.kind === "link" ? (
+    <Link to={action.to} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <button onClick={action.onClick} className={className}>
       {content}
     </button>
   );
 }
-
-/* =========================
-   Desktop top action button
-========================= */
 
 function TopActionButtonDesktop({ action }: { action: TopAction }) {
   const className = `
-    block rounded-xl
-    bg-green-500 text-white
-    hover:bg-green-600 transition
-    px-4 py-2.5
-    text-center
-    w-full
+    block w-full rounded-xl
+    bg-emerald-500 text-white
+    hover:bg-emerald-600 transition
+    dark:hover:bg-emerald-400
+    px-4 py-2.5 text-center text-sm font-medium
   `;
 
   const content = (
-    <span className="text-sm font-medium">
+    <>
       {action.desktopPrefix ? `${action.desktopPrefix} ` : ""}
       {action.label}
-    </span>
+    </>
   );
 
-  if (action.kind === "link") {
-    return (
-      <Link to={action.to} aria-label={action.label} title={action.label} className={className}>
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <button onClick={action.onClick} aria-label={action.label} title={action.label} className={className}>
+  return action.kind === "link" ? (
+    <Link to={action.to} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <button onClick={action.onClick} className={className}>
       {content}
     </button>
   );
 }
 
-/* =========================
-   Links
-========================= */
+/* ========================= LINKS ========================= */
 
-function SidebarLink({
-  to,
-  icon,
-  label,
-  active,
-}: {
-  to: string;
-  icon: string;
-  label: string;
-  active?: boolean;
-}) {
+function SidebarLink({ to, icon, label, active }: any) {
   return (
     <Link
       to={to}
-      title={label}
-      aria-label={label}
       className={[
         `
         flex items-center gap-3
-        rounded-xl
-        text-sm font-medium
-        hover:bg-gray-100 transition
-        px-4 py-2.5
-        justify-start
+        rounded-xl px-4 py-2.5
+        text-sm font-medium transition
+        hover:bg-gray-100
+        dark:hover:bg-slate-800/60
         `,
-        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+        active
+          ? "bg-gray-100 text-slate-900 dark:bg-slate-800/70 dark:text-slate-100"
+          : "text-slate-700 dark:text-slate-300",
       ].join(" ")}
     >
       <span className="text-lg">{icon}</span>
@@ -304,30 +260,19 @@ function SidebarLink({
   );
 }
 
-function IconLink({
-  to,
-  icon,
-  label,
-  active,
-}: {
-  to: string;
-  icon: string;
-  label: string;
-  active?: boolean;
-}) {
+function IconLink({ to, icon, label, active }: any) {
   return (
     <Link
       to={to}
-      title={label}
-      aria-label={label}
       className={[
         `
-        w-10 h-10
-        rounded-xl
+        w-10 h-10 rounded-xl
         flex items-center justify-center
-        hover:bg-gray-100 transition
+        transition
+        hover:bg-gray-100
+        dark:hover:bg-slate-800/60
         `,
-        active ? "bg-gray-100" : "",
+        active ? "bg-gray-100 dark:bg-slate-800/70" : "",
       ].join(" ")}
     >
       <span className="text-lg leading-none">{icon}</span>

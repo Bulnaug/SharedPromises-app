@@ -13,34 +13,57 @@ export function AddWishForm({
   addWish,
   loading,
 }: Props) {
-
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-      <label className="text-sm font-medium text-gray-700">
-        <h1 className="text-xl font-semibold text-gray-900">
-              {t("newWish")}
-            </h1>
-            <p className="text-sm text-gray-500">
-               {t("newWishDesc")} 💚
-            </p>
-      </label>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          {t("newWish")}
+        </h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          {t("newWishDesc")} 💚
+        </p>
+      </div>
 
+      {/* Input */}
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder={t("wishExample")}
-        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         autoFocus
+        className="
+          w-full rounded-xl border px-4 py-2.5 text-sm
+          border-gray-200 bg-gray-50 text-slate-900
+          placeholder:text-slate-400
+          focus:outline-none
+          focus-visible:ring-2 focus-visible:ring-emerald-400/40
+          focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50
+          dark:border-slate-700/60 dark:bg-slate-900/30 dark:text-slate-100
+          dark:placeholder:text-slate-400
+          dark:focus-visible:ring-emerald-400/30
+          dark:focus-visible:ring-offset-slate-900
+        "
       />
 
+      {/* Button */}
       <button
         onClick={addWish}
         disabled={loading || !title.trim()}
-        className="w-full bg-green-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-green-600 disabled:opacity-50 transition"
+        className="
+          w-full inline-flex items-center justify-center
+          rounded-xl py-2.5 text-sm font-medium transition
+          bg-emerald-500 text-white hover:bg-emerald-600
+          disabled:opacity-50 disabled:cursor-not-allowed
+          dark:hover:bg-emerald-400
+          focus-visible:outline-none
+          focus-visible:ring-2 focus-visible:ring-emerald-400/60
+          focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50
+          dark:focus-visible:ring-offset-slate-900
+        "
       >
-        {t("add")}
+        {loading ? t("addAction") : t("add")}
       </button>
     </div>
   );

@@ -26,26 +26,28 @@ export function WishItem({ wish, onToggle }: Props) {
       transition={{ duration: 0.25 }}
       className="
         flex items-center justify-between
-        px-4 py-3
-        rounded-xl
-        border border-gray-100
-        hover:bg-gray-50
+        px-4 py-3 rounded-xl border
+        bg-white border-gray-100 hover:bg-gray-50
+        dark:bg-slate-900/30 dark:border-slate-700/60 dark:hover:bg-slate-700/30
       "
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <motion.span
           layout
-          animate={{
-            opacity: doneToday ? 0.5 : 1,
-          }}
+          animate={{ opacity: doneToday ? 0.55 : 1 }}
           transition={{ duration: 0.2 }}
-          className={doneToday ? "line-through" : ""}
+          className={`
+            truncate
+            text-slate-900 dark:text-slate-100
+            ${doneToday ? "line-through" : ""}
+          `}
+          title={wish.title}
         >
-            {wish.title}
+          {wish.title}
         </motion.span>
 
         {streak > 0 && (
-          <span className="text-xs text-orange-500 font-medium">
+          <span className="text-xs font-medium text-amber-600 dark:text-amber-400 whitespace-nowrap">
             🔥 {streak}
           </span>
         )}
@@ -57,15 +59,20 @@ export function WishItem({ wish, onToggle }: Props) {
         onClick={() => onToggle(wish)}
         title={doneToday ? t("cancel") : t("done")}
         className={`
-            inline-flex items-center justify-center
-            w-9 h-9
-            rounded-full
-            transition
-            ${
+          inline-flex items-center justify-center
+          w-9 h-9 rounded-full transition
+          border border-transparent
+          ${
             doneToday
-                ? "bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-600"
-                : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-700"
-            }
+              ? `
+                bg-emerald-50 text-emerald-700 hover:bg-red-50 hover:text-red-600
+                dark:bg-emerald-500/15 dark:text-emerald-300 dark:hover:bg-red-500/15 dark:hover:text-red-300
+              `
+              : `
+                bg-gray-100 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700
+                dark:bg-slate-700/40 dark:text-slate-200 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-300
+              `
+          }
         `}
       >
         <AnimatePresence mode="wait">

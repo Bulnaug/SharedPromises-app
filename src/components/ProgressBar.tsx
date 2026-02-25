@@ -1,21 +1,25 @@
 export function ProgressBar({ value }: { value: number }) {
   const color =
     value === 100
-      ? "bg-green-500"
+      ? "bg-emerald-500 dark:bg-emerald-400"
       : value >= 50
-      ? "bg-green-400"
+      ? "bg-emerald-400 dark:bg-emerald-400"
       : value > 0
-      ? "bg-yellow-400"
-      : "bg-gray-300";
+      ? "bg-amber-400 dark:bg-amber-400"
+      : "bg-slate-300 dark:bg-slate-600";
 
   return (
-    <div className="w-full h-2.5 rounded-full bg-gray-200 overflow-hidden">
+    <div
+      className="
+        w-full h-2.5 rounded-full overflow-hidden
+        bg-gray-200
+        dark:bg-slate-700/60
+      "
+    >
       <div
         className={`
-          h-full
+          h-full transition-all duration-500
           ${color}
-          transition-all
-          duration-500
         `}
         style={{ width: `${value}%` }}
       />

@@ -17,20 +17,36 @@ export default function AddWishPage() {
 
   return (
     <div className="space-y-8">
-      {/* Форма */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+      {/* Form */}
+      <section
+        className="
+          rounded-2xl border p-5 md:p-6 shadow-sm
+          bg-white border-gray-100
+          focus-within:ring-2 focus-within:ring-emerald-400/25 focus-within:ring-offset-2
+          focus-within:ring-offset-gray-50
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+          dark:focus-within:ring-emerald-400/20
+          dark:focus-within:ring-offset-slate-900
+        "
+      >
         <AddWishForm {...wishes} />
       </section>
 
-      {/* Заголовок списка */}
+      {/* List header */}
       <div className="px-1">
-        <h2 className="text-sm font-semibold text-gray-600">
+        <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-400">
           {t("yourWishes")}
         </h2>
       </div>
 
-      {/* Список */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+      {/* List */}
+      <section
+        className="
+          rounded-2xl border p-3 md:p-4 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
         <WishList {...wishes} />
       </section>
 

@@ -16,7 +16,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
       className="
         sticky top-0
         h-dvh
-        bg-white
+        bg-white dark:bg-gray-950 dark:border-gray-800
         border-r border-gray-200
         flex flex-col
         w-16 md:w-64

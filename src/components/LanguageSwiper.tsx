@@ -86,7 +86,7 @@ export function LanguageSwiper({
       >
         {/* бегунок */}
         <div
-          className="absolute top-1 bottom-1 w-1/2 rounded-full bg-white shadow-sm transition-[left] duration-200"
+          className="absolute top-1 bottom-1 w-1/2 rounded-full bg-white dark:bg-gray-950 dark:border-gray-800 shadow-sm transition-[left] duration-200"
           style={{ left: `${leftPercent}%` }}
         />
 

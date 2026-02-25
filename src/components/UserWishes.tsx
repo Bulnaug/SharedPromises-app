@@ -19,25 +19,22 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
   const [wishes, setWishes] = useState(initialWishes);
 
   const progress = calcProgress(wishes);
-
   const { toggleWish } = useToggleWish(setWishes);
-
   const { t } = useTranslation();
 
   return (
-    <section className="
-      bg-white
-      rounded-2xl
-      shadow-sm
-      border border-gray-100
-      p-6
-      space-y-5
-    ">
+    <section
+      className="
+        rounded-2xl border p-6 space-y-5 shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      "
+    >
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-900">
-          {t("wishesHeader")} {name}
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          {t('wishesHeader')} {name}
         </h2>
-        <span className="text-sm font-medium text-gray-500">
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
           {progress}%
         </span>
       </div>
@@ -45,8 +42,8 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
       <ProgressBar value={progress} />
 
       {wishes.length === 0 && (
-        <p className="text-sm text-gray-400 italic">
-          {t("emptyWishes")} ✨
+        <p className="text-sm italic text-slate-500 dark:text-slate-400">
+          {t('emptyWishes')} ✨
         </p>
       )}
 

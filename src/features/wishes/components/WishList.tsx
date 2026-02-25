@@ -24,61 +24,89 @@ export function WishList({
   cancelEdit,
   removeWish,
 }: Props) {
-  
-const { t } = useTranslation();
+  const { t } = useTranslation();
 
   if (wishes.length === 0) {
     return (
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         {t("emptyWishes")} ✨
       </p>
     );
   }
 
-  
-
   return (
     <ul className="space-y-2">
-      {wishes.map((wish) => (
-        <li
-          key={wish._id}
-          className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-4"
-        >
-          {editingId === wish._id ? (
-            <input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => saveEdit(wish)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") saveEdit(wish);
-                if (e.key === "Escape") cancelEdit();
-              }}
-              className="flex-1 text-sm text-gray-800 bg-transparent outline-none"
-            />
-          ) : (
-            <p className="text-sm text-gray-800 flex-1">
-              {wish.title}
-            </p>
-          )}
+      {wishes.map((wish) => {
+        const isEditing = editingId === wish._id;
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => startEdit(wish)}
-              className="text-xs text-gray-500 hover:text-gray-700"
-            >
-              <Pencil size={14} />
-            </button>
+        return (
+          <li
+            key={wish._id}
+            className="
+              group
+              rounded-xl border p-4 flex items-center justify-between gap-4
+              bg-white border-gray-100
+              hover:bg-gray-50 transition
+              dark:bg-slate-900/30 dark:border-slate-700/60
+              dark:hover:bg-slate-700/30
+            "
+          >
+            {isEditing ? (
+              <input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => saveEdit(wish)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveEdit(wish);
+                  if (e.key === "Escape") cancelEdit();
+                }}
+                className="
+                  flex-1 text-sm
+                  rounded-lg px-2 py-1
+                  border border-transparent
+                  bg-transparent
+                  text-slate-900 dark:text-slate-100
+                  outline-none
+                  focus-visible:border-emerald-400/40
+                  focus-visible:ring-2 focus-visible:ring-emerald-400/25
+                "
+              />
+            ) : (
+              <p className="text-sm text-slate-900 dark:text-slate-100 flex-1">
+                {wish.title}
+              </p>
+            )}
 
-            <button
-              onClick={() => removeWish(wish._id)}
-              className="text-xs text-red-500 hover:text-red-600"
-            >
-              {t("remove")}
-            </button>
-          </div>
-        </li>
-      ))}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => startEdit(wish)}
+                className="
+                  inline-flex items-center justify-center
+                  rounded-lg p-2 transition
+                  text-slate-500 hover:text-slate-700 hover:bg-gray-100
+                  dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-700/40
+                "
+                aria-label={t("edit") ?? "Edit"}
+                title={t("edit") ?? "Edit"}
+              >
+                <Pencil size={14} />
+              </button>
+
+              <button
+                onClick={() => removeWish(wish._id)}
+                className="
+                  text-xs font-medium transition
+                  text-red-600 hover:text-red-700
+                  dark:text-red-300 dark:hover:text-red-200
+                "
+              >
+                {t("remove")}
+              </button>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

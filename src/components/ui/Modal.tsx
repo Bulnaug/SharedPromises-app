@@ -15,7 +15,7 @@ export function Modal({ children, onClose }: ModalProps) {
       />
 
       {/* content */}
-      <div className="relative z-10 w-full max-w-sm rounded-xl bg-white p-4 shadow-lg">
+      <div className="relative z-10 w-full max-w-sm rounded-xl bg-white dark:bg-gray-950 dark:border-gray-800 p-4 shadow-lg">
         {children}
       </div>
     </div>

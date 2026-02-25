@@ -65,5 +65,8 @@
   "prevMonth": "Vorheriger Monat",
   "nextMonth": "Nächster Monat",
   "weekDayShort": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
-  "openAnotherRoom" : "Versuch mal, ein anderes Zimmer zu öffnen."
+  "openAnotherRoom" : "Versuch mal, ein anderes Zimmer zu öffnen.",
+
+  "memberMany": "Teilnehmer",
+  "memberMan": "Teilnehmer"
 }
