@@ -1,6 +1,7 @@
 import type { Wish } from "../types";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { Pencil } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   wishes: Wish[];
@@ -23,13 +24,18 @@ export function WishList({
   cancelEdit,
   removeWish,
 }: Props) {
+  
+const { t } = useTranslation();
+
   if (wishes.length === 0) {
     return (
       <p className="text-sm text-gray-400">
-        Пока желаний нет ✨
+        {t("emptyWishes")} ✨
       </p>
     );
   }
+
+  
 
   return (
     <ul className="space-y-2">

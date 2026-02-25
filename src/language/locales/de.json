@@ -9,5 +9,13 @@
   "fullProgress": "Gesamtfortschritt heute",
 
   "sigin": "Einloggen",
-  "signup": "Registrieren"
+  "signup": "Registrieren",
+
+  "newWish": "Neues Wunsch",
+  "newWishDesc": "Schreib, was du täglich erhalten willst",
+  "yourWishes": "Dass du schon willst",
+  "emptyWishes": "Noch keine Wünsche",
+  "wishExample": "Beispiel: Morgenkaffee",
+  "remove": ""
+
 }

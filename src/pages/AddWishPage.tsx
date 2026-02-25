@@ -5,9 +5,12 @@ import { useWishes } from "../features/wishes/hooks/useWishes";
 import { AddWishForm } from "../features/wishes/components/AddWishForm";
 import { WishList } from "../features/wishes/components/WishList";
 import { FeedbackToast } from "../features/wishes/components/FeedbackToast";
+import { useTranslation } from "react-i18next";
 
 export default function AddWishPage() {
   const { roomId } = useParams<{ roomId: string }>();
+
+  const { t } = useTranslation();
 
   if (!roomId) return <Navigate to="/rooms" replace />;
 
@@ -23,7 +26,7 @@ export default function AddWishPage() {
         <div className="max-w-xl mx-auto space-y-8">
           <AddWishForm {...wishes} />
             <h2 className="text-sm font-semibold text-gray-600">
-              То, что ты уже хочешь
+              {t("yourWishes")}
             </h2>
           <WishList {...wishes} />
         </div>
