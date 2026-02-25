@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import { DayDetailsModal } from "./DayDetailsModal";
 
@@ -35,6 +36,12 @@ function startOfCalendarGrid(month: dayjs.Dayjs) {
 export function Tracker({ startDate, wishes }: TrackerProps) {
   const start = useMemo(() => dayjs(startDate).startOf("day"), [startDate]);
   const [monthCursor, setMonthCursor] = useState(() => dayjs().startOf("month"));
+
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    dayjs.locale(i18n.language?.startsWith("de") ? "de" : "ru");
+  }, [i18n.language]);
 
   const days: Day[] = useMemo(() => {
     const gridStart = startOfCalendarGrid(monthCursor);
@@ -92,7 +99,7 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
     return count;
   }, [wishes, start]);
 
-  const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+  const weekDays = t("weekDayShort", { returnObjects: true }) as string[];
 
   return (
     <>
@@ -103,20 +110,22 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
             type="button"
             className="h-9 w-9 text-gray-900 grid place-items-center"
             onClick={() => setMonthCursor((m) => m.subtract(1, "month"))}
-            aria-label="Предыдущий месяц"
+            aria-label={t("prevMonth")}
+            title={t("prevMonth")}
           >
             ←
           </button>
 
           <div className="text-sm font-semibold text-gray-900">
-            {monthCursor.format("MMMM YYYY")}
+            {monthCursor.locale(i18n.language?.startsWith("de") ? "de" : "ru").format("MMMM YYYY")}
           </div>
 
           <button
             type="button"
             className="h-9 w-9 text-gray-900 grid place-items-center"
             onClick={() => setMonthCursor((m) => m.add(1, "month"))}
-            aria-label="Следующий месяц"
+            aria-label={t("nextMonth")}
+            title={t("nextMonth")}
           >
             →
           </button>

@@ -60,5 +60,9 @@
   "signOut": "Ausloggen",
 
   "cancel": "Aufheben",
-  "done": "Erledigt"
+  "done": "Erledigt",
+
+  "prevMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat",
+  "weekDayShort": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 }
