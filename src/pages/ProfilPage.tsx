@@ -2,11 +2,14 @@ import React from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useUser, SignOutButton } from "@clerk/clerk-react";
+import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
   const me = useQuery(api.users.getMe);
   const updateName = useMutation(api.users.updateMyName);
   const { user } = useUser();
+
+  const { t } = useTranslation();
 
   const [name, setName] = React.useState("");
   const [saving, setSaving] = React.useState(false);
@@ -49,10 +52,10 @@ export default function ProfilePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">
-          Мой профиль
+          {t("myProfile")}
         </h1>
         <p className="text-sm text-gray-600">
-          Управление аккаунтом и отображаемым именем.
+          {t("myProfileDesc")}
         </p>
       </div>
 
@@ -91,14 +94,14 @@ export default function ProfilePage() {
       <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">
-            Отображаемое имя
+            {t("userName")}
           </h2>
 
           {status === "saved" && (
-            <span className="text-sm text-green-600">Сохранено</span>
+            <span className="text-sm text-green-600">{t("saved")}</span>
           )}
           {status === "error" && (
-            <span className="text-sm text-red-600">Ошибка</span>
+            <span className="text-sm text-red-600">{t("error")}</span>
           )}
         </div>
 
@@ -109,7 +112,7 @@ export default function ProfilePage() {
             setStatus("idle");
             setErrorText("");
           }}
-          placeholder="Введите имя"
+          placeholder={t("addName")}
           className="
             w-full
             rounded-xl
@@ -136,7 +139,7 @@ export default function ProfilePage() {
                 : "bg-gray-100 text-gray-400 cursor-not-allowed",
             ].join(" ")}
           >
-            {saving ? "Сохраняю…" : "Сохранить"}
+            {saving ? t("saveAction") : t("save")}
           </button>
 
           {isDirty && !saving && (
@@ -144,7 +147,7 @@ export default function ProfilePage() {
               onClick={() => setName(me.name ?? "")}
               className="px-3 py-2 rounded-xl text-sm border border-gray-300 hover:bg-gray-50"
             >
-              Сбросить
+              {t("reset")}
             </button>
           )}
         </div>
@@ -155,16 +158,16 @@ export default function ProfilePage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
-              Сессия
+              {t("session")}
             </h2>
             <p className="text-sm text-gray-600">
-              Выйти из аккаунта на этом устройстве.
+              {t("signOutDesc")}
             </p>
           </div>
 
           <SignOutButton>
             <button className="text-sm font-medium text-red-600 underline underline-offset-4">
-              Выйти
+              {t("signOut")}
             </button>
           </SignOutButton>
         </div>

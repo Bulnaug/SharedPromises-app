@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useRoom } from "../hooks/useRoom";
 import { Sidebar } from "../components/Sidebar";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   back: () => void;
-  roomId: Id<"rooms">; // ✅ лучше обязательный
+  roomId: Id<"rooms">;
 };
 
-export const RoomSettingsPage = ({ back, roomId }: Props) => {
+export const RoomSettingsPage = ({ roomId }: Props) => {
   const {
     room,
     members,
@@ -24,6 +25,8 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
   const [busyAction, setBusyAction] = useState<
     null | "regen" | `remove:${string}` | "leave" | "delete"
   >(null);
+
+  const { t } = useTranslation();
 
   // ✅ НЕ hook — безопасно
   const inviteLink = room
@@ -41,14 +44,14 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      alert("Не удалось скопировать. Скопируй вручную.");
+      alert(t("copyFailed"));
     }
   };
 
   const onRegenerate = async () => {
     if (!isOwner) return;
     const ok = confirm(
-      "Перегенерировать ссылку приглашения? Старая перестанет работать."
+      t("generateInviteLink")
     );
     if (!ok) return;
 
@@ -62,7 +65,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
 
   const onRemoveMember = async (userId: Id<"users">, name?: string) => {
     const ok = confirm(
-      `Удалить участника${name ? ` "${name}"` : ""} из комнаты?`
+      `${t("removeMember")} ${name ? ` "${name}"` : ""}  ${t("fromRoom")}`
     );
     if (!ok) return;
 
@@ -75,7 +78,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
   };
 
   const onLeave = async () => {
-    const ok = confirm("Точно хочешь покинуть комнату?");
+    const ok = confirm(t("leaveConfirm"));
     if (!ok) return;
 
     setBusyAction("leave");
@@ -87,7 +90,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
   };
 
   const onDelete = async () => {
-    const ok = confirm("Удалить комнату навсегда? Это действие нельзя отменить.");
+    const ok = confirm(t("roomDeleteConfirm"));
     if (!ok) return;
 
     setBusyAction("delete");
@@ -109,17 +112,11 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
         mx-auto
         space-y-8
       ">
-      <button
-        onClick={back}
-        className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-2"
-      >
-        <span aria-hidden>←</span> Назад
-      </button>
 
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold text-gray-900">Параметры комнаты</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("roomSettings")}</h2>
         <p className="text-sm text-gray-600">
-          Управляй приглашением, участниками и безопасными действиями.
+          {t("roomSettingsDesc")}
         </p>
       </div>
 
@@ -127,9 +124,9 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
       <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Приглашение</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("invite")}</h3>
             <p className="text-sm text-gray-600">
-              Отправь ссылку партнёру, чтобы он присоединился к комнате.
+              {t("inviteDesc")}
             </p>
           </div>
 
@@ -148,7 +145,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
             onClick={copyInvite}
             className="rounded-xl px-4 py-2 text-sm font-medium bg-gray-900 text-white hover:bg-black transition"
           >
-            {copied ? "Скопировано" : "Копировать"}
+            {copied ? t("copied") : t("copy")}
           </button>
         </div>
 
@@ -159,7 +156,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
               disabled={busyAction === "regen"}
               className="rounded-xl px-4 py-2 text-sm font-medium border border-gray-200 hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {busyAction === "regen" ? "Генерирую..." : "Перегенерировать ссылку"}
+              {busyAction === "regen" ? t("generate") : t("generateNew")}
             </button>
           </div>
         )}
@@ -168,7 +165,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
       {/* MEMBERS */}
       <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Участники</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t("members")}</h3>
           <p className="text-sm text-gray-600">
             {members.length} {members.length === 1 ? "участник" : "участника/участников"}
           </p>
@@ -188,7 +185,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
 
                     {isMe && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
-                        Вы
+                        {t("you")}
                       </span>
                     )}
 
@@ -209,7 +206,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
                     disabled={removing}
                     className="rounded-xl px-3 py-1.5 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {removing ? "Удаляю..." : "Удалить"}
+                    {removing ? t("removeAction") : t("remove")}
                   </button>
                 )}
               </div>
@@ -223,7 +220,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
         <div>
           <h3 className="text-lg font-semibold text-red-700">Danger Zone</h3>
           <p className="text-sm text-gray-600">
-            Эти действия необратимы. Будь аккуратнее.
+            {t("dangerZoneDesc")}
           </p>
         </div>
 
@@ -233,7 +230,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
             disabled={busyAction === "leave"}
             className="w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {busyAction === "leave" ? "Выходим..." : "Покинуть комнату"}
+            {busyAction === "leave" ? t("leavingAction") :  t("leave")}
           </button>
         ) : (
           <button
@@ -241,7 +238,7 @@ export const RoomSettingsPage = ({ back, roomId }: Props) => {
             disabled={busyAction === "delete"}
             className="w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {busyAction === "delete" ? "Удаляю..." : "Удалить комнату"}
+            {busyAction === "delete" ? t("deleteAction") : t("deleteRoom")}
           </button>
         )}
       </section>

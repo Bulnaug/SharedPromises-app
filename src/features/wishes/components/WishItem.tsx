@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 import { isDoneToday } from "../utils/isDoneToday";
 import { calculateWishStreak } from "../utils/calculateWishStreak";
+import { useTranslation } from "react-i18next";
 
 import type { Wish } from "../types";
 
@@ -13,6 +14,8 @@ type Props = {
 export function WishItem({ wish, onToggle }: Props) {
   const doneToday = isDoneToday(wish.completedDates);
   const streak = calculateWishStreak(wish);
+
+  const { t } = useTranslation();
 
   return (
     <motion.li
@@ -52,7 +55,7 @@ export function WishItem({ wish, onToggle }: Props) {
         layout
         whileTap={{ scale: 0.95 }}
         onClick={() => onToggle(wish)}
-        title={doneToday ? "Недоделано" : "Выполнено"}
+        title={doneToday ? t("cancel") : t("done")}
         className={`
             inline-flex items-center justify-center
             w-9 h-9

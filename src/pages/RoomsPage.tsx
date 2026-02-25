@@ -2,12 +2,15 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function RoomsPage() {
   const navigate = useNavigate();
 
   const rooms = useQuery(api.rooms.getMyRooms);
   const createRoom = useMutation(api.rooms.createRoom);
+
+  const { t } = useTranslation();
 
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +37,7 @@ export default function RoomsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       <main className="max-w-xl mx-auto space-y-6">
         <h1 className="text-2xl font-semibold text-center">
-          Твои комнаты
+          {t("yourRooms")}
         </h1>
 
         {/* Create room */}
@@ -55,7 +58,7 @@ export default function RoomsPage() {
               focus:ring-2
               focus:ring-black
             "
-            placeholder="Название комнаты"
+            placeholder={t("roomName")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -74,14 +77,14 @@ export default function RoomsPage() {
               transition
             "
           >
-            Создать
+            {t("create")}
           </button>
         </form>
 
         {/* Rooms list */}
         {rooms.length === 0 ? (
           <p className="text-center text-sm text-gray-500">
-            You don’t have any rooms yet ✨
+            {t("emptyRooms")} ✨
           </p>
         ) : (
           <ul className="space-y-3">

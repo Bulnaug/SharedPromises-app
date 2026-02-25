@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { WishItem } from "../features/wishes/components/WishItem";
 import { useToggleWish } from "../features/wishes/hooks/useToggleWish";
+import { useTranslation } from "react-i18next";
 
 import type { Wish } from "../features/wishes/types";
 
@@ -21,6 +22,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
 
   const { toggleWish } = useToggleWish(setWishes);
 
+  const { t } = useTranslation();
 
   return (
     <section className="
@@ -33,7 +35,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
     ">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-900">
-          Что делает {name}
+          {t("wishesHeader")} {name}
         </h2>
         <span className="text-sm font-medium text-gray-500">
           {progress}%
@@ -44,7 +46,7 @@ export function UserWishes({ name, wishes: initialWishes }: UserWishesProps) {
 
       {wishes.length === 0 && (
         <p className="text-sm text-gray-400 italic">
-          Пока здесь пусто ✨
+          {t("emptyWishes")} ✨
         </p>
       )}
 

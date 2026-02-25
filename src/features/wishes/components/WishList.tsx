@@ -74,7 +74,7 @@ const { t } = useTranslation();
               onClick={() => removeWish(wish._id)}
               className="text-xs text-red-500 hover:text-red-600"
             >
-              Удалить
+              {t("remove")}
             </button>
           </div>
         </li>
