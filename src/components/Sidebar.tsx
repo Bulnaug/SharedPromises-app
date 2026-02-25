@@ -39,8 +39,8 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
         {isAddWishPage || isRoomSettingsPage ? (
           <Link
             to={backHref}
-            aria-label="Назад"
-            title="Назад"
+            aria-label={t("back")}
+            title={t("back")}
             className="
               block rounded-xl
               bg-green-500 text-white
@@ -50,13 +50,13 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
             "
           >
             <span className="md:hidden text-lg leading-none">←</span>
-            <span className="hidden md:inline text-sm font-medium">← {t("navigation.back")}</span>
+            <span className="hidden md:inline text-sm font-medium">← {t("back")}</span>
           </Link>
         ) : (
           <Link
             to={addHref}
-            aria-label="Добавить хотелку"
-            title="Добавить хотелку"
+            aria-label={t("add")}
+            title={t("add")}
             className="
               block rounded-xl
               bg-green-500 text-white
@@ -67,7 +67,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
           >
             <span className="md:hidden text-lg leading-none">＋</span>
             <span className="hidden md:inline text-sm font-medium">
-              + Хочу ещё
+              + {t("add")}
             </span>
           </Link>
         )}
@@ -75,18 +75,18 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
         {/* Навигация */}
         
         <nav className="space-y-1">
-          <SidebarLink to="/rooms" icon="🏠" label="Мои комнаты" />
+          <SidebarLink to="/rooms" icon="🏠" label={t("myRooms")} />
           <SidebarLink
             to={`/rooms/${roomId}/settings`}
             icon="⚙️"
-            label="Параметры комнаты"
+            label={t("roomSettings")}
           />
         </nav>
       </div>
 
       {/* ───────── Низ ───────── */}
       <div className="mt-auto p-3 md:p-6 border-t border-gray-100">
-        <SidebarLink to="/profile" icon="👤" label="Мой профиль" />
+        <SidebarLink to="/profile" icon="👤" label={t("myProfile")} />
       </div>
     </aside>
   );

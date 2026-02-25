@@ -1,19 +1,7 @@
 {
-  "app": {
-    "name": "SharedPromises"
-  },
-  "nav": {
-    "rooms": "Räume",
-    "newWish": "Neuer Wunsch",
-    "settings": "Einstellungen",
-    "profile": "Profil"
-  },
-  "common": {
-    "save": "Speichern",
-    "cancel": "Abbrechen"
-  },
-
-  "navigation": {
-    "back": "zuruck"
-  }
+  "back": "zurück",
+  "myRooms": "Meine Räume",
+  "add": "Hinzufügen",
+  "roomSettings": "Raumdaten",
+  "myProfile": "Mein Profil"
 }

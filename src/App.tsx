@@ -7,10 +7,7 @@ import RoomSettingsRoute from "./pages/RoomSettingsRoute";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
-import { useLanguageSwipe } from "./hooks/useLanguageSwipe";
-import { LanguageSwiper } from "./components/LanguageSwiper";
-import { useEdgeLanguageSwipe } from "./hooks/useEdgeLanguageSwipe";
-
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 // Страницы
 import Landing from "./pages/Landing";
@@ -28,8 +25,6 @@ export default function App() {
 
   const createdRef = useRef(false);
 
-  useEdgeLanguageSwipe({ edgePx: 28, minDx: 90 });
-
   useEffect(() => {
     if (!isLoaded) return;
     if (!isSignedIn) return;
@@ -40,49 +35,40 @@ export default function App() {
     getOrCreateMe();
   }, [isLoaded, isSignedIn, me, getOrCreateMe]);
 
-  useLanguageSwipe();
-
   return (
     <>
-    <LanguageSwiper className="md:max-w-[220px] hidden" size="sm" />
-    <BrowserRouter>
-      {/* Не залогиненные */}
-      <SignedOut>
-        <Routes>
-          <Route path="*" element={<Landing />} />
-        </Routes>
-      </SignedOut>
-
-      {/* Залогиненные */}
-      <SignedIn>
-        {me === undefined && <div>Loading...</div>}
-
-        {me && (
+      <LanguageSwitcher />
+      <BrowserRouter>
+        <SignedOut>
           <Routes>
-            <Route path="/" element={<Navigate to="/rooms" />} />
-
-            <Route path="/join/:inviteCode" element={<JoinRoom />} />
-            <Route path="/rooms" element={<RoomsPage />} />
-
-            {/* ✅ Глобальные страницы с AppSidebar */}
-            <Route element={<AppLayout />}>
-              <Route path="/profile" element={<ProfilePage />} />
-              {/* если у тебя появится /rooms/new — добавишь сюда */}
-            </Route>
-
-            {/* 🏠 Страницы комнаты — без AppLayout */}
-            <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
-            <Route path="/rooms/:roomId" element={<Dashboard />} />
-            <Route
-              path="/rooms/:roomId/settings"
-              element={<RoomSettingsRoute />}
-            />
-
-            <Route path="*" element={<Navigate to="/rooms" />} />
+            <Route path="*" element={<Landing />} />
           </Routes>
-        )}
-      </SignedIn>
-    </BrowserRouter>
+        </SignedOut>
+
+        <SignedIn>
+          {me === undefined && <div>Loading...</div>}
+
+          {me && (
+            <Routes>
+              <Route path="/" element={<Navigate to="/rooms" />} />
+
+              <Route path="/join/:inviteCode" element={<JoinRoom />} />
+              <Route path="/rooms" element={<RoomsPage />} />
+
+              {/* ✅ сюда лучше класть LanguageSwiper (внутрь layout) */}
+              <Route element={<AppLayout />}>
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+
+              <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
+              <Route path="/rooms/:roomId" element={<Dashboard />} />
+              <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
+
+              <Route path="*" element={<Navigate to="/rooms" />} />
+            </Routes>
+          )}
+        </SignedIn>
+      </BrowserRouter>
     </>
   );
 }

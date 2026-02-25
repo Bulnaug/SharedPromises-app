@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import i18n from "../language/i18n";
+import i18n from "../utils/i18n";
 
 type Options = {
   edgePx?: number;   // зона у левого края, откуда свайп “считается”
