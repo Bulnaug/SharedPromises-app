@@ -6,5 +6,8 @@
   "myProfile": "Mein Profil",
 
   "activityCalendar": "Aktivitätskalender",
-  "fullProgress": "Gesamtfortschritt heute"
+  "fullProgress": "Gesamtfortschritt heute",
+
+  "sigin": "Einloggen",
+  "signup": "Registrieren"
 }

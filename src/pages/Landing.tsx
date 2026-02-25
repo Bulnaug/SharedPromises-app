@@ -1,6 +1,10 @@
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { useTranslation } from "react-i18next";
 
 export default function Landing() {
+
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <div className="text-xl font-semibold text-gray-900">
@@ -21,7 +25,7 @@ export default function Landing() {
               hover:bg-green-600
               transition
             ">
-          Войти
+          {t("sigin")}
         </button>
       </SignInButton>
 
@@ -40,7 +44,7 @@ export default function Landing() {
               hover:bg-gray-50
               transition
             ">
-          Зарегистрироваться
+          {t("signup")}
         </button>
       </SignUpButton>
     </div>
