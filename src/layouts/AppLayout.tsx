@@ -5,7 +5,7 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 export function AppLayout() {
   return (
     <div className="min-h-dvh bg-gray-50 overflow-x-hidden">
-      <div className="flex min-h-dvh">
+      <div className="flex flex-col md:flex-row min-h-dvh">
         <AppSidebar />
 
         <main className="flex-1">
