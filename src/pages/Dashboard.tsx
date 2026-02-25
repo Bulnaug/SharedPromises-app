@@ -7,6 +7,7 @@ import { useDashboard } from "../hooks/useDashboard";
 import { Tracker } from "../features/tracker/components/Tracker";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import Spinner from "../components/Spinner";
 
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -15,12 +16,14 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
 
-  const { data } = useDashboard(convexRoomId);
+  const { data, isLoading } = useDashboard(convexRoomId);
 
   if (!convexRoomId) return <Navigate to="/rooms" replace />;
 
-  if (data === undefined) return <LoadingBlock />;
+  // Самый первый заход: данных ещё не было вообще
+  if (data === undefined) return <Spinner />;
 
+  // Комната не найдена / нет доступа
   if (!data) return <EmptyBlock title="Room not found" />;
 
   const { room, wishesByUser, usersMap } = data;
@@ -29,24 +32,30 @@ export default function Dashboard() {
   const totalProgress = calcProgress(allWishes);
 
   return (
-    <div className="space-y-8 text-slate-900 dark:text-slate-100">
+    <div className="relative space-y-8 text-slate-900 dark:text-slate-100">
+      {isLoading && <TopLoadingOverlay />}
+
       {/* Header */}
-      <header className="
-        rounded-2xl border px-5 py-4 shadow-sm
-        bg-white border-gray-100
-        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
-      ">
+      <header
+        className="
+          rounded-2xl border px-5 py-4 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
         <h1 className="text-xl md:text-2xl font-semibold text-center text-slate-900 dark:text-slate-100">
           {room.name}
         </h1>
       </header>
 
       {/* Tracker + progress */}
-      <section className="
-        rounded-2xl border p-5 md:p-6 space-y-5 shadow-sm
-        bg-white border-gray-100
-        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
-      ">
+      <section
+        className="
+          rounded-2xl border p-5 md:p-6 space-y-5 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {t("activityCalendar")}
@@ -95,14 +104,22 @@ export default function Dashboard() {
    Tiny UI helpers
 --------------------------- */
 
-function LoadingBlock() {
+function TopLoadingOverlay() {
   return (
-    <div className="bg-white dark:bg-gray-950 dark:border-gray-800 rounded-2xl shadow-sm border border-gray-100 p-6">
-      <div className="h-4 w-40 bg-gray-100 rounded mb-4" />
-      <div className="space-y-2">
-        <div className="h-3 w-full bg-gray-100 rounded" />
-        <div className="h-3 w-5/6 bg-gray-100 rounded" />
-        <div className="h-3 w-2/3 bg-gray-100 rounded" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
+      <div
+        className="
+          mx-auto mt-2 w-fit
+          rounded-full
+          bg-white/80 dark:bg-slate-900/60
+          border border-gray-200/60 dark:border-slate-700/60
+          px-3 py-1
+          text-xs
+          text-slate-600 dark:text-slate-300
+          shadow-sm
+        "
+      >
+        Loading…
       </div>
     </div>
   );
@@ -111,8 +128,12 @@ function LoadingBlock() {
 function EmptyBlock({ title }: { title: string }) {
   return (
     <div className="bg-white dark:bg-gray-950 dark:border-gray-800 rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
-      <div className="text-gray-900 font-semibold">{title}</div>
-      <div className="text-sm text-gray-500 mt-1">Room not found.</div>
+      <div className="text-gray-900 dark:text-slate-100 font-semibold">
+        {title}
+      </div>
+      <div className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+        Room not found.
+      </div>
     </div>
   );
 }

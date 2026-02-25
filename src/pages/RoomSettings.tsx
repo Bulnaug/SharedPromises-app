@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRoom } from "../hooks/useRoom";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useTranslation } from "react-i18next";
+import Spinner from "../components/Spinner";
 
 type Props = {
   back: () => void;
@@ -27,11 +28,19 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
   const { t } = useTranslation();
 
-  const inviteLink = room ? `${window.location.origin}/join/${room.inviteCode}` : "";
+  const inviteLink = room
+    ? `${window.location.origin}/join/${room.inviteCode}`
+    : "";
 
-  if (isLoading) return <LoadingBlock />;
-  if (!room || !currentUserId)
+  // ✅ Скелет — только когда это реально первый заход (ещё нет room)
+  if (!room && isLoading) return <Spinner />;
+
+  // ✅ Если загрузка идёт, но room уже есть — НЕ убиваем страницу, покажем overlay
+  const showOverlay = isLoading && !!room;
+
+  if (!room || !currentUserId) {
     return <EmptyBlock title={t("roomNotFound") ?? "Room not found"} />;
+  }
 
   const isOwner = room.ownerId === currentUserId;
 
@@ -59,7 +68,9 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
   };
 
   const onRemoveMember = async (userId: Id<"users">, name?: string) => {
-    const ok = confirm(`${t("removeMember")}${name ? ` "${name}"` : ""} ${t("fromRoom")}`);
+    const ok = confirm(
+      `${t("removeMember")}${name ? ` "${name}"` : ""} ${t("fromRoom")}`
+    );
     if (!ok) return;
 
     setBusyAction(`remove:${userId}`);
@@ -117,7 +128,9 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
     "focus-visible:ring-red-400/60";
 
   return (
-    <div className="space-y-8">
+    <div className="relative space-y-8">
+      {showOverlay && <TopLoadingOverlay />}
+
       {/* Header */}
       <header className="space-y-1">
         <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-slate-100">
@@ -176,10 +189,7 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
               dark:focus-visible:ring-offset-slate-900
             "
           />
-          <button
-            onClick={copyInvite}
-            className={btnPrimary}
-          >
+          <button onClick={copyInvite} className={btnPrimary}>
             {copied ? t("copied") : t("copy")}
           </button>
         </div>
@@ -210,7 +220,8 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
             {t("members")}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            {members.length} {members.length === 1 ? t("memberOne") : t("memberMany")}
+            {members.length}{" "}
+            {members.length === 1 ? t("memberOne") : t("memberMany")}
           </p>
         </div>
 
@@ -221,7 +232,10 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
             const removing = busyAction === `remove:${m._id}`;
 
             return (
-              <div key={m._id} className="py-3 flex items-center justify-between gap-3">
+              <div
+                key={m._id}
+                className="py-3 flex items-center justify-between gap-3"
+              >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
@@ -316,20 +330,22 @@ export const RoomSettingsPage = ({ roomId }: Props) => {
 
 /* --------------------------- Tiny UI helpers --------------------------- */
 
-function LoadingBlock() {
+function TopLoadingOverlay() {
   return (
-    <div
-      className="
-        rounded-2xl border p-6 shadow-sm
-        bg-white border-gray-100
-        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
-      "
-    >
-      <div className="h-4 w-44 rounded mb-4 bg-gray-100 dark:bg-slate-700/60" />
-      <div className="space-y-2">
-        <div className="h-3 w-full rounded bg-gray-100 dark:bg-slate-700/60" />
-        <div className="h-3 w-5/6 rounded bg-gray-100 dark:bg-slate-700/60" />
-        <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-slate-700/60" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
+      <div
+        className="
+          mx-auto mt-2 w-fit
+          rounded-full
+          bg-white/80 dark:bg-slate-900/60
+          border border-gray-200/60 dark:border-slate-700/60
+          px-3 py-1
+          text-xs
+          text-slate-600 dark:text-slate-300
+          shadow-sm
+        "
+      >
+        Loading…
       </div>
     </div>
   );
@@ -344,7 +360,9 @@ function EmptyBlock({ title }: { title: string }) {
         dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
       "
     >
-      <div className="font-semibold text-slate-900 dark:text-slate-100">{title}</div>
+      <div className="font-semibold text-slate-900 dark:text-slate-100">
+        {title}
+      </div>
       <div className="text-sm mt-1 text-slate-500 dark:text-slate-400">
         Room not found.
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PageContainer } from "../layouts/PageContainer";
+import Spinner from "../components/Spinner";
 
 export default function RoomsPage() {
   const navigate = useNavigate();
@@ -16,23 +17,7 @@ export default function RoomsPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (rooms === undefined) {
-    return (
-      <div
-        className="
-          rounded-2xl border p-6 shadow-sm
-          bg-white border-gray-100
-          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
-        "
-      >
-        <div className="h-4 w-44 rounded mb-4 bg-gray-100 dark:bg-slate-700/60" />
-        <div className="space-y-2">
-          <div className="h-3 w-full rounded bg-gray-100 dark:bg-slate-700/60" />
-          <div className="h-3 w-5/6 rounded bg-gray-100 dark:bg-slate-700/60" />
-        </div>
-      </div>
-    );
-  }
+  if (rooms === undefined) return <Spinner />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

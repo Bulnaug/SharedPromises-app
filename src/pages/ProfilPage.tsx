@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useUser, SignOutButton } from "@clerk/clerk-react";
 import { useTranslation } from "react-i18next";
+import Spinner from "../components/Spinner";
 
 export default function ProfilePage() {
   const me = useQuery(api.users.getMe);
@@ -19,7 +20,7 @@ export default function ProfilePage() {
     if (me?.name) setName(me.name);
   }, [me?.name]);
 
-  if (me === undefined) return <LoadingBlock />;
+  if (me === undefined) return <Spinner />;
   if (!me) return <EmptyBlock title={t("notAuthenticated") ?? "Not authenticated"} />;
 
   const trimmed = name.trim();
@@ -239,25 +240,6 @@ export default function ProfilePage() {
 }
 
 /* --------------------------- Tiny UI helpers --------------------------- */
-
-function LoadingBlock() {
-  return (
-    <div
-      className="
-        rounded-2xl border p-6 shadow-sm
-        bg-white border-gray-100
-        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
-      "
-    >
-      <div className="h-4 w-40 rounded mb-4 bg-gray-100 dark:bg-slate-700/60" />
-      <div className="space-y-2">
-        <div className="h-3 w-full rounded bg-gray-100 dark:bg-slate-700/60" />
-        <div className="h-3 w-5/6 rounded bg-gray-100 dark:bg-slate-700/60" />
-        <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-slate-700/60" />
-      </div>
-    </div>
-  );
-}
 
 function EmptyBlock({ title }: { title: string }) {
   return (
