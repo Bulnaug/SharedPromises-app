@@ -4,21 +4,17 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export function AppLayout() {
   return (
-    <div className="flex min-h-dvh bg-gray-50 overflow-x-hidden">
-      <AppSidebar />
+    <div className="min-h-dvh bg-gray-50 overflow-x-hidden">
+      <div className="flex min-h-dvh">
+        <AppSidebar />
 
-      <main
-        className="
-          flex-1
-          px-2
-          py-8
-        "
-      >
-        <div className="max-w-4xl mx-auto space-y-8">
-          <LanguageSwitcher />
-          <Outlet />
-        </div>
-      </main>
+        <main className="flex-1">
+          <div className="mx-auto w-full max-w-4xl px-2 md:px-6 py-6 md:py-10 space-y-8">
+            <LanguageSwitcher />
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

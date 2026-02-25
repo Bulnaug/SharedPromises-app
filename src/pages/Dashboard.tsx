@@ -8,117 +8,99 @@ import { Tracker } from "../features/tracker/components/Tracker";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 
-
 export default function Dashboard() {
   const { roomId } = useParams<{ roomId: string }>();
-
-  const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
-
   const convexRoomId = roomId ? (roomId as Id<"rooms">) : null;
 
   const { t } = useTranslation();
+  const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
 
-  // ✅ Хуки — ВСЕГДА ПЕРВЫМИ
   const { data } = useDashboard(convexRoomId);
 
-  if (!convexRoomId) {
-    return <Navigate to="/rooms" replace />;
-  }
+  if (!convexRoomId) return <Navigate to="/rooms" replace />;
 
-  if (data === undefined) {
-    return <div className="p-6">Loading…</div>;
-  }
+  if (data === undefined) return <LoadingBlock />;
 
-  if (!data) {
-    return <div className="p-6">Room not found</div>;
-  }
+  if (!data) return <EmptyBlock title="Room not found" />;
 
   const { room, wishesByUser, usersMap } = data;
 
-  // Все желания всех пользователей
   const allWishes = Object.values(wishesByUser).flat();
-
   const totalProgress = calcProgress(allWishes);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-
-      <main className="
-        flex-1
-        px-2
-        py-8
-        max-w-4xl
-        mx-auto
-        space-y-8
-      ">
-        <h1 className="
-          text-2xl
-          font-semibold
-          text-center
-          bg-white
-          rounded-2xl
-          py-4
-          shadow-sm
-        ">
+    <div className="space-y-8">
+      {/* Header */}
+      <header className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900 text-center">
           {room.name}
         </h1>
+      </header>
 
-        
+      {/* Tracker + progress */}
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-gray-500">
+            {t("activityCalendar")}
+          </h2>
+        </div>
 
-        {/* === 30-дневный трекер === */}
-        <section className="
-          bg-white
-          rounded-2xl
-          shadow-sm
-          border border-gray-100
-          p-6
-          space-y-5
-        ">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-medium text-gray-500">
-              {t("activityCalendar")}
-            </h2>
+        <div className="overflow-x-auto">
+          <Tracker wishes={allWishes} startDate={startDate} />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">{t("fullProgress")}</span>
+            <span className="font-semibold text-gray-900">{totalProgress}%</span>
           </div>
 
-          {/* Трекер */}
-          <div className="">
-            <Tracker wishes={allWishes} startDate={startDate} />
-          </div>
+          <ProgressBar value={totalProgress} />
+        </div>
+      </section>
 
-          {/* Общий прогресс */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">{t("fullProgress")}</span>
-              <span className="font-semibold text-gray-900">
-                {totalProgress}%
-              </span>
-            </div>
+      {/* User wishes */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {Object.entries(wishesByUser).map(([userId, wishes]) => {
+          const user = usersMap[userId];
+          if (!user) return null;
 
-            <ProgressBar value={totalProgress} />
-          </div>
-        </section>
-        <section className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          gap-6
-        ">
-          {/* === Список желаний пользователей === */}
-          {Object.entries(wishesByUser).map(([userId, wishes]) => {
-            const user = usersMap[userId];
-            if (!user) return null;
+          return (
+            <UserWishes
+              key={userId}
+              name={user.name || "Без имени"}
+              wishes={wishes}
+              userId={userId as Id<"users">}
+            />
+          );
+        })}
+      </section>
+    </div>
+  );
+}
 
-            return (
-              <UserWishes
-                key={userId}
-                name={user.name || "Без имени"}
-                wishes={wishes}
-                userId={userId as Id<"users">} // Приведение строки к Id<"users">
-              />
-            );
-          })}
-        </section>
-      </main>
+/* ---------------------------
+   Tiny UI helpers
+--------------------------- */
+
+function LoadingBlock() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="h-4 w-40 bg-gray-100 rounded mb-4" />
+      <div className="space-y-2">
+        <div className="h-3 w-full bg-gray-100 rounded" />
+        <div className="h-3 w-5/6 bg-gray-100 rounded" />
+        <div className="h-3 w-2/3 bg-gray-100 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function EmptyBlock({ title }: { title: string }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+      <div className="text-gray-900 font-semibold">{title}</div>
+      <div className="text-sm text-gray-500 mt-1">Room not found.</div>
     </div>
   );
 }
