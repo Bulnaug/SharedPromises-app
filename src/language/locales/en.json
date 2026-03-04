@@ -1,0 +1,72 @@
+{
+  "back": "Back",
+  "myRooms": "My rooms",
+  "add": "Add",
+  "roomSettings": "Room settings",
+  "myProfile": "My profile",
+
+  "activityCalendar": "Activity calendar",
+  "fullProgress": "Overall progress today",
+
+  "signin": "Sign in",
+  "signup": "Sign up",
+
+  "newWish": "New wish",
+  "newWishDesc": "Write what you want to receive every day",
+  "yourWishes": "Your wishes",
+  "emptyWishes": "No wishes yet",
+  "wishExample": "Example: Goodnight kiss",
+  "remove": "Remove",
+  "removeAction": "Removing...",
+
+  "wishesHeader": "What your partner does",
+
+  "yourRooms": "Your rooms",
+  "emptyRooms": "No rooms yet.",
+  "roomName": "Room name",
+  "create": "Create",
+
+  "copyFailed": "Failed to copy. Please copy it manually.",
+  "generateInviteLink": "Regenerate invite link? The old one will stop working.",
+  "removeMember": "Remove member",
+  "fromRoom": "from the room?",
+  "leaveConfirm": "Are you sure you want to leave the room?",
+  "roomDeleteConfirm": "Delete the room permanently? This action cannot be undone.",
+  "roomSettingsDesc": "Manage invites, members, and sensitive actions.",
+  "invite": "Invite",
+  "inviteDesc": "Send this link to your partner so they can join the room.",
+  "copy": "Copy",
+  "copied": "Copied",
+  "generate": "Generating...",
+  "generateNew": "Regenerate link",
+  "members": "Members",
+  "you": "You",
+  "dangerZoneDesc": "These actions are irreversible. Be careful.",
+  "leavingAction": "Leaving...",
+  "leave": "Leave room",
+  "deleteAction": "Deleting...",
+  "deleteRoom": "Delete room",
+
+  "myProfileDesc": "Manage your account and display name.",
+  "userName": "Display name",
+  "save": "Save",
+  "saveAction": "Saving...",
+  "saved": "Saved",
+  "error": "Error",
+  "addName": "Enter a name",
+  "reset": "Reset",
+  "session": "Session",
+  "signOutDesc": "Sign out of your account on this device.",
+  "signOut": "Sign out",
+
+  "cancel": "Cancel",
+  "done": "Done",
+
+  "prevMonth": "Previous month",
+  "nextMonth": "Next month",
+  "weekDayShort": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  "openAnotherRoom": "Try opening another room.",
+
+  "memberMany": "Members",
+  "memberOne": "Member"
+}
