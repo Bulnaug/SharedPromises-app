@@ -1,68 +1,93 @@
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+
 import deFlag from "../assets/flags/de.svg";
 import ruFlag from "../assets/flags/ru.svg";
+import enFlag from "../assets/flags/en.svg";
+import uaFlag from "../assets/flags/ua.svg";
+
+const languages = [
+  { code: "de", name: "Deutsch", flag: deFlag },
+  { code: "ru", name: "Русский", flag: ruFlag },
+  { code: "en", name: "English", flag: enFlag },
+  { code: "ua", name: "Українська", flag: uaFlag },
+];
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  const isRu = i18n.language === "ru";
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(isRu ? "de" : "ru");
+  const current = languages.find((l) => l.code === i18n.language) ?? languages[0];
+
+  const changeLang = (lng: string) => {
+    i18n.changeLanguage(lng);
+    setOpen(false);
   };
 
-  return (
-    <div className="flex items-center gap-4">
-      {/* DE Flag */}
-      <div className="relative">
-        <img
-          src={deFlag}
-          alt="German"
-          className={`w-7 h-5 rounded-sm transition-all duration-300
-          ${!isRu ? "scale-110" : "opacity-50"}`}
-        />
-        {!isRu && (
-          <div className="absolute inset-0 rounded-sm blur-xl bg-blue-500/30 animate-pulse -z-10" />
-        )}
-      </div>
+  // закрытие при клике вне
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
 
-      {/* Glass Toggle */}
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      {/* Trigger */}
       <button
-        onClick={toggleLanguage}
+        onClick={() => setOpen((v) => !v)}
         className="
-            relative w-16 h-8 rounded-full
-            backdrop-blur-md
-            transition-all duration-300
-            border
-            shadow-inner
-            bg-gray-200 dark:bg-gray-700
-            border-gray-300/50
-            dark:border-white/20
-        "
+        flex items-center gap-2
+        px-3 py-1.5
+        rounded-lg
+        bg-white/60 dark:bg-slate-800
+        border border-gray-200 dark:border-slate-700
+        hover:bg-gray-100 dark:hover:bg-slate-700
+        transition
+        text-sm
+      "
       >
-        {/* Sliding circle */}
-        <span
-          className={`
-            absolute top-1 left-1 w-6 h-6 rounded-full
-            bg-white/80 backdrop-blur-md
-            shadow-lg
-            transition-all duration-300
-            ${isRu ? "translate-x-8 bg-blue-400" : ""}
-          `}
-        />
+        🌍
+        <img src={current.flag} className="w-5 h-4 rounded-sm" />
       </button>
 
-      {/* RU Flag */}
-      <div className="relative">
-        <img
-          src={ruFlag}
-          alt="Russian"
-          className={`w-7 h-5 rounded-sm transition-all duration-300
-          ${isRu ? "scale-110" : "opacity-50"}`}
-        />
-        {isRu && (
-          <div className="absolute inset-0 rounded-sm blur-md bg-blue-500/40 -z-10" />
-        )}
-      </div>
+      {/* Dropdown */}
+      {open && (
+        <div
+          className="
+          absolute right-0 mt-2 w-44
+          rounded-xl
+          bg-white dark:bg-slate-800
+          border border-gray-200 dark:border-slate-700
+          shadow-lg
+          overflow-hidden
+          z-50
+        "
+        >
+          {languages.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => changeLang(lang.code)}
+              className="
+              flex items-center gap-3
+              w-full px-3 py-2
+              text-sm
+              hover:bg-gray-100 dark:hover:bg-slate-700
+              transition
+            "
+            >
+              <img src={lang.flag} className="w-5 h-4 rounded-sm" />
+              {lang.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
