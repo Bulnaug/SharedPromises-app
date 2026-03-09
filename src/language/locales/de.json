@@ -72,5 +72,8 @@
 
   "roomsSubtitle": "Einen Raum erstellen oder einen bestehenden öffnen",
   "trackerNoActivity": "An diesem Tag hat niemand etwas gemacht",
+  "notDone": "Nicht erledigt",
+  "nothingDone": "An diesem Tag wurde nichts erledigt",
+  "everythingDone": "Alles wurde erledigt",
   "close": "Schließen"
 }

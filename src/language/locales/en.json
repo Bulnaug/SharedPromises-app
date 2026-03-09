@@ -72,5 +72,8 @@
 
   "roomsSubtitle": "Create a room or open an existing one",
   "trackerNoActivity": "No one completed anything on this day",
-  "close": "Close"
+  "close": "Close",
+  "notDone": "Not done",
+  "nothingDone": "Nothing was completed on this day",
+  "everythingDone": "Everything was completed"
 }

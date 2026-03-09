@@ -27,8 +27,8 @@ type Day = {
 
 function startOfCalendarGrid(month: dayjs.Dayjs) {
   const first = month.startOf("month");
-  const dow = first.day(); // 0=Вс ... 6=Сб
-  const mondayIndex = (dow + 6) % 7; // Пн=0 ... Вс=6
+  const dow = first.day();
+  const mondayIndex = (dow + 6) % 7;
   return first.subtract(mondayIndex, "day");
 }
 
@@ -39,7 +39,27 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    dayjs.locale(i18n.language?.startsWith("de") ? "de" : "ru");
+    const lang = i18n.language.split("-")[0];
+    const localeMap: Record<string, string> = {
+      ru: "ru",
+      de: "de",
+      en: "en",
+      ua: "uk",
+    };
+
+    dayjs.locale(localeMap[lang] || "ru");
+  }, [i18n.language]);
+
+  const currentLocale = useMemo(() => {
+    const lang = i18n.language.split("-")[0];
+    const localeMap: Record<string, string> = {
+      ru: "ru",
+      de: "de",
+      en: "en",
+      ua: "uk",
+    };
+
+    return localeMap[lang] || "ru";
   }, [i18n.language]);
 
   const days: Day[] = useMemo(() => {
@@ -66,39 +86,31 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
 
   const wishesByDate = useMemo(() => {
     const map: Record<string, Wish[]> = {};
+
     wishes.forEach((wish) => {
       wish.completedDates.forEach((date) => {
         if (!map[date]) map[date] = [];
         map[date].push(wish);
       });
     });
+
     return map;
   }, [wishes]);
 
   const getRelevantWishes = (dateStr: string) =>
     wishes.filter((w) => dayjs(w.createdAt).format("YYYY-MM-DD") <= dateStr);
 
-  const streak = useMemo(() => {
-    const today = dayjs().startOf("day");
-    let count = 0;
-
-    for (let i = 0; ; i++) {
-      const d = today.subtract(i, "day");
-      if (d.isBefore(start, "day")) break;
-
-      const dateStr = d.format("YYYY-MM-DD");
-      const relevant = getRelevantWishes(dateStr);
-      const total = relevant.length;
-      const completed = relevant.filter((w) => w.completedDates.includes(dateStr)).length;
-
-      if (total > 0 && completed === total) count++;
-      else break;
-    }
-
-    return count;
-  }, [wishes, start]);
-
   const weekDays = t("weekDayShort", { returnObjects: true }) as string[];
+
+  const doneWishesForSelectedDay = selectedDay
+    ? wishesByDate[selectedDay.key] || []
+    : [];
+
+  const notDoneWishesForSelectedDay = selectedDay
+    ? getRelevantWishes(selectedDay.key).filter(
+        (wish) => !wish.completedDates.includes(selectedDay.key)
+      )
+    : [];
 
   return (
     <>
@@ -120,9 +132,7 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
           </button>
 
           <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {monthCursor
-              .locale(i18n.language?.startsWith("de") ? "de" : "ru")
-              .format("MMMM YYYY")}
+            {monthCursor.locale(currentLocale).format("MMMM YYYY")}
           </div>
 
           <button
@@ -145,7 +155,6 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
       <div className="w-full flex justify-center">
         <div className="inline-block max-w-full">
           <div className="grid grid-cols-7 gap-2">
-            {/* weekdays */}
             {weekDays.map((wd) => (
               <div
                 key={wd}
@@ -158,16 +167,16 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
             {days.map((day) => {
               const relevant = getRelevantWishes(day.date);
               const total = relevant.length;
-              const completed = relevant.filter((w) => w.completedDates.includes(day.date)).length;
+              const completed = relevant.filter((w) =>
+                w.completedDates.includes(day.date)
+              ).length;
 
               const isOutOfMonth = !day.isInMonth;
               const isDisabled = day.isFuture || day.isBeforeStart;
 
-              // Base (calm)
               let cellBg = "bg-gray-100 dark:bg-slate-700/40";
               let textMain = "text-slate-900 dark:text-slate-100";
 
-              // Progress coloring
               if (total > 0 && completed === total) {
                 cellBg = "bg-emerald-500 dark:bg-emerald-400";
                 textMain = "text-white dark:text-slate-900";
@@ -176,7 +185,6 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
                 textMain = "text-slate-900";
               }
 
-              // Out of month: keep the grid calm (same size, very subtle)
               if (isOutOfMonth) {
                 return (
                   <div
@@ -208,12 +216,19 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
                     todayRing,
                     fade,
                     hover,
-                    !isDisabled ? "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/35" : "",
+                    !isDisabled
+                      ? "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/35"
+                      : "",
                   ].join(" ")}
                   aria-label={day.date}
                   title={day.date}
                 >
-                  <span className={["text-[11px] font-medium leading-none", textMain].join(" ")}>
+                  <span
+                    className={[
+                      "text-[11px] font-medium leading-none",
+                      textMain,
+                    ].join(" ")}
+                  >
                     {dayjs(day.date).date()}
                   </span>
                 </button>
@@ -223,16 +238,11 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
         </div>
       </div>
 
-      {/* {streak > 0 && (
-        <div className="text-center font-semibold text-emerald-600 dark:text-emerald-300 mb-5 mt-5">
-          🔥 {streak} {streak === 1 ? "день" : "дня"} подряд с 100% выполнением!
-        </div>
-      )} */}
-
       {selectedDay && (
         <DayDetailsModal
           date={dayjs(selectedDay.date)}
-          wishes={wishesByDate[selectedDay.key] || []}
+          doneWishes={doneWishesForSelectedDay}
+          notDoneWishes={notDoneWishesForSelectedDay}
           onClose={() => setSelectedDayKey(null)}
         />
       )}
