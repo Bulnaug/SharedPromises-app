@@ -70,5 +70,7 @@
   "memberMany": "Teilnehmer",
   "memberOne": "Teilnehmer",
 
-  "roomsSubtitle": "Einen Raum erstellen oder einen bestehenden öffnen" 
+  "roomsSubtitle": "Einen Raum erstellen oder einen bestehenden öffnen",
+  "trackerNoActivity": "An diesem Tag hat niemand etwas gemacht",
+  "close": "Schließen"
 }

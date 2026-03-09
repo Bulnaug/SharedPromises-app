@@ -70,5 +70,7 @@
   "memberMany": "Members",
   "memberOne": "Member",
 
-  "roomsSubtitle": "Create a room or open an existing one" 
+  "roomsSubtitle": "Create a room or open an existing one",
+  "trackerNoActivity": "No one completed anything on this day",
+  "close": "Close"
 }

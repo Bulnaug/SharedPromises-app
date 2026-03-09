@@ -40,7 +40,7 @@ i18n.on("languageChanged", (lng) => {
     ru: "ru_RU",
     de: "de_DE",
     en: "en_EN",
-    ua: "ua_UA",
+    ua: "uk_UA"
   };
 
   const ogLocale = localeMap[lng] || "ru_RU";

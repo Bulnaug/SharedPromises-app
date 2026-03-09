@@ -223,11 +223,11 @@ export function Tracker({ startDate, wishes }: TrackerProps) {
         </div>
       </div>
 
-      {streak > 0 && (
+      {/* {streak > 0 && (
         <div className="text-center font-semibold text-emerald-600 dark:text-emerald-300 mb-5 mt-5">
           🔥 {streak} {streak === 1 ? "день" : "дня"} подряд с 100% выполнением!
         </div>
-      )}
+      )} */}
 
       {selectedDay && (
         <DayDetailsModal
