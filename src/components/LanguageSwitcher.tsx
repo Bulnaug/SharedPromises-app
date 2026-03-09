@@ -61,7 +61,7 @@ export default function LanguageSwitcher() {
       {open && (
         <div
           className="
-          absolute right-0 mt-2 w-44
+          absolute left-0 mt-2 w-44
           rounded-xl
           bg-white dark:bg-slate-800
           border border-gray-200 dark:border-slate-700
