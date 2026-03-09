@@ -22,9 +22,7 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
         w-16 md:w-64
       "
     >
-      {/* ───────── Верх ───────── */}
       <div className="p-3 md:p-6 space-y-3 md:space-y-6">
-        {/* Лого: SP на мобилке, SharedPromises на md+ */}
         <div className="flex items-center justify-center md:justify-start">
           <div className="md:hidden text-lg font-semibold text-gray-900">
             S<span className="text-green-500">P</span>
@@ -35,7 +33,6 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
           </div>
         </div>
 
-        {/* Add / Back button: иконка на мобилке, текст на md+ */}
         {isAddWishPage || isRoomSettingsPage ? (
           <Link
             to={backHref}
@@ -72,7 +69,6 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
           </Link>
         )}
 
-        {/* Навигация */}
         
         <nav className="space-y-1">
           <SidebarLink to="/rooms" icon="🏠" label={t("myRooms")} />
@@ -84,7 +80,6 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
         </nav>
       </div>
 
-      {/* ───────── Низ ───────── */}
       <div className="mt-auto p-3 md:p-6 border-t border-gray-100">
         <SidebarLink to="/profile" icon="👤" label={t("myProfile")} />
       </div>
@@ -92,7 +87,6 @@ export function Sidebar({ roomId }: { roomId: Id<"rooms"> }) {
   );
 }
 
-/* ───────── Link-компонент ───────── */
 
 function SidebarLink({
   to,
@@ -106,7 +100,7 @@ function SidebarLink({
   return (
     <Link
       to={to}
-      title={label} // на мобилке будет подсказка при долгом тапе/ховере
+      title={label}
       aria-label={label}
       className="
         flex items-center

@@ -68,5 +68,7 @@
   "openAnotherRoom": "Try opening another room.",
 
   "memberMany": "Members",
-  "memberOne": "Member"
+  "memberOne": "Member",
+
+  "roomsSubtitle": "Create a room or open an existing one" 
 }

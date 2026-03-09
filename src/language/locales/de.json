@@ -68,5 +68,7 @@
   "openAnotherRoom" : "Versuch mal, ein anderes Zimmer zu öffnen.",
 
   "memberMany": "Teilnehmer",
-  "memberOne": "Teilnehmer"
+  "memberOne": "Teilnehmer",
+
+  "roomsSubtitle": "Einen Raum erstellen oder einen bestehenden öffnen" 
 }

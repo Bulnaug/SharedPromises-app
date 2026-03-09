@@ -68,5 +68,7 @@
   "openAnotherRoom": "Спробуй відкрити іншу кімнату.",
 
   "memberMany": "Учасники",
-  "memberOne": "Учасник"
+  "memberOne": "Учасник",
+
+  "roomsSubtitle": "Створити кімнату або відкрити існуючу" 
 }
