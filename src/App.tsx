@@ -12,6 +12,8 @@ import Landing from "./pages/Landing";
 import RoomsPage from "./pages/RoomsPage";
 import Dashboard from "./pages/Dashboard";
 import AddWishPage from "./pages/AddWishPage";
+import TasksPage from "./components/tasks/components/TasksPage";
+import NewTaskPage from "./components/tasks/components/NewTaskPage";
 
 // ✅ Layout
 import { AppLayout } from "./layouts/AppLayout";
@@ -58,6 +60,9 @@ export default function App() {
                 <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
                 <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
               </Route>
+
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="tasks/new" element={<NewTaskPage />} />
 
               <Route path="*" element={<Navigate to="/rooms" />} />
             </Routes>

@@ -37,5 +37,15 @@ export default defineSchema({
     createdAt: v.number(),
   })
   .index("by_date", ["date"])
-  .index("by_wish", ["wishId"])
+  .index("by_wish", ["wishId"]),
+
+  tasks: defineTable({
+    title: v.string(),
+    dueDate: v.optional(v.string()),
+    completed: v.boolean(),
+    createdAt: v.number(),
+    userId: v.id("users"),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_completed", ["userId", "completed"])
 });
