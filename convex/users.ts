@@ -126,3 +126,13 @@ export async function getUserByClerkIdOrCreate(
 
   return created; // ✅ теперь гарантированно не null
 }
+
+export const findUserByClerkId = async (
+  ctx: QueryCtx,
+  clerkId: string
+) => {
+  return await ctx.db
+    .query("users")
+    .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+    .unique();
+};
