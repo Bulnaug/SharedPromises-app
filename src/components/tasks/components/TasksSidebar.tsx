@@ -152,7 +152,6 @@ type TopAction =
 function getTopAction({
   isNewTaskPage,
   isTasksCalendarPage,
-  navigate,
   t,
 }: {
   isNewTaskPage: boolean;

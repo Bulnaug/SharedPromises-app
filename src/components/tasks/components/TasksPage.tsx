@@ -4,7 +4,6 @@ import {
   CalendarDays,
   CheckCircle2,
   Circle,
-  Plus,
   Trash2,
 } from "lucide-react";
 
