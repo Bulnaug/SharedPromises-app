@@ -1,7 +1,25 @@
-import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { CalendarDays, CheckCircle2, Circle, Plus, Trash2 } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Circle,
+  Plus,
+  Trash2,
+} from "lucide-react";
+
+function formatDate(date?: string) {
+  if (!date) return null;
+
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return date;
+
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(d);
+}
 
 export default function TasksPage() {
   const tasks = useQuery(api.tasks.listMyTasks);
@@ -10,8 +28,16 @@ export default function TasksPage() {
 
   if (tasks === undefined) {
     return (
-      <div className="text-sm text-slate-500 dark:text-slate-400">
-        Загрузка задач...
+      <div
+        className="
+          rounded-2xl border px-5 py-4 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
+        <div className="text-sm text-slate-500 dark:text-slate-400">
+          Загрузка задач...
+        </div>
       </div>
     );
   }
@@ -27,180 +53,278 @@ export default function TasksPage() {
   const completedTasks = sortedTasks.filter((task) => task.completed);
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
-            Мои задачи
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 md:text-base">
-            Личный список задач с датами и статусом выполнения
-          </p>
-        </div>
-
-        <Link
-          to="/tasks/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-600"
+      <div className="relative space-y-8 text-slate-900 dark:text-slate-100">
+        {/* Header */}
+        <header
+          className="
+            rounded-2xl border px-5 py-4 shadow-sm
+            bg-white border-gray-100
+            dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+          "
         >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Новая задача</span>
-        </Link>
-      </div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-slate-100">
+                Задачи
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Личный список задач с датами и выполнением
+              </p>
+            </div>
+          </div>
+        </header>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div className="text-sm text-slate-500 dark:text-slate-400">
-            Всего задач
-          </div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            {tasks.length}
-          </div>
-        </div>
+        {/* Summary */}
+        <section className="grid grid-cols-3 gap-3 md:gap-4">
+          <SummaryCard label="Всего" value={tasks.length} />
+          <SummaryCard label="Активные" value={activeTasks.length} />
+          <SummaryCard label="Готово" value={completedTasks.length} />
+        </section>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div className="text-sm text-slate-500 dark:text-slate-400">
-            Активные
-          </div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            {activeTasks.length}
-          </div>
-        </div>
+        {/* Active tasks */}
+        <section
+          className="
+            rounded-2xl border p-5 md:p-6 space-y-5 shadow-sm
+            bg-white border-gray-100
+            dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+          "
+        >
+          <SectionTitle
+            icon={<Circle size={17} className="text-emerald-500" />}
+            title="Активные"
+            count={activeTasks.length}
+          />
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div className="text-sm text-slate-500 dark:text-slate-400">
-            Выполненные
-          </div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            {completedTasks.length}
-          </div>
-        </div>
-      </div>
-
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Circle size={18} className="text-emerald-500" />
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            Активные задачи
-          </h2>
-        </div>
-
-        <div className="space-y-3">
           {activeTasks.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
-              Пока нет активных задач
-            </div>
+            <EmptyState text="Пока нет активных задач" />
           ) : (
-            activeTasks.map((task) => (
-              <div
-                key={task._id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 space-y-2">
-                    <h3 className="text-base font-medium text-slate-900 dark:text-slate-100">
-                      {task.title}
-                    </h3>
-
-                    {task.description && (
-                      <p className="text-sm text-slate-500 dark:text-slate-400">
-                        {task.description}
-                      </p>
-                    )}
-
-                    {task.dueDate && (
-                      <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        <CalendarDays size={15} />
-                        <span>{task.dueDate}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleTaskCompleted({ taskId: task._id })}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"
-                    >
-                      Готово
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteTask({ taskId: task._id })}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+            <div className="space-y-3">
+              {activeTasks.map((task) => (
+                <TaskCard
+                  key={task._id}
+                  title={task.title}
+                  description={task.description}
+                  dueDate={task.dueDate}
+                  completed={false}
+                  onToggle={() => toggleTaskCompleted({ taskId: task._id })}
+                  onDelete={() => deleteTask({ taskId: task._id })}
+                />
+              ))}
+            </div>
           )}
-        </div>
-      </section>
+        </section>
 
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 size={18} className="text-emerald-500" />
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            Выполненные
-          </h2>
-        </div>
+        {/* Completed tasks */}
+        <section
+          className="
+            rounded-2xl border p-5 md:p-6 space-y-5 shadow-sm
+            bg-white border-gray-100
+            dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+          "
+        >
+          <SectionTitle
+            icon={<CheckCircle2 size={17} className="text-emerald-500" />}
+            title="Выполненные"
+            count={completedTasks.length}
+          />
 
-        <div className="space-y-3">
           {completedTasks.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
-              Пока нет выполненных задач
-            </div>
+            <EmptyState text="Пока нет выполненных задач" />
           ) : (
-            completedTasks.map((task) => (
-              <div
-                key={task._id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 opacity-80 shadow-sm dark:border-slate-800 dark:bg-slate-950"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 space-y-2">
-                    <h3 className="text-base font-medium text-slate-500 line-through dark:text-slate-400">
-                      {task.title}
-                    </h3>
-
-                    {task.description && (
-                      <p className="text-sm text-slate-400 dark:text-slate-500">
-                        {task.description}
-                      </p>
-                    )}
-
-                    {task.dueDate && (
-                      <div className="flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500">
-                        <CalendarDays size={15} />
-                        <span>{task.dueDate}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleTaskCompleted({ taskId: task._id })}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"
-                    >
-                      Вернуть
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteTask({ taskId: task._id })}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+            <div className="space-y-3">
+              {completedTasks.map((task) => (
+                <TaskCard
+                  key={task._id}
+                  title={task.title}
+                  description={task.description}
+                  dueDate={task.dueDate}
+                  completed
+                  onToggle={() => toggleTaskCompleted({ taskId: task._id })}
+                  onDelete={() => deleteTask({ taskId: task._id })}
+                />
+              ))}
+            </div>
           )}
-        </div>
-      </section>
+        </section>
+      </div>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div
+      className="
+        rounded-2xl border px-4 py-3 shadow-sm
+        bg-white border-gray-100
+        dark:bg-slate-800/60 dark:border-slate-700/60 dark:shadow-none
+      "
+    >
+      <div className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        {label}
+      </div>
+      <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">
+        {value}
+      </div>
     </div>
+  );
+}
+
+function SectionTitle({
+  icon,
+  title,
+  count,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  count: number;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-2">
+        {icon}
+        <h2 className="text-base md:text-lg font-semibold text-slate-900 dark:text-slate-100">
+          {title}
+        </h2>
+      </div>
+
+      <div
+        className="
+          rounded-full border px-2.5 py-1 text-xs font-medium
+          border-gray-200 text-slate-500 bg-slate-50
+          dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-400
+        "
+      >
+        {count}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div
+      className="
+        rounded-2xl border border-dashed p-6 text-center
+        border-gray-200 bg-slate-50/70
+        dark:border-slate-700 dark:bg-slate-900/40
+      "
+    >
+      <div className="text-sm text-slate-500 dark:text-slate-400">{text}</div>
+    </div>
+  );
+}
+
+function TaskCard({
+  title,
+  description,
+  dueDate,
+  completed,
+  onToggle,
+  onDelete,
+}: {
+  title: string;
+  description?: string;
+  dueDate?: string;
+  completed: boolean;
+  onToggle: () => void;
+  onDelete: () => void;
+}) {
+  return (
+      <div
+        className="
+          rounded-2xl border p-4 shadow-sm
+          bg-white border-gray-100
+          dark:bg-slate-900/70 dark:border-slate-700/60 dark:shadow-none
+        "
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start gap-3">
+              <div className="pt-0.5 shrink-0">
+                {completed ? (
+                  <CheckCircle2 size={18} className="text-emerald-500" />
+                ) : (
+                  <Circle size={18} className="text-slate-300 dark:text-slate-600" />
+                )}
+              </div>
+
+              <div className="min-w-0 space-y-1.5">
+                <h3
+                  className={[
+                    "text-base font-medium",
+                    completed
+                      ? "line-through text-slate-500 dark:text-slate-400"
+                      : "text-slate-900 dark:text-slate-100",
+                  ].join(" ")}
+                >
+                  {title}
+                </h3>
+
+                {description && (
+                  <p
+                    className={[
+                      "text-sm",
+                      completed
+                        ? "text-slate-400 dark:text-slate-500"
+                        : "text-slate-500 dark:text-slate-400",
+                    ].join(" ")}
+                  >
+                    {description}
+                  </p>
+                )}
+
+                {dueDate && (
+                  <div
+                    className={[
+                      "flex items-center gap-2 text-sm",
+                      completed
+                        ? "text-slate-400 dark:text-slate-500"
+                        : "text-slate-500 dark:text-slate-400",
+                    ].join(" ")}
+                  >
+                    <CalendarDays size={15} />
+                    <span>{formatDate(dueDate)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 self-end md:self-auto">
+            <button
+              type="button"
+              onClick={onToggle}
+              className="
+                rounded-xl border px-3 py-2 text-sm font-medium
+                border-gray-200 text-slate-700 bg-white
+                transition hover:bg-slate-50
+                dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800
+              "
+            >
+              {completed ? "Вернуть" : "Готово"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onDelete}
+              className="
+                rounded-xl border p-2.5
+                border-gray-200 text-slate-500 bg-white
+                transition hover:bg-slate-50 hover:text-red-500
+                dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800
+              "
+              aria-label="Удалить задачу"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
   );
 }

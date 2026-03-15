@@ -17,6 +17,7 @@ import NewTaskPage from "./components/tasks/components/NewTaskPage";
 
 // ✅ Layout
 import { AppLayout } from "./layouts/AppLayout";
+import { TasksLayout } from "./components/tasks/components/TasksLayout";
 
 export default function App() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -60,10 +61,10 @@ export default function App() {
                 <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
                 <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
               </Route>
-
-              <Route path="tasks" element={<TasksPage />} />
-              <Route path="tasks/new" element={<NewTaskPage />} />
-
+              <Route element={<TasksLayout />}>
+                <Route path="tasks" element={<TasksPage />} />
+                <Route path="tasks/new" element={<NewTaskPage />} />
+              </Route>
               <Route path="*" element={<Navigate to="/rooms" />} />
             </Routes>
           )}

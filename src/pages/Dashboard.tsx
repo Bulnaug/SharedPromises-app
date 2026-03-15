@@ -20,10 +20,10 @@ export default function Dashboard() {
 
   if (!convexRoomId) return <Navigate to="/rooms" replace />;
 
-  // Самый первый заход: данных ещё не было вообще
+  
   if (data === undefined) return <Spinner />;
 
-  // Комната не найдена / нет доступа
+
   if (!data) return <EmptyBlock title="Room not found" />;
 
   const { room, wishesByUser, usersMap } = data;
