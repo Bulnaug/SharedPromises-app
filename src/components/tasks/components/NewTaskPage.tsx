@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { ArrowLeft, CalendarDays } from "lucide-react";
@@ -15,6 +15,7 @@ export default function NewTaskPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title.trim()) return;
 
     try {
@@ -27,6 +28,8 @@ export default function NewTaskPage() {
       });
 
       navigate("/tasks");
+    } catch (error) {
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -47,10 +50,13 @@ export default function NewTaskPage() {
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             Новая задача
           </h1>
+          <p className="mt-1 text-sm md:text-base text-slate-500 dark:text-slate-400">
+            Создай задачу с названием, описанием и датой
+          </p>
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 md:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 md:p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <label
