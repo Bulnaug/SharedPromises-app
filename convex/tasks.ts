@@ -73,3 +73,28 @@ export const toggleTaskCompleted = mutation({
     });
   },
 });
+
+export const deleteTask = mutation({
+  args: {
+    taskId: v.id("tasks"),
+  },
+  handler: async (ctx, { taskId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await getUserByClerkIdOrCreate(ctx, identity);
+    const task = await ctx.db.get(taskId);
+
+    if (!task) {
+      throw new Error("Task not found");
+    }
+
+    if (task.userId !== user._id) {
+      throw new Error("Not allowed");
+    }
+
+    await ctx.db.delete(taskId);
+  },
+});
