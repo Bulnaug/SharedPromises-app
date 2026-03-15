@@ -5,6 +5,7 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import App from "./App";
 import "./index.css";
+import { registerSW } from 'virtual:pwa-register'
 
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
@@ -16,12 +17,14 @@ const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 const normalizeLng = (lng: string) =>
   lng.startsWith("de") ? "de" : "ru";
 
-// установить локаль при старте
 dayjs.locale(normalizeLng(i18n.language));
 
-// обновлять при смене языка
 i18n.on("languageChanged", (lng) => {
   dayjs.locale(normalizeLng(lng));
+});
+
+registerSW({
+  immediate: true,
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
