@@ -1,10 +1,18 @@
 import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CheckSquare, Plus, User, ArrowLeft, Home } from "lucide-react";
+import {
+  CheckSquare,
+  Plus,
+  User,
+  ArrowLeft,
+  Home,
+  CalendarDays,
+} from "lucide-react";
 
 export function TasksSidebar() {
   const isTasksPage = useMatch("/tasks");
   const isNewTaskPage = useMatch("/tasks/new");
+  const isTasksCalendarPage = useMatch("/tasks/calendar");
   const isProfilePage = useMatch("/profile");
 
   const navigate = useNavigate();
@@ -12,6 +20,7 @@ export function TasksSidebar() {
 
   const topAction = getTopAction({
     isNewTaskPage: Boolean(isNewTaskPage),
+    isTasksCalendarPage: Boolean(isTasksCalendarPage),
     navigate,
     t,
   });
@@ -50,6 +59,13 @@ export function TasksSidebar() {
               icon={<CheckSquare size={18} />}
               label="Задачи"
               active={!!isTasksPage || !!isNewTaskPage}
+            />
+
+            <IconLink
+              to="/tasks/calendar"
+              icon={<CalendarDays size={18} />}
+              label="Календарь задач"
+              active={!!isTasksCalendarPage}
             />
 
             <IconLink
@@ -92,6 +108,13 @@ export function TasksSidebar() {
               label="Задачи"
               active={!!isTasksPage || !!isNewTaskPage}
             />
+
+            <SidebarLink
+              to="/tasks/calendar"
+              icon={<CalendarDays size={18} />}
+              label="Календарь"
+              active={!!isTasksCalendarPage}
+            />
           </nav>
         </div>
 
@@ -128,14 +151,16 @@ type TopAction =
 
 function getTopAction({
   isNewTaskPage,
+  isTasksCalendarPage,
   navigate,
   t,
 }: {
   isNewTaskPage: boolean;
+  isTasksCalendarPage: boolean;
   navigate: ReturnType<typeof useNavigate>;
   t: (key: string) => string;
 }): TopAction {
-  if (isNewTaskPage) {
+  if (isNewTaskPage || isTasksCalendarPage) {
     return {
       kind: "link",
       to: "/tasks",
@@ -240,7 +265,9 @@ function SidebarLink({
           : "text-slate-700 dark:text-slate-300",
       ].join(" ")}
     >
-      <span className="shrink-0 text-slate-500 dark:text-slate-400">{icon}</span>
+      <span className="shrink-0 text-slate-500 dark:text-slate-400">
+        {icon}
+      </span>
       <span>{label}</span>
     </Link>
   );

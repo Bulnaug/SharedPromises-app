@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import AddWishPage from "./pages/AddWishPage";
 import TasksPage from "./components/tasks/components/TasksPage";
 import NewTaskPage from "./components/tasks/components/NewTaskPage";
+import TasksCalendarPage from "./components/tasks/components/TasksCalendarPage";
 
 // ✅ Layout
 import { AppLayout } from "./layouts/AppLayout";
@@ -64,6 +65,7 @@ export default function App() {
               <Route element={<TasksLayout />}>
                 <Route path="tasks" element={<TasksPage />} />
                 <Route path="tasks/new" element={<NewTaskPage />} />
+                <Route path="/tasks/calendar" element={<TasksCalendarPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/rooms" />} />
             </Routes>
