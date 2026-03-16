@@ -1,16 +1,13 @@
 import React from "react";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { ThemeToggle } from "../components/ThemeSwitsher";
+import { ModeSwitch } from "../components/ModeSwitch";
 
 type Props = {
   children: React.ReactNode;
-  /** Центрировать контент и ограничить ширину */
   centered?: boolean;
-  /** Максимальная ширина, если centered=true */
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl";
-  /** Доп. классы для внешнего контейнера (фон/паддинги) */
   className?: string;
-  /** Доп. классы для внутреннего main (ширина/отступы) */
   innerClassName?: string;
 };
 
@@ -52,6 +49,9 @@ export function PageContainer({
         <div className="flex items-center justify-between gap-4">
           <LanguageSwitcher />
           <ThemeToggle />
+        </div>
+        <div className="flex justify-start">
+          <ModeSwitch />
         </div>
         {children}
       </main>

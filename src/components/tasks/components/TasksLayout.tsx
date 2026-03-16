@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { TasksSidebar } from "./TasksSidebar";
 import LanguageSwitcher from "../../LanguageSwitcher";
 import { ThemeToggle } from "../../ThemeSwitsher";
+import { ModeSwitch } from "../../ModeSwitch";
 
 export function TasksLayout() {
   return (
@@ -20,7 +21,7 @@ export function TasksLayout() {
             className="
               mx-auto w-full max-w-4xl
               px-2 md:px-6
-              py-6 md:py-10
+              pb-6 md:pb-10
               space-y-8
             "
           >
@@ -38,6 +39,9 @@ export function TasksLayout() {
             >
               <LanguageSwitcher />
               <ThemeToggle />
+            </div>
+            <div className="flex justify-start">
+              <ModeSwitch />
             </div>
 
             <Outlet />
