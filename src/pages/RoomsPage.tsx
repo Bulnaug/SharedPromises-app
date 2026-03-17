@@ -6,8 +6,6 @@ import { useTranslation } from "react-i18next";
 import { PageContainer } from "../layouts/PageContainer";
 import Spinner from "../components/Spinner";
 
-import { useMatch } from "react-router-dom";
-
 export default function RoomsPage() {
   const navigate = useNavigate();
 
