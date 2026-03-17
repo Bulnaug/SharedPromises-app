@@ -6,13 +6,10 @@ import { useTranslation } from "react-i18next";
 import { PageContainer } from "../layouts/PageContainer";
 import Spinner from "../components/Spinner";
 
-import { Link, useMatch } from "react-router-dom";
-import { CheckSquare } from "lucide-react";
+import { useMatch } from "react-router-dom";
 
 export default function RoomsPage() {
   const navigate = useNavigate();
-
-  const isTasksPage = useMatch("/tasks");
 
   const rooms = useQuery(api.rooms.getMyRooms);
   const createRoom = useMutation(api.rooms.createRoom);
