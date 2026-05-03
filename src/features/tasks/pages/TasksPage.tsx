@@ -1,11 +1,8 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { TaskCard } from "../components/TaskCard";
+import { useTasks } from "../model/useTasks";
 
 export default function TasksPage() {
-  const tasks = useQuery(api.tasks.listMyTasks);
-  const toggle = useMutation(api.tasks.toggleTaskCompleted);
-  const remove = useMutation(api.tasks.deleteTask);
+  const { tasks, toggleTask, deleteTask } = useTasks();
 
   if (!tasks) return <div>Loading...</div>;
 
@@ -15,8 +12,8 @@ export default function TasksPage() {
         <TaskCard
           key={t._id}
           {...t}
-          onToggle={() => toggle({ taskId: t._id })}
-          onDelete={() => remove({ taskId: t._id })}
+          onToggle={() => toggleTask(t._id)}
+          onDelete={() => deleteTask(t._id)}
         />
       ))}
     </div>
