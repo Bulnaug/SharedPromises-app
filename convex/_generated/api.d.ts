@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as aiAgents from "../aiAgents.js";
 import type * as lib_getUser from "../lib/getUser.js";
 import type * as migrations_cleanupAuthorId from "../migrations/cleanupAuthorId.js";
 import type * as migrations_fillInviteCodes from "../migrations/fillInviteCodes.js";
@@ -29,6 +30,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aiAgents: typeof aiAgents;
   "lib/getUser": typeof lib_getUser;
   "migrations/cleanupAuthorId": typeof migrations_cleanupAuthorId;
   "migrations/fillInviteCodes": typeof migrations_fillInviteCodes;

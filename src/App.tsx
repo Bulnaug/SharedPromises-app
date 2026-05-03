@@ -7,7 +7,9 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useEffect, useRef } from "react";
 
+
 // Pages
+import AIAgentsPage from "./features/ai-agents/AIAgentsPage";
 import Landing from "./pages/Landing";
 import RoomsPage from "./pages/RoomsPage";
 import Dashboard from "./pages/Dashboard";
@@ -61,6 +63,7 @@ export default function App() {
                 <Route path="/rooms/:roomId" element={<Dashboard />} />
                 <Route path="/rooms/:roomId/new" element={<AddWishPage />} />
                 <Route path="/rooms/:roomId/settings" element={<RoomSettingsRoute />} />
+                <Route path="/ai-agents" element={<AIAgentsPage />} />
               </Route>
               <Route element={<TasksLayout />}>
                 <Route path="tasks" element={<TasksPage />} />

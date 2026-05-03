@@ -1,4 +1,5 @@
 import { structureArchitectAgent } from "./agents/structureArchitectAgent";
+import { AgentChat } from "./AgentChat";
 
 export default function AIAgentsPage() {
   return (
@@ -20,9 +21,7 @@ export default function AIAgentsPage() {
           </ul>
         </div>
 
-        <div className="mt-4 text-sm text-gray-500">
-          В следующем шаге здесь появится чат с агентом.
-        </div>
+       <AgentChat />
       </div>
     </div>
   );
