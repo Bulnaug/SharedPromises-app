@@ -13,14 +13,11 @@ import ProfilePage from "../../pages/ProfilPage";
 import RoomSettingsRoute from "../../pages/RoomSettingsRoute";
 import JoinRoom from "../../components/JoinRoom";
 
-// Tasks
-import TasksPage from "../../components/tasks/components/TasksPage";
-import NewTaskPage from "../../components/tasks/components/NewTaskPage";
-import TasksCalendarPage from "../../components/tasks/components/TasksCalendarPage";
+// Tasks (feature)
+import { TasksLayout, TasksPage, NewTaskPage, TasksCalendarPage } from "../../features/tasks";
 
 // Layouts
 import { AppLayout } from "../../layouts/AppLayout";
-import { TasksLayout } from "../../components/tasks/components/TasksLayout";
 
 // Features
 import AIAgentsPage from "../../features/ai-agents/AIAgentsPage";
