@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { aiAgents } from "./agents";
+import type { AIAgentId } from "./agents";
 import { AgentChat } from "./components/AgentChat";
 
 export default function AIAgentsPage() {
-  const [selectedAgentId, setSelectedAgentId] = useState(aiAgents[0].id);
+  const [selectedAgentId, setSelectedAgentId] = useState<AIAgentId>(
+    aiAgents[0].id
+  );
 
   const selectedAgent = aiAgents.find((a) => a.id === selectedAgentId)!;
 
@@ -16,11 +19,7 @@ export default function AIAgentsPage() {
           <button
             key={agent.id}
             onClick={() => setSelectedAgentId(agent.id)}
-            className={`px-4 py-2 rounded-xl border text-sm transition ${{
-              true: "",
-            }[
-              agent.id === selectedAgentId
-            ] || ""} ${
+            className={`px-4 py-2 rounded-xl border text-sm transition ${
               agent.id === selectedAgentId
                 ? "bg-emerald-500 text-white border-emerald-500"
                 : "bg-white text-gray-700 border-gray-300 hover:border-emerald-400"
