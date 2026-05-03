@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import type { AIAgent } from "../agents";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
 };
 
-export function AgentChat() {
+export function AgentChat({ agent }: { agent: AIAgent }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const askStructureArchitect = useAction(api.aiAgents.askStructureArchitect);
+  const askAgent = useAction(api.aiAgents.askAgent);
 
   async function sendMessage() {
     const currentInput = input.trim();
@@ -25,7 +26,11 @@ export function AgentChat() {
     setError(null);
 
     try {
-      const reply = await askStructureArchitect({ message: currentInput });
+      const reply = await askAgent({
+        message: currentInput,
+        systemPrompt: agent.systemPrompt,
+      });
+
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (e) {
       console.error(e);
@@ -40,7 +45,7 @@ export function AgentChat() {
       <div className="h-80 overflow-y-auto rounded-xl border p-3 space-y-2">
         {messages.length === 0 && (
           <div className="text-sm text-gray-500">
-            Спроси агента про архитектуру, структуру папок или безопасный рефакторинг.
+            Сейчас выбран агент: {agent.name}. Задай ему вопрос.
           </div>
         )}
 
@@ -61,7 +66,7 @@ export function AgentChat() {
           </div>
         ))}
 
-        {loading && <div className="text-sm text-gray-400">Structure Architect думает...</div>}
+        {loading && <div className="text-sm text-gray-400">{agent.shortName} думает...</div>}
       </div>
 
       {error && (
@@ -77,7 +82,7 @@ export function AgentChat() {
           onKeyDown={(e) => {
             if (e.key === "Enter") sendMessage();
           }}
-          placeholder="Спроси про архитектуру..."
+          placeholder={`Спроси ${agent.shortName}...`}
           className="min-w-0 flex-1 rounded-xl border px-3 py-2 text-slate-900"
         />
         <button
