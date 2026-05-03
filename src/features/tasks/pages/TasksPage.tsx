@@ -1,11 +1,10 @@
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import {
   CalendarDays,
   CheckCircle2,
   Circle,
   Trash2,
 } from "lucide-react";
+import { useTasks } from "../model/useTasks";
 
 function formatDate(date?: string) {
   if (!date) return null;
@@ -21,9 +20,7 @@ function formatDate(date?: string) {
 }
 
 export default function TasksPage() {
-  const tasks = useQuery(api.tasks.listMyTasks);
-  const toggleTaskCompleted = useMutation(api.tasks.toggleTaskCompleted);
-  const deleteTask = useMutation(api.tasks.deleteTask);
+  const { tasks, toggleTask, deleteTask } = useTasks();
 
   if (tasks === undefined) {
     return (
@@ -71,8 +68,8 @@ export default function TasksPage() {
         title="Активные"
         tasks={activeTasks}
         emptyText="Пока нет активных задач"
-        onToggle={(taskId) => toggleTaskCompleted({ taskId })}
-        onDelete={(taskId) => deleteTask({ taskId })}
+        onToggle={toggleTask}
+        onDelete={deleteTask}
       />
 
       <TaskSection
@@ -80,8 +77,8 @@ export default function TasksPage() {
         title="Выполненные"
         tasks={completedTasks}
         emptyText="Пока нет выполненных задач"
-        onToggle={(taskId) => toggleTaskCompleted({ taskId })}
-        onDelete={(taskId) => deleteTask({ taskId })}
+        onToggle={toggleTask}
+        onDelete={deleteTask}
       />
     </div>
   );
