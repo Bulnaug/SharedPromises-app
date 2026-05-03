@@ -14,6 +14,7 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileContent, setFileContent] = useState<string>("");
 
   const askAgent = useAction(api.aiAgents.askAgent);
 
@@ -28,8 +29,15 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
 
     try {
       const reply = await askAgent({
-        message: `${projectContext}\n\nUser request:\n${currentInput}`,
-        systemPrompt: agent.systemPrompt,
+          message: `
+        ${projectContext}
+
+        ${fileContent ? `File content:\n${fileContent}` : ""}
+
+        User request:
+        ${currentInput}
+        `,
+          systemPrompt: agent.systemPrompt,
       });
 
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
@@ -77,6 +85,17 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
       )}
 
       <div className="flex gap-2">
+        <input
+          type="file"
+          accept=".ts,.tsx,.js,.jsx"
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const text = await file.text();
+            setFileContent(text);
+          }}
+        />
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
