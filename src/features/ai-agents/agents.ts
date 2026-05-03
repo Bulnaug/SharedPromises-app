@@ -1,6 +1,10 @@
 import { structureArchitectAgent } from "./agents/structureArchitectAgent";
+import { codeReviewerAgent } from "./agents/codeReviewerAgent";
 
-export const aiAgents = [structureArchitectAgent] as const;
+export const aiAgents = [
+  structureArchitectAgent,
+  codeReviewerAgent,
+] as const;
 
 export type AIAgent = (typeof aiAgents)[number];
 export type AIAgentId = AIAgent["id"];
