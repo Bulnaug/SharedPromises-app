@@ -1,5 +1,5 @@
 import { structureArchitectAgent } from "./agents/structureArchitectAgent";
-import { AgentChat } from "./AgentChat";
+import { AgentChat } from "./components/AgentChat";
 
 export default function AIAgentsPage() {
   return (
@@ -21,7 +21,7 @@ export default function AIAgentsPage() {
           </ul>
         </div>
 
-       <AgentChat />
+        <AgentChat />
       </div>
     </div>
   );
