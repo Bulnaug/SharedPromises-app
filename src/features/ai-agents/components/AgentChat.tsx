@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { AIAgent } from "../agents";
+import { projectContext } from "../projectContext";
 
 type Message = {
   role: "user" | "assistant";
@@ -27,7 +28,7 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
 
     try {
       const reply = await askAgent({
-        message: currentInput,
+        message: `${projectContext}\n\nUser request:\n${currentInput}`,
         systemPrompt: agent.systemPrompt,
       });
 
@@ -45,7 +46,7 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
       <div className="h-80 overflow-y-auto rounded-xl border p-3 space-y-2">
         {messages.length === 0 && (
           <div className="text-sm text-gray-500">
-            Сейчас выбран агент: {agent.name}. Задай ему вопрос.
+            Сейчас выбран агент: {agent.name}. Он видит контекст проекта и может давать более точные советы.
           </div>
         )}
 
