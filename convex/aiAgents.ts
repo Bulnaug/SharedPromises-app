@@ -40,7 +40,7 @@ export const askAgent = action({
         "X-Title": "SharedPromises AI Agents",
       },
       body: JSON.stringify({
-        model: "openrouter/free",
+        model: "deepseek/deepseek-chat-v3-0324:free",
         messages: [
           {
             role: "system",
@@ -62,10 +62,15 @@ export const askAgent = action({
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content;
+    const reply =
+      data.choices?.[0]?.message?.content?.trim() ||
+      data.choices?.[0]?.delta?.content?.trim();
 
     if (!reply) {
-      throw new Error("No response from OpenRouter model.");
+      console.error("OpenRouter empty response:", JSON.stringify(data, null, 2));
+      throw new Error(
+        "OpenRouter returned an empty response. Try again or reduce project/file context."
+      );
     }
 
     return reply;

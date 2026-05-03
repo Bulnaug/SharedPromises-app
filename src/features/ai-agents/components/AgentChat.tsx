@@ -3,6 +3,7 @@ import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { AIAgent } from "../agents";
 import { projectContext } from "../projectContext";
+import { generatedProjectTree } from "../generatedProjectTree";
 
 type Message = {
   role: "user" | "assistant";
@@ -15,6 +16,7 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState<string>("");
+  const [applyMode, setApplyMode] = useState(false);
 
   const askAgent = useAction(api.aiAgents.askAgent);
 
@@ -32,10 +34,32 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
           message: `
         ${projectContext}
 
+        Project file tree:
+        ${generatedProjectTree}
+
         ${fileContent ? `File content:\n${fileContent}` : ""}
 
         User request:
         ${currentInput}
+
+        ${
+          applyMode
+            ? `
+        You are in APPLY CHANGES mode.
+
+        Return ONLY:
+        1. Summary
+        2. Files to change
+        3. Code blocks with full file content OR diff
+
+        Rules:
+        - Do NOT explain too much
+        - Do NOT say "you can"
+        - Output must be ready to paste
+        - Keep changes small (1 commit)
+        `
+            : ""
+        }
         `,
           systemPrompt: agent.systemPrompt,
       });
@@ -51,6 +75,14 @@ export function AgentChat({ agent }: { agent: AIAgent }) {
 
   return (
     <div className="space-y-4">
+      <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={applyMode}
+            onChange={(e) => setApplyMode(e.target.checked)}
+          />
+          Apply Changes mode
+        </label>
       <div className="h-80 overflow-y-auto rounded-xl border p-3 space-y-2">
         {messages.length === 0 && (
           <div className="text-sm text-gray-500">
